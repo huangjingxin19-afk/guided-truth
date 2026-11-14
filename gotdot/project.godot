@@ -33,6 +33,11 @@ enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
 
 bridge_url="ws://127.0.0.1:19080"
 
+[layer_names]
+
+2d_physics/layer_1="Objects"
+2d_physics/layer_2="Room Bounds"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

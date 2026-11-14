@@ -4,10 +4,12 @@
 [ext_resource type="PackedScene" path="res://actors/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://props/foot_pad.tscn" id="3_foot_pad"]
 [ext_resource type="PackedScene" path="res://ui/investigation_hud.tscn" id="4_hud"]
+[ext_resource type="Script" path="res://rooms/walkable_floor.gd" id="5_floor"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_floor"]
-outlines = Array[PackedVector2Array]([PackedVector2Array(112, 231, 848, 231, 848, 472, 112, 472)])
+resource_local_to_scene = true
 agent_radius = 12.0
+parsed_collision_mask = 1
 parsed_geometry_type = 1
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_desk"]
@@ -119,8 +121,19 @@ width = 2.0
 default_color = Color(0.93, 0.76, 0.46, 1)
 closed = true
 
-[node name="WalkableFloor" type="NavigationRegion2D" parent="."]
+[node name="WalkableFloor" type="NavigationRegion2D" parent="." node_paths=PackedStringArray("player", "boundary")]
 navigation_polygon = SubResource("NavigationPolygon_floor")
+script = ExtResource("5_floor")
+player = NodePath("DepthSort/LinHe")
+boundary = NodePath("FloorBounds/Outline")
+
+[node name="FloorBounds" type="StaticBody2D" parent="WalkableFloor"]
+collision_layer = 2
+collision_mask = 0
+
+[node name="Outline" type="CollisionPolygon2D" parent="WalkableFloor/FloorBounds"]
+build_mode = 1
+polygon = PackedVector2Array(112, 231, 848, 231, 848, 472, 112, 472)
 
 [node name="DepthSort" type="Node2D" parent="WalkableFloor"]
 y_sort_enabled = true
@@ -150,6 +163,7 @@ width = 2.0
 default_color = Color(0.71, 0.52, 0.33, 1)
 
 [node name="LinHe" parent="WalkableFloor/DepthSort" instance=ExtResource("2_player")]
+unique_name_in_owner = true
 position = Vector2(307, 439)
 
 [node name="RoomNumber" type="Label" parent="."]
@@ -175,4 +189,6 @@ text = "点击地面移动"
 [node name="InvestigationHud" parent="." instance=ExtResource("4_hud")]
 
 [connection signal="pressed" from="Scenery/FootPad/InspectButton" to="." method="_on_foot_pad_pressed"]
+[connection signal="movement_changed" from="InvestigationHud" to="WalkableFloor" method="steer"]
 [connection signal="notebook_requested" from="InvestigationHud" to="." method="_on_notebook_requested"]
+[connection signal="overlay_changed" from="InvestigationHud" to="WalkableFloor" method="set_overlay_open"]

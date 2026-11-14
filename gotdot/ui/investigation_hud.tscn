@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://ui/investigation_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://ui/touch_joystick.gd" id="2_joystick"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
 content_margin_left = 16.0
@@ -80,6 +81,16 @@ offset_bottom = 70.0
 mouse_default_cursor_shape = 2
 theme = SubResource("Theme_investigation")
 text = "笔记"
+
+[node name="TouchJoystick" type="Control" parent="."]
+visible = false
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -130.0
+offset_right = 130.0
+offset_bottom = -18.0
+script = ExtResource("2_joystick")
 
 [node name="Overlay" type="ColorRect" parent="."]
 visible = false
