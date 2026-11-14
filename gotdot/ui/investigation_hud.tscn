@@ -92,6 +92,21 @@ offset_right = 130.0
 offset_bottom = -18.0
 script = ExtResource("2_joystick")
 
+[node name="InteractionButton" type="Button" parent="."]
+visible = false
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -236.0
+offset_top = -106.0
+offset_right = -24.0
+offset_bottom = -40.0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme = SubResource("Theme_investigation")
+action_mode = 0
+
 [node name="Overlay" type="ColorRect" parent="."]
 visible = false
 anchor_right = 1.0
@@ -189,5 +204,6 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [connection signal="pressed" from="NotebookButton" to="." method="_on_notebook_pressed"]
+[connection signal="pressed" from="InteractionButton" to="." method="_on_interaction_pressed"]
 [connection signal="pressed" from="Overlay/Card/Content/HeaderRow/CloseButton" to="." method="_on_close_pressed"]
 [connection signal="pressed" from="Overlay/Card/Content/Evidence/EvidenceAction" to="." method="_on_evidence_action_pressed"]

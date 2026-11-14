@@ -38,7 +38,9 @@ func _run() -> void:
 	wheel.stream = _temporary_stream()
 	scrape.stream = _temporary_stream()
 	player.global_position = Vector2(722, 286)
-	await _inspect(han_su)
+	await _wait_for_input()
+	_check(hud.interaction_button.text.ends_with("看推车过门槛"), "The shared button offers the first pass near Han Su.")
+	await _inspect(hud.interaction_button)
 	_check(hud.header.text == "第一次过门槛" and not hud.close_button.visible, "First pass opens a locked presentation.")
 	_check(_entry_count(log) == 0 and not pad.visible and not scratch.visible, "First pass starts with a bare leg and no scratch.")
 	await _advance(animation, 0.73)
@@ -60,7 +62,8 @@ func _run() -> void:
 	_tap_button(hud.close_button)
 
 	player.global_position = Vector2(503, 280)
-	await _inspect(foot_pad_point)
+	await _wait_for_input()
+	await _inspect(hud.interaction_button)
 	_check(hud.evidence_action_button.visible, "Live pad inspection offers installation after the first pass.")
 	_tap_button(hud.evidence_action_button)
 	_check(animation.current_animation == "install" and foot_pad.visible, "Installation plays before removing the floor prop.")
@@ -71,7 +74,9 @@ func _run() -> void:
 	_check(han_su.visible and han_su.text == "再推一次" and _entry_count(log) == 0, "Second pass is available before recording the result.")
 
 	player.global_position = Vector2(722, 286)
-	await _inspect(han_su)
+	await _wait_for_input()
+	_check(hud.interaction_button.text.ends_with("再推一次"), "The shared button picks up Han Su's new action.")
+	await _inspect(hud.interaction_button)
 	var watching_position := player.global_position
 	_tap(Vector2(797, 400))
 	await _advance(animation, 0.73)
@@ -86,6 +91,7 @@ func _run() -> void:
 	_check(wheel.playing, "Second rear wheel still plays the impact.")
 	await _advance(animation, 2.4)
 	_check(not hud.is_open() and not han_su.visible, "Completion returns control and closes the replay entry.")
+	_check(not hud.interaction_button.text.ends_with("再推一次") or not hud.interaction_button.visible, "The completed replay is no longer an available action.")
 	_check(_entry_count(log) == 1, "Completion records exactly one comparison.")
 	_check(not wheel.playing and not scrape.playing, "Closing the presentation stops its audio.")
 
@@ -126,6 +132,10 @@ func _entry_count(log: Node) -> int:
 
 func _inspect(button: Button) -> void:
 	_tap_button(button)
+	await _wait_for_input()
+
+
+func _wait_for_input() -> void:
 	await physics_frame
 	await physics_frame
 	await process_frame

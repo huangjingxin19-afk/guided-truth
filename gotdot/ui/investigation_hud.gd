@@ -4,10 +4,12 @@ const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 const TouchJoystick = preload("res://ui/touch_joystick.gd")
 
 signal notebook_requested
+signal interaction_requested
 signal movement_changed(direction: Vector2, engaged: bool)
 signal overlay_changed(open: bool)
 
 @onready var overlay: Control = $Overlay
+@onready var interaction_button: Button = $InteractionButton
 @onready var _joystick: TouchJoystick = $TouchJoystick
 @onready var header: Label = %Header
 @onready var close_button: Button = %CloseButton
@@ -43,6 +45,23 @@ func _on_overlay_visibility_changed() -> void:
 
 func is_open() -> bool:
 	return overlay.visible
+
+
+func set_interaction_prompt(label: String) -> void:
+	interaction_button.visible = not label.is_empty() and not is_open()
+	if interaction_button.visible:
+		interaction_button.text = label if uses_touch_controls() else "E  " + label
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if interaction_button.visible and event.is_action_pressed(&"interact"):
+		_on_interaction_pressed()
+		get_viewport().set_input_as_handled()
+
+
+func _on_interaction_pressed() -> void:
+	if not is_open() and interaction_button.visible:
+		interaction_requested.emit()
 
 
 func show_evidence(

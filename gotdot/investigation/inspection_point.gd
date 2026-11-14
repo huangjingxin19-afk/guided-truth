@@ -40,16 +40,45 @@ func _on_pressed() -> void:
 
 func _physics_process(_delta: float) -> void:
 	set_physics_process(false)
+	if not _is_available() or try_interact():
+		return
+	_show_approach_hint()
+
+
+func get_interaction_label() -> String:
+	return "查看" + evidence.title if evidence != null else text
+
+
+func reachable_distance_squared() -> float:
+	if not _is_available():
+		return INF
 	var feet := investigator.global_position
 	var nearest := _closest_target_point(feet)
-	var in_range := feet.distance_squared_to(nearest) <= inspection_distance * inspection_distance
-	if in_range and _has_clear_reach(feet, nearest):
-		if evidence != null:
-			inspection_requested.emit(evidence)
-		else:
-			interaction_requested.emit()
-		return
+	var distance := feet.distance_squared_to(nearest)
+	if distance <= inspection_distance * inspection_distance and _has_clear_reach(feet, nearest):
+		return distance
+	return INF
 
+
+func try_interact() -> bool:
+	if not is_finite(reachable_distance_squared()):
+		return false
+	if evidence != null:
+		inspection_requested.emit(evidence)
+	else:
+		interaction_requested.emit()
+	return true
+
+
+func _is_available() -> bool:
+	return (
+		is_visible_in_tree() and not disabled and is_instance_valid(investigator)
+		and is_instance_valid(target) and target.is_visible_in_tree()
+	)
+
+
+func _show_approach_hint() -> void:
+	var feet := investigator.global_position
 	var nearest_stand: Marker2D
 	var nearest_distance := INF
 	for stand in hint_stands:
