@@ -1,0 +1,9 @@
+/.codex/
+/.godot-editor-mcp/
+/gotdot/export_templates/
+*.apk
+*.aab
+*.idsig
+*.keystore
+*.jks
+export_credentials.cfg

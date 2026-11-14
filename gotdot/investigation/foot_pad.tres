@@ -1,0 +1,11 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1_entry"]
+[ext_resource type="PackedScene" path="res://props/foot_pad.tscn" id="2_preview"]
+
+[resource]
+script = ExtResource("1_entry")
+id = &"room102_foot_pad"
+title = "橡胶凳脚垫"
+description = "器材门门槛内侧掉了一块橡胶凳脚垫。"
+preview = ExtResource("2_preview")
