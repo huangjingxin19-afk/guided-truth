@@ -94,30 +94,34 @@ hud = NodePath("../InvestigationHud")
 walk_hint = NodePath("../WalkHint")
 stand_hint = NodePath("StandHint")
 
-[node name="FootPadPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "stand") instance=ExtResource("6_point")]
+[node name="FootPadPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "stands") instance=ExtResource("6_point")]
 offset_left = 517.0
 offset_top = 223.0
 offset_right = 585.0
 offset_bottom = 279.0
 investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
-stand = NodePath("../FootPadStand")
+stands = [NodePath("../FootPadStand")]
 evidence = ExtResource("7_foot_evidence")
 approach_hint = "走到桌后的地面标记，再点脚垫"
 
-[node name="WheelTracksPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "stand") instance=ExtResource("6_point")]
+[node name="WheelTracksPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "stands") instance=ExtResource("6_point")]
 offset_left = 592.0
 offset_top = 249.0
 offset_right = 660.0
 offset_bottom = 305.0
 investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
-stand = NodePath("../WheelTracksStand")
+stands = [NodePath("../WheelTracksLeftStand"), NodePath("../WheelTracksRightStand")]
 evidence = ExtResource("9_track_evidence")
+inspection_distance = 52.0
 approach_hint = "走到轮痕旁的地面标记，再查看"
 
 [node name="FootPadStand" type="Marker2D" parent="Investigation"]
 position = Vector2(503, 280)
 
-[node name="WheelTracksStand" type="Marker2D" parent="Investigation"]
+[node name="WheelTracksLeftStand" type="Marker2D" parent="Investigation"]
+position = Vector2(580, 290)
+
+[node name="WheelTracksRightStand" type="Marker2D" parent="Investigation"]
 position = Vector2(674, 270)
 
 [node name="StandHint" type="Line2D" parent="Investigation"]
