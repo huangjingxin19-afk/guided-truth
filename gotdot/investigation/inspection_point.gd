@@ -15,6 +15,8 @@ signal interaction_requested
 @export var touch_padding: float = 16.0
 @export var hint_stands: Array[Marker2D] = []
 @export var approach_hint := "走到地面标记处再查看"
+## Optional HUD action text, independent of the scene button's visible text.
+@export var interaction_label := ""
 
 
 func _ready() -> void:
@@ -46,7 +48,9 @@ func _physics_process(_delta: float) -> void:
 
 
 func get_interaction_label() -> String:
-	return "查看" + evidence.title if evidence != null else text
+	if evidence != null:
+		return "查看" + evidence.title
+	return interaction_label if not interaction_label.is_empty() else text
 
 
 func reachable_distance_squared() -> float:

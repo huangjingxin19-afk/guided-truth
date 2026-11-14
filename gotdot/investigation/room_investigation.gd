@@ -15,6 +15,8 @@ var _requested_point: InspectionPoint
 func _ready() -> void:
 	hud.interaction_requested.connect(_request_interaction)
 	hud.overlay_changed.connect(_on_overlay_changed)
+	if hud.allow_new_game:
+		hud.new_game_requested.connect(get_node("/root/RoomTransition").start_new_game)
 	_show_walk_hint()
 
 

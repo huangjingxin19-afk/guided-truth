@@ -5,9 +5,11 @@ const TouchJoystick = preload("res://ui/touch_joystick.gd")
 
 signal notebook_requested
 signal interaction_requested
+signal new_game_requested
 signal movement_changed(direction: Vector2, engaged: bool)
 signal overlay_changed(open: bool)
 
+@export var allow_new_game := false
 @onready var overlay: Control = $Overlay
 @onready var interaction_button: Button = $InteractionButton
 @onready var _joystick: TouchJoystick = $TouchJoystick
@@ -126,7 +128,21 @@ func show_notebook(entries: Array[EvidenceEntry]) -> void:
 		button.pressed.connect(show_evidence.bind(entry, true))
 		notebook_list.add_child(button)
 
+	if allow_new_game:
+		var restart := Button.new()
+		restart.text = "重新开始"
+		restart.custom_minimum_size.y = 52.0
+		restart.pressed.connect(_confirm_new_game)
+		notebook_list.add_child(restart)
+
 	_show_notebook_page()
+
+
+func _confirm_new_game() -> void:
+	var prompt := EvidenceEntry.new()
+	prompt.title = "重新开始调查？"
+	prompt.description = "会清空本次笔记和调查进度，回到前台。"
+	show_evidence(prompt, false, "确认重新开始", new_game_requested.emit)
 
 
 func _show_notebook_page() -> void:

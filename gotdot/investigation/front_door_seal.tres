@@ -1,0 +1,12 @@
+[gd_resource type="Resource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/front_door_seal.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"chapter1_front_door_seal"
+title = "102 正门封条"
+description = "编号纸条连续跨贴门扇和门框，门缝处未断裂，边缘没有揭起。正门仍锁着。
+这只能说明正门封条完整，尚不能确认谁从其他路线进出。需绕经后院，核对器材门的使用情况。"
+preview = ExtResource("2")

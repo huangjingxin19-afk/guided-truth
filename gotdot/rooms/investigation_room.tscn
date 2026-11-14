@@ -1,0 +1,105 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://investigation/room_investigation.gd" id="1"]
+[ext_resource type="PackedScene" path="res://actors/player.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://ui/investigation_hud.tscn" id="3"]
+[ext_resource type="Script" path="res://rooms/walkable_floor.gd" id="4"]
+
+[sub_resource type="NavigationPolygon" id="Navigation_floor"]
+resource_local_to_scene = true
+agent_radius = 12.0
+parsed_collision_mask = 1
+parsed_geometry_type = 1
+
+[node name="InvestigationRoom" type="Node2D"]
+
+[node name="Scenery" type="Node2D" parent="."]
+
+[node name="Wall" type="Polygon2D" parent="Scenery"]
+polygon = PackedVector2Array(96, 136, 864, 136, 864, 276, 96, 276)
+color = Color(0.28, 0.34, 0.33, 1)
+
+[node name="WallTrim" type="Polygon2D" parent="Scenery"]
+polygon = PackedVector2Array(96, 244, 864, 244, 864, 278, 96, 278)
+color = Color(0.21, 0.26, 0.25, 1)
+
+[node name="Floor" type="Polygon2D" parent="Scenery"]
+polygon = PackedVector2Array(96, 276, 864, 276, 864, 474, 96, 474)
+color = Color(0.45, 0.37, 0.29, 1)
+
+[node name="FloorSeams" type="Line2D" parent="Scenery"]
+points = PackedVector2Array(96, 328, 864, 328, 864, 380, 96, 380, 96, 432, 864, 432)
+width = 2.0
+default_color = Color(0.25, 0.22, 0.18, 0.35)
+
+[node name="WalkableFloor" type="NavigationRegion2D" parent="." node_paths=PackedStringArray("player", "boundary")]
+navigation_polygon = SubResource("Navigation_floor")
+script = ExtResource("4")
+player = NodePath("DepthSort/LinHe")
+boundary = NodePath("FloorBounds/Outline")
+
+[node name="FloorBounds" type="StaticBody2D" parent="WalkableFloor"]
+collision_layer = 2
+collision_mask = 0
+
+[node name="Outline" type="CollisionPolygon2D" parent="WalkableFloor/FloorBounds"]
+build_mode = 1
+polygon = PackedVector2Array(96, 276, 864, 276, 864, 474, 96, 474)
+
+[node name="DepthSort" type="Node2D" parent="WalkableFloor"]
+y_sort_enabled = true
+
+[node name="LinHe" parent="WalkableFloor/DepthSort" instance=ExtResource("2")]
+position = Vector2(230, 420)
+
+[node name="Investigation" type="Node" parent="." node_paths=PackedStringArray("hud", "walk_hint", "stand_hint")]
+script = ExtResource("1")
+hud = NodePath("../InvestigationHud")
+walk_hint = NodePath("../WalkHint")
+stand_hint = NodePath("StandHint")
+
+[node name="StandHint" type="Line2D" parent="Investigation"]
+visible = false
+points = PackedVector2Array(-12, 0, -7, -5, 7, -5, 12, 0, 7, 5, -7, 5)
+width = 2.0
+default_color = Color(0.93, 0.76, 0.46, 1)
+closed = true
+
+[node name="Entrances" type="Node2D" parent="."]
+
+[node name="Start" type="Marker2D" parent="Entrances"]
+position = Vector2(230, 420)
+
+[node name="RoomTitle" type="Label" parent="."]
+offset_left = 96.0
+offset_top = 24.0
+offset_right = 600.0
+offset_bottom = 60.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.88, 0.75, 1)
+theme_override_font_sizes/font_size = 26
+
+[node name="WalkHint" type="Label" parent="."]
+offset_left = 96.0
+offset_top = 65.0
+offset_right = 780.0
+offset_bottom = 90.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.69, 0.72, 0.66, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="ChapterStatus" type="Label" parent="."]
+offset_left = 96.0
+offset_top = 102.0
+offset_right = 864.0
+offset_bottom = 130.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.81, 0.55, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="InvestigationHud" parent="." instance=ExtResource("3")]
+allow_new_game = true
+
+[connection signal="movement_changed" from="InvestigationHud" to="WalkableFloor" method="steer"]
+[connection signal="notebook_requested" from="InvestigationHud" to="Investigation" method="open_notebook"]
+[connection signal="overlay_changed" from="InvestigationHud" to="WalkableFloor" method="set_overlay_open"]

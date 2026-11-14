@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"chapter1_equipment_note"
+title = "器材交接便笺"
+description = "周闻交来，取自旧值班夹，沿原折痕折起。朝上只露出『18:40 后院』。
+
+展开原文：
+『周四 18:40 后院，器材取用。领取人和件数见随车单』
+
+周闻：『你要在门口等的话，带上这个。里面的推车一过门槛，隔着两间屋都能听见。』
+完整的前台副联还留在旧值班夹。"

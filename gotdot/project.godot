@@ -11,13 +11,15 @@ config_version=5
 [application]
 
 config/name="被引向的真相"
-run/main_scene="res://rooms/room_102.tscn"
+run/main_scene="res://rooms/front_desk.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
 InvestigationLog="*res://investigation/investigation_log.gd"
+ChapterOne="*res://chapters/chapter_one.gd"
+RoomTransition="*res://rooms/room_transition.gd"
 
 [display]
 

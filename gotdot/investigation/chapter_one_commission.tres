@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"chapter1_commission"
+title = "102 调查委托"
+description = "委托人：何青
+核实 102 傍晚的出入者、路线和声响来源。
+
+何青亲手锁了正门，编号纸条跨贴门扇和门框。白天检查仍完好，傍晚却连续亮灯、传来拖声。
+器材门曾用于临时领用。先查看正门封条，查清借还路线，免得误封。周闻递来的器材便笺也已记入笔记。"
