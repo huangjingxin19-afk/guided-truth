@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1_entry"]
+
+[resource]
+script = ExtResource("1_entry")
+id = &"room102_cart_reenactment"
+title = "推车复走"
+description = "装回脚垫前：前后轮磕过器材门门槛，金属凳脚滑过铁车板，留下擦痕。\n装回脚垫后：前后轮照样磕过门槛，凳脚稳在车板上。"

@@ -4,6 +4,7 @@ const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 
 signal approach_requested(position: Vector2, message: String)
 signal inspection_requested(entry: EvidenceEntry)
+signal interaction_requested
 
 @export var investigator: CharacterBody2D
 @export var target: Node2D
@@ -17,8 +18,9 @@ signal inspection_requested(entry: EvidenceEntry)
 
 
 func _ready() -> void:
-	tooltip_text = evidence.title
-	accessibility_name = evidence.title
+	if evidence != null:
+		tooltip_text = evidence.title
+		accessibility_name = evidence.title
 	set_physics_process(false)
 
 
@@ -42,7 +44,10 @@ func _physics_process(_delta: float) -> void:
 	var nearest := _closest_target_point(feet)
 	var in_range := feet.distance_squared_to(nearest) <= inspection_distance * inspection_distance
 	if in_range and _has_clear_reach(feet, nearest):
-		inspection_requested.emit(evidence)
+		if evidence != null:
+			inspection_requested.emit(evidence)
+		else:
+			interaction_requested.emit()
 		return
 
 	var nearest_stand: Marker2D

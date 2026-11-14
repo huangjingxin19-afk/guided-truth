@@ -161,6 +161,20 @@ unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3
 
+[node name="EvidenceAction" type="Button" parent="Overlay/Card/Content/Evidence"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_default_cursor_shape = 2
+
+[node name="Presentation" type="CenterContainer" parent="Overlay/Card/Content"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
 [node name="Notebook" type="ScrollContainer" parent="Overlay/Card/Content"]
 unique_name_in_owner = true
 visible = false
@@ -176,3 +190,4 @@ theme_override_constants/separation = 8
 
 [connection signal="pressed" from="NotebookButton" to="." method="_on_notebook_pressed"]
 [connection signal="pressed" from="Overlay/Card/Content/HeaderRow/CloseButton" to="." method="_on_close_pressed"]
+[connection signal="pressed" from="Overlay/Card/Content/Evidence/EvidenceAction" to="." method="_on_evidence_action_pressed"]

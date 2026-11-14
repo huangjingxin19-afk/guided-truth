@@ -17,9 +17,12 @@ signal overlay_changed(open: bool)
 @onready var preview_container: Panel = %Preview
 @onready var preview_anchor: Node2D = %PreviewAnchor
 @onready var description: Label = %Description
+@onready var evidence_action_button: Button = %EvidenceAction
+@onready var presentation_slot: CenterContainer = %Presentation
 
 var _preview: Node2D
 var _return_to_notebook := false
+var _evidence_action := Callable()
 
 
 func _ready() -> void:
@@ -42,11 +45,17 @@ func is_open() -> bool:
 	return overlay.visible
 
 
-func show_evidence(entry: EvidenceEntry, from_notebook := false) -> void:
+func show_evidence(
+	entry: EvidenceEntry, from_notebook := false, action_label := "", action := Callable()
+) -> void:
 	_return_to_notebook = from_notebook
 	header.text = entry.title
 	description.text = entry.description
 	close_button.text = "返回笔记" if from_notebook else "关闭"
+	close_button.show()
+	_evidence_action = action if not from_notebook else Callable()
+	evidence_action_button.text = action_label
+	evidence_action_button.visible = _evidence_action.is_valid()
 	if is_instance_valid(_preview):
 		preview_anchor.remove_child(_preview)
 		_preview.queue_free()
@@ -56,9 +65,28 @@ func show_evidence(entry: EvidenceEntry, from_notebook := false) -> void:
 		_preview = entry.preview.instantiate()
 		preview_anchor.add_child(_preview)
 	notebook.hide()
+	presentation_slot.hide()
 	evidence.show()
 	overlay.show()
 	close_button.grab_focus()
+
+
+func show_presentation(view: Control, title: String) -> void:
+	if view.get_parent() != presentation_slot:
+		view.reparent(presentation_slot, false)
+	_evidence_action = Callable()
+	header.text = title
+	close_button.hide()
+	evidence.hide()
+	notebook.hide()
+	view.show()
+	presentation_slot.show()
+	overlay.show()
+
+
+func close_presentation() -> void:
+	presentation_slot.hide()
+	overlay.hide()
 
 
 func show_notebook(entries: Array[EvidenceEntry]) -> void:
@@ -86,7 +114,10 @@ func _show_notebook_page() -> void:
 	_return_to_notebook = false
 	header.text = "笔记"
 	close_button.text = "关闭"
+	close_button.show()
+	_evidence_action = Callable()
 	evidence.hide()
+	presentation_slot.hide()
 	notebook.show()
 	overlay.show()
 	close_button.grab_focus()
@@ -98,7 +129,13 @@ func _on_notebook_pressed() -> void:
 
 
 func _on_close_pressed() -> void:
+	_evidence_action = Callable()
 	if _return_to_notebook:
 		_show_notebook_page()
 	else:
 		overlay.hide()
+
+
+func _on_evidence_action_pressed() -> void:
+	if _evidence_action.is_valid():
+		_evidence_action.call()

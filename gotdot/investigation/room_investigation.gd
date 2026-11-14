@@ -21,18 +21,22 @@ func show_approach_hint(position: Vector2, message: String) -> void:
 	stand_hint.show()
 
 
-func inspect(entry: EvidenceEntry) -> void:
+func inspect(entry: EvidenceEntry, action_label := "", action := Callable()) -> void:
 	if hud.is_open():
 		return
 
-	_show_walk_hint()
-	stand_hint.hide()
+	clear_approach_hint()
 	InvestigationLog.record(entry)
-	hud.show_evidence(entry)
+	hud.show_evidence(entry, false, action_label, action)
 
 
 func open_notebook() -> void:
 	hud.show_notebook(InvestigationLog.entries())
+
+
+func clear_approach_hint() -> void:
+	_show_walk_hint()
+	stand_hint.hide()
 
 
 func _show_walk_hint() -> void:
