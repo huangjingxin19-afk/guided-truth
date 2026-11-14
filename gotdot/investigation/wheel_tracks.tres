@@ -1,0 +1,11 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1_entry"]
+[ext_resource type="PackedScene" path="res://props/wheel_tracks.tscn" id="2_preview"]
+
+[resource]
+script = ExtResource("1_entry")
+id = &"room102_wheel_tracks"
+title = "地面轮痕"
+description = "桌后的地板上有两道并行的轮痕，一直延伸到器材门的门槛边。"
+preview = ExtResource("2_preview")
