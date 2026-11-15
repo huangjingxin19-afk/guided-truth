@@ -4,9 +4,9 @@ Godot 4.7.2 项目位于 `gotdot/`。当前主场景从第一章前台开始。
 
 ## 当前试玩路线
 
-安卓测试包为 `chapter1-backyard-1.0.8.apk`（版本号 9，arm64，调试签名）。沿用包名 `com.cool.room102test`，可覆盖同签名的旧测试包。APK 保存在项目根目录，由 Git 忽略。
+安卓测试包为 `chapter1-joystick-1.0.9.apk`（版本号 10，arm64，调试签名）。沿用包名 `com.cool.room102test`，可覆盖同签名的旧测试包。APK 保存在项目根目录，由 Git 忽略。
 
-1. 打开游戏，从前台走到何青面前的柜台边。手机拖动左下摇杆或点地面移动；电脑点地面。
+1. 打开游戏，从前台走到何青面前的柜台边。手机用左下角摇杆移动，电脑点击地面移动。
 2. 点右下角“领取委托”（电脑也可按 E）。笔记同时登记“102 调查委托”和“器材交接便笺”。点“展开周闻的便笺”可读完整原文，也可关闭后从笔记回看。
 3. 靠近右侧走廊入口，用交互键“前往走廊”。首次到达时故事时间从周四 18:35 推进至 18:40。先打开笔记，确认委托、便笺都仍在。
 4. 走到 102 正门前查看封条。正门保持上锁。去走廊右侧选“经外廊去后院”，也可以先到后院再回来补查。
@@ -27,7 +27,7 @@ godot --editor --path gotdot
 godot --headless --path gotdot --script ../tests/chapter_one_route.gd
 godot --headless --path gotdot --script ../tests/room_102_inspection.gd
 godot --headless --path gotdot --script ../tests/room_102_reenactment.gd
-godot --headless --path gotdot --export-debug Android ../chapter1-backyard-1.0.8.apk
+godot --headless --path gotdot --export-debug Android ../chapter1-joystick-1.0.9.apk
 ```
 
 导出使用编辑器中已配置的 JDK、Android SDK、同版本安卓模板和调试签名。不要提交签名文件或密码。
@@ -36,7 +36,7 @@ godot --headless --path gotdot --export-debug Android ../chapter1-backyard-1.0.8
 
 102 的共用交互与复走也可通过直接运行 `gotdot/rooms/room_102.tscn` 单独验证。
 
-1.0.7 的前台与走廊流程已通过手机试玩。1.0.8 的正常路线、往返补查、102 调查与推车复走均已通过桌面自动测试，并检查了雨棚、两份新证物和 102 的画面。APK 已验证与 1.0.7 使用相同包名和签名，新增路线待手机验收。
+1.0.8 的后院路线已通过手机试玩。1.0.9 的模拟触屏测试覆盖空地点击、摇杆移动、证物和笔记，桌面全路线回归通过。1.0.9 待手机验收。
 
 ## 本次结构
 

@@ -37,7 +37,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _overlay_open or _steering:
+	if _overlay_open or _steering or DisplayServer.is_touchscreen_available():
 		return
 
 	var pointer_position: Vector2

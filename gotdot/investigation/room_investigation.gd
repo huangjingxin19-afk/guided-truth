@@ -81,4 +81,4 @@ func clear_approach_hint() -> void:
 
 
 func _show_walk_hint() -> void:
-	walk_hint.text = "拖动摇杆或点击地面移动" if hud.uses_touch_controls() else "点击地面移动"
+	walk_hint.text = "拖动左下角摇杆移动" if hud.uses_touch_controls() else "点击地面移动"

@@ -100,8 +100,51 @@ func _run() -> void:
 	await _restart()
 	_check(not _chapter.can_enter_supply_door(), "Restart clears the back-door authorization.")
 	_check(_chapter.reenactment_stage == _chapter.ReenactmentStage.FIRST_PASS, "Restart resets the installed pad and reenactment stage.")
+	await _check_touchscreen_movement()
 	print("Chapter one route failures: ", _failures)
 	quit(int(_failures > 0))
+
+
+func _check_touchscreen_movement() -> void:
+	# Use Godot's built-in touch emulation to enter the same mode as the Android HUD.
+	Input.emulate_touch_from_mouse = true
+	_transition.start_new_game()
+	await _room_ready("FrontDesk")
+	var joystick := _hud.get_node("TouchJoystick") as Control
+	_check(joystick.visible and _room.get_node("WalkHint").text == "拖动左下角摇杆移动", "Touchscreen mode shows the joystick and its movement hint.")
+	var start := _player.global_position
+	var floor_point := Vector2(475, 415)
+	_tap(floor_point)
+	await _settle()
+	_check(_player.global_position.is_equal_approx(start), "A free touch on walkable ground cannot move the player.")
+	_click(floor_point)
+	await _settle()
+	_check(_player.global_position.is_equal_approx(start), "A mouse event on walkable ground cannot bypass touchscreen movement.")
+
+	var center := joystick.get_global_transform_with_canvas() * (joystick.size * 0.5)
+	_send_touch(center, true)
+	var drag := InputEventScreenDrag.new()
+	drag.position = center + Vector2(30, -15)
+	root.push_input(drag, true)
+	for frame in range(90):
+		await physics_frame
+		if _hud.interaction_button.visible:
+			break
+	_send_touch(drag.position, false)
+	await _settle()
+	_check(_player.global_position.distance_to(start) > 20.0 and _player.velocity.is_zero_approx(), "Dragging the joystick moves the player and releasing it stops movement.")
+	_check(_hud.interaction_button.visible and _hud.interaction_button.text == "领取委托", "Approaching with the joystick still offers the touchscreen action.")
+	_tap_button(_hud.interaction_button)
+	await _settle()
+	_check(_hud.header.text == "102 调查委托" and _hud.is_open(), "Tapping the touchscreen action still opens evidence.")
+	_close()
+	await _settle()
+	_tap(Vector2(350, 225))
+	await _settle()
+	_check(_hud.header.text == "102 调查委托" and _hud.is_open(), "Touch still works on a reachable scene interaction point.")
+	_close()
+	await _settle()
+	await _reread("102 调查委托", "何青")
 
 
 func _play_back_yard_route(backtrack: bool) -> void:
@@ -246,14 +289,7 @@ func _room_ready(expected: String) -> void:
 
 
 func _walk_to(destination: Vector2) -> void:
-	var click := InputEventMouseButton.new()
-	click.button_index = MOUSE_BUTTON_LEFT
-	click.position = destination
-	click.pressed = true
-	root.push_input(click, true)
-	click = click.duplicate()
-	click.pressed = false
-	root.push_input(click, true)
+	_click(destination)
 	for frame in range(480):
 		await physics_frame
 		if _player.global_position.distance_to(destination) < 3.0:
@@ -314,10 +350,23 @@ func _tap_button(button: Control) -> void:
 
 func _tap(point: Vector2) -> void:
 	for pressed in [true, false]:
-		var touch := InputEventScreenTouch.new()
-		touch.position = point
-		touch.pressed = pressed
-		root.push_input(touch, true)
+		_send_touch(point, pressed)
+
+
+func _send_touch(point: Vector2, pressed: bool) -> void:
+	var touch := InputEventScreenTouch.new()
+	touch.position = point
+	touch.pressed = pressed
+	root.push_input(touch, true)
+
+
+func _click(point: Vector2) -> void:
+	for pressed in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.position = point
+		click.pressed = pressed
+		root.push_input(click, true)
 
 
 func _press_e() -> void:
