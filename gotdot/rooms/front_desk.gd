@@ -1,5 +1,7 @@
 extends Node2D
 
+const Case = preload("res://chapters/chapter_one.gd").CaseStage
+
 @onready var _investigation = $Investigation
 @onready var _hud = $InvestigationHud
 
@@ -13,6 +15,11 @@ func _refresh() -> void:
 	$ChapterStatus.text = ChapterOne.story_time() + "  ·  " + ChapterOne.objective()
 	$Investigation/HeQingPoint.interaction_label = "重看委托" if ChapterOne.commission_accepted else "领取委托"
 	$Investigation/CorridorExit.disabled = not ChapterOne.commission_accepted
+	var stage := ChapterOne.case_stage
+	var he_qing_in_102 := ChapterOne.is_he_qing_in_102()
+	$Scenery/HeQing.visible = not he_qing_in_102
+	$Investigation/HeQingPoint.visible = not he_qing_in_102
+	$Scenery/ZhouWen.visible = stage != Case.SIGN_OFF
 
 
 func _on_he_qing_interacted() -> void:

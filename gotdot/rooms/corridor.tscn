@@ -153,6 +153,24 @@ visible = false
 [node name="YardStand" type="Marker2D" parent="Investigation" index="6"]
 position = Vector2(783, 344)
 
+[node name="EndingPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="7" instance=ExtResource("3")]
+visible = false
+offset_left = 528.0
+offset_top = 145.0
+offset_right = 667.0
+offset_bottom = 310.0
+interaction_label = "回看 102 正门"
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/Door102")
+target_outline = PackedVector2Array(-59, -4, 68, -4, 68, 4, -59, 4)
+inspection_distance = 58.0
+touch_padding = 165.0
+hint_stands = [NodePath("../SealStand")]
+approach_hint = "靠近 102 正门，再看一眼封条"
+
+[node name="Marker" parent="Investigation/EndingPoint" index="0"]
+visible = false
+
 [node name="FromFrontDesk" type="Marker2D" parent="Entrances" index="1"]
 position = Vector2(230, 374)
 
@@ -166,7 +184,10 @@ text = "第一章 · 102 门口"
 [connection signal="approach_requested" from="Investigation/SealPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="inspection_requested" from="Investigation/SealPoint" to="." method="_on_seal_inspected"]
 [connection signal="approach_requested" from="Investigation/YardExit" to="Investigation" method="show_approach_hint"]
+[connection signal="approach_requested" from="Investigation/EndingPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/EndingPoint" to="." method="_on_ending_requested"]
 
 [editable path="Investigation/FrontDeskExit"]
 [editable path="Investigation/SealPoint"]
 [editable path="Investigation/YardExit"]
+[editable path="Investigation/EndingPoint"]

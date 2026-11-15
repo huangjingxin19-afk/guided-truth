@@ -100,6 +100,7 @@ func _run() -> void:
 	await _restart()
 	_check(not _chapter.can_enter_supply_door(), "Restart clears the back-door authorization.")
 	_check(_chapter.reenactment_stage == _chapter.ReenactmentStage.FIRST_PASS, "Restart resets the installed pad and reenactment stage.")
+	_check(_chapter.case_stage == _chapter.CaseStage.DEDUCTION, "Restart resets the conclusion and inventory stages.")
 	await _check_touchscreen_movement()
 	print("Chapter one route failures: ", _failures)
 	quit(int(_failures > 0))
@@ -169,6 +170,7 @@ func _play_back_yard_route(backtrack: bool) -> void:
 	await _enter_102()
 	_check(_player.position.is_equal_approx(Vector2(550, 280)), "Enter 102 on the inside of the supply door.")
 	_check(_room.get_node("Scenery/FootPad").visible, "The pad starts on the floor in a new game.")
+	_check(not _room.get_node("Investigation/ReasoningPoint").visible and not _room.get_node("Investigation/DrawerPoint").visible, "Reasoning and inventory are gated before reenactment.")
 	await _interact_at(Vector2(580, 290), "查看地面轮痕")
 	_check(_hud.header.text.contains("轮痕"), "The wheel tracks can be investigated from the new entrance.")
 	_close()
@@ -198,6 +200,7 @@ func _play_back_yard_route(backtrack: bool) -> void:
 	await _interact_at(Vector2(722, 286), "再推一次")
 	await _finish_presentation("第二次过门槛")
 	_check(_log.has_entry(_chapter.REENACTMENT.id), "The second pass records the comparison.")
+	_check(_room.get_node("Investigation/ReasoningPoint").visible == (not backtrack), "Reasoning opens after the two passes only when the required evidence is present.")
 	await _reread("推车复走", "前后轮照样磕过门槛")
 
 	await _return_to_yard()
@@ -207,8 +210,91 @@ func _play_back_yard_route(backtrack: bool) -> void:
 	await _reread("随车单", "折叠凳六把")
 	await _enter_102()
 	_check(not _room.get_node("Investigation/HanSuPoint").visible, "Completion survives a round trip without reopening either replay.")
-	_check(_room.get_node("ChapterStatus").text.contains("取用记录与推车复走已核对"), "The completed route is acknowledged after all evidence is collected.")
+	_check(_room.get_node("ChapterStatus").text.contains("向何青提交推理"), "The next objective points to He Qing once the evidence is collected.")
 	_check(_log.entries().size() == 8 and _chapter.story_time() == "周四 18:40", "A completed route retains all eight records and the scene time.")
+	await _complete_case(not backtrack)
+
+
+func _complete_case(try_wrong_answer: bool) -> void:
+	await _interact_at(Vector2(789, 303), "向何青提交推理")
+	_check(_hud.header.text == "提交推理" and _hud.close_button.visible, "The reasoning panel can be closed for review.")
+	var reasoning: Control = _hud.presentation_slot.get_node("Reasoning")
+	var submit := reasoning.get_node("Submit") as Button
+	_check(submit.disabled, "Both answers are required before submitting.")
+	await _check_card("reasoning")
+	if try_wrong_answer:
+		_tap_button(_choice(reasoning, _chapter.ROUTE_CHOICES[1]))
+		_tap_button(_choice(reasoning, _chapter.SOUND_CHOICES[1]))
+		await _settle()
+		await _capture("10-reasoning")
+		_tap_button(submit)
+		await _settle()
+		_check(_hud.header.text == "提交推理" and not _room.get_node("Investigation/DrawerPoint").visible, "A wrong answer does not clear the case or unlock the drawer.")
+		_close()
+		await _settle()
+		await _reread("待复核 · 拖响来源", "哪一段声响消失了")
+		await _reread("推车复走", "前后轮照样磕过门槛")
+		await _interact_at(Vector2(789, 303), "向何青提交推理")
+
+	_tap_button(_choice(reasoning, _chapter.ROUTE_CHOICES[1]))
+	_tap_button(_choice(reasoning, _chapter.SOUND_CHOICES[0]))
+	await _settle()
+	_tap_button(submit)
+	await _settle()
+	_check(_hud.header.text == "102 出入结论" and _log.has_entry(_chapter.CONCLUSION.id), "Correct reasoning records the conclusion and unlocks inventory.")
+	_close()
+
+	var original_desk: Vector2 = _room.get_node("WalkableFloor/DepthSort/LongDesk").position
+	await _interact_at(Vector2(179, 267), "查看下层抽屉")
+	_check(_hud.header.text == "102 下层抽屉" and _hud.evidence_action_button.text == "装入 A01", "Open the lower drawer at the scene.")
+	var moved_desk: Vector2 = _room.get_node("WalkableFloor/DepthSort/LongDesk").position
+	_check(moved_desk.y > original_desk.y, "Opening the drawer moves the desk and its collision shape.")
+	await _check_card("drawer")
+	await _capture("11-open-drawer")
+	_close()
+	if try_wrong_answer:
+		await _return_to_yard()
+		await _enter_102()
+		_check(_room.get_node("Scenery/DrawerUnit/ExposedDrawer").visible, "The opened drawer persists across rooms.")
+		_check(_room.get_node("WalkableFloor/DepthSort/LongDesk").position == moved_desk, "The desk shift persists across rooms.")
+		await _walk_to(Vector2(370, 343))
+	await _interact_at(Vector2(179, 267), "查看下层抽屉")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "已装入 A01" and not _log.has_entry(_chapter.ARCHIVE_PHOTO.id), "Packing the ledger exposes the photo action without recording it.")
+	_check(not _room.get_node("Investigation/SignOffPoint").visible, "Sign-off requires the photograph.")
+	_close()
+	await _interact_at(Vector2(279, 283), "查看 A01")
+	_check(_hud.evidence_action_button.text == "拍下清点照片", "The photo action is offered when inspecting the box.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "A01 清点照片" and _hud.preview_container.visible, "Photograph shows the A01 box and ledger.")
+	_check(_log.has_entry(_chapter.ARCHIVE_PHOTO.id), "The photograph is recorded.")
+	await _check_card("A01 photograph")
+	await _capture("12-a01-photograph")
+	_close()
+	await _interact_at(Vector2(371, 301), "请周闻签字")
+	_check(_hud.header.text == "A01 清点单" and _hud.description.text.contains("已阅：周闻"), "Zhou Wen signs the inventory.")
+	_check(_log.has_entry(_chapter.SIGNED_INVENTORY.id), "The signed inventory is recorded.")
+	_close()
+
+	await _return_to_yard()
+	await _interact_at(Vector2(158, 346), "经外廊回走廊")
+	await _room_ready("Corridor")
+	await _interact_at(Vector2(610, 352), "回看 102 正门")
+	_check(_hud.header.text == "第一章完 · 上锁的教室" and _chapter.case_stage == _chapter.CaseStage.COMPLETE, "The final look at the sealed door completes Chapter One.")
+	await _check_card("chapter ending")
+	await _capture("13-ending")
+	_close()
+	await _reread("A01 清点照片", "三针白色补线")
+	await _reread("A01 清点单", "已阅：周闻")
+
+
+func _choice(parent: Control, label: String) -> Button:
+	for node in parent.find_children("*", "Button", true, false):
+		if node.text == label:
+			return node
+	return null
 
 
 func _enter_back_yard() -> void:

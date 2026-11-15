@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/a01_archive_box.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"a01_archive_photo"
+title = "A01 清点照片"
+description = "周四 · 102 长桌背后。A01 箱口的蓝布报修册，书脊下端有三针白色补线，线尾夹着蓝布毛边。册内和下方留有散页。"
+preview = ExtResource("2")
+preview_scale = 4.4

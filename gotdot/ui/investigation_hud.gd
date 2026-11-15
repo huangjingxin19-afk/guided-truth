@@ -83,6 +83,7 @@ func show_evidence(
 		_preview = null
 	preview_container.visible = entry.preview != null
 	if entry.preview != null:
+		preview_anchor.scale = Vector2.ONE * entry.preview_scale
 		_preview = entry.preview.instantiate()
 		preview_anchor.add_child(_preview)
 	notebook.hide()
@@ -92,17 +93,21 @@ func show_evidence(
 	close_button.grab_focus()
 
 
-func show_presentation(view: Control, title: String) -> void:
+func show_presentation(view: Control, title: String, closable := false) -> void:
 	if view.get_parent() != presentation_slot:
 		view.reparent(presentation_slot, false)
 	_evidence_action = Callable()
 	header.text = title
-	close_button.hide()
+	_return_to_notebook = false
+	close_button.text = "关闭"
+	close_button.visible = closable
 	evidence.hide()
 	notebook.hide()
 	view.show()
 	presentation_slot.show()
 	overlay.show()
+	if closable:
+		close_button.grab_focus()
 
 
 func close_presentation() -> void:

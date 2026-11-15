@@ -170,7 +170,6 @@ mouse_filter = 2
 
 [node name="PreviewAnchor" type="Node2D" parent="Overlay/Card/Content/Evidence/Preview/PreviewCenter"]
 unique_name_in_owner = true
-scale = Vector2(7, 7)
 
 [node name="Description" type="Label" parent="Overlay/Card/Content/Evidence"]
 unique_name_in_owner = true

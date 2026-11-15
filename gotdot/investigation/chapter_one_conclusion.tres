@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"chapter_one_conclusion"
+title = "102 出入结论"
+description = "正门封条完整。韩素持何青签过的后门授权，从器材门领回六把折叠凳。装回脚垫后，车轮仍旧磕过门槛，消失的是凳脚擦过铁车板的拖响。\n\n何青：后门这周继续用于借还。趁大家都在，把 102 桌后的物件也清点一下。"

@@ -11,6 +11,10 @@ var _steering := false
 
 
 func _ready() -> void:
+	refresh_navigation()
+
+
+func refresh_navigation() -> void:
 	# Use the collision outline as the walkable area and bake furniture as obstructions.
 	var boundary_to_region := global_transform.affine_inverse() * boundary.global_transform
 	navigation_polygon.clear_outlines()
