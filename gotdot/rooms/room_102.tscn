@@ -11,6 +11,8 @@
 [ext_resource type="Resource" path="res://investigation/wheel_tracks.tres" id="9_track_evidence"]
 [ext_resource type="Script" path="res://rooms/room_102.gd" id="10_room"]
 [ext_resource type="PackedScene" path="res://rooms/room_102_threshold_reenactment.tscn" id="11_reenactment"]
+[ext_resource type="Script" path="res://rooms/room_exit.gd" id="12_exit"]
+[ext_resource type="PackedScene" path="res://actors/han_su.tscn" id="13_han_su"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_floor"]
 resource_local_to_scene = true
@@ -75,6 +77,13 @@ polygon = PackedVector2Array(498, 120, 597, 120, 597, 228, 498, 228)
 color = Color(0.76, 0.65, 0.43, 1)
 polygon = PackedVector2Array(576, 177, 590, 177, 590, 181, 576, 181)
 
+[node name="SupplyDoorCaption" type="Label" parent="Scenery/SupplyDoor"]
+offset_left = 502.0
+offset_top = 126.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+text = "器材门"
+
 [node name="FrontDoor" type="Polygon2D" parent="Scenery"]
 color = Color(0.32, 0.26, 0.22, 1)
 polygon = PackedVector2Array(246, 471, 369, 471, 369, 507, 246, 507)
@@ -103,28 +112,8 @@ position = Vector2(627, 272)
 rotation = 0.52
 scale = Vector2(1.8, 1.8)
 
-[node name="HanSu" type="Node2D" parent="Scenery"]
+[node name="HanSu" parent="Scenery" instance=ExtResource("13_han_su")]
 position = Vector2(722, 249)
-
-[node name="Shadow" type="Polygon2D" parent="Scenery/HanSu"]
-color = Color(0.12, 0.1, 0.09, 0.34)
-polygon = PackedVector2Array(-22, 0, -13, -5, 13, -5, 22, 0, 13, 5, -13, 5)
-
-[node name="Boots" type="Polygon2D" parent="Scenery/HanSu"]
-color = Color(0.16, 0.19, 0.2, 1)
-polygon = PackedVector2Array(-12, -27, 12, -27, 16, 0, 5, 0, 0, -15, -5, 0, -17, 0)
-
-[node name="Coat" type="Polygon2D" parent="Scenery/HanSu"]
-color = Color(0.53, 0.35, 0.25, 1)
-polygon = PackedVector2Array(-17, -49, -9, -56, 10, -56, 17, -47, 18, -25, -17, -25)
-
-[node name="Face" type="Polygon2D" parent="Scenery/HanSu"]
-color = Color(0.82, 0.61, 0.45, 1)
-polygon = PackedVector2Array(-11, -70, 10, -70, 13, -58, 7, -53, -8, -53, -13, -58)
-
-[node name="Hair" type="Polygon2D" parent="Scenery/HanSu"]
-color = Color(0.24, 0.22, 0.2, 1)
-polygon = PackedVector2Array(-15, -74, -8, -80, 10, -80, 15, -72, 13, -62, 8, -70, -8, -67, -13, -61)
 
 [node name="Investigation" type="Node2D" parent="." node_paths=PackedStringArray("hud", "walk_hint", "stand_hint")]
 script = ExtResource("1_investigation")
@@ -182,6 +171,29 @@ approach_hint = "绕过长桌右端，走到韩素旁边"
 
 [node name="Marker" parent="Investigation/HanSuPoint" index="0"]
 visible = false
+
+[node name="YardExit" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") instance=ExtResource("6_point")]
+offset_left = 490.0
+offset_top = 113.0
+offset_right = 606.0
+offset_bottom = 223.0
+script = ExtResource("12_exit")
+interaction_label = "返回后院"
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/SupplyDoor")
+target_outline = PackedVector2Array(498, 231, 597, 231, 597, 235, 498, 235)
+inspection_distance = 33.0
+touch_padding = 125.0
+hint_stands = [NodePath("../YardStand")]
+approach_hint = "走到器材门旁，从这里返回后院"
+destination = "res://rooms/back_yard.tscn"
+entrance = &"FromRoom102"
+
+[node name="Marker" parent="Investigation/YardExit" index="0"]
+visible = false
+
+[node name="YardStand" type="Marker2D" parent="Investigation"]
+position = Vector2(483, 257)
 
 [node name="FootPadStand" type="Marker2D" parent="Investigation"]
 position = Vector2(503, 280)
@@ -246,6 +258,11 @@ default_color = Color(0.71, 0.52, 0.33, 1)
 [node name="LinHe" parent="WalkableFloor/DepthSort" instance=ExtResource("2_player")]
 position = Vector2(307, 439)
 
+[node name="Entrances" type="Node2D" parent="."]
+
+[node name="FromYard" type="Marker2D" parent="Entrances"]
+position = Vector2(550, 280)
+
 [node name="RoomNumber" type="Label" parent="."]
 offset_left = 96.0
 offset_top = 30.0
@@ -266,7 +283,17 @@ theme_override_colors/font_color = Color(0.69, 0.72, 0.66, 1)
 theme_override_font_sizes/font_size = 18
 text = "点击地面移动"
 
+[node name="ChapterStatus" type="Label" parent="."]
+offset_left = 96.0
+offset_top = 59.0
+offset_right = 864.0
+offset_bottom = 84.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.94, 0.81, 0.55, 1)
+theme_override_font_sizes/font_size = 17
+
 [node name="InvestigationHud" parent="." instance=ExtResource("4_hud")]
+allow_new_game = true
 
 [node name="ThresholdReenactment" parent="." instance=ExtResource("11_reenactment")]
 visible = false
@@ -277,9 +304,11 @@ visible = false
 [connection signal="inspection_requested" from="Investigation/WheelTracksPoint" to="Investigation" method="inspect"]
 [connection signal="approach_requested" from="Investigation/HanSuPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/HanSuPoint" to="." method="_on_han_su_interaction_requested"]
+[connection signal="approach_requested" from="Investigation/YardExit" to="Investigation" method="show_approach_hint"]
 [connection signal="movement_changed" from="InvestigationHud" to="WalkableFloor" method="steer"]
 [connection signal="notebook_requested" from="InvestigationHud" to="Investigation" method="open_notebook"]
 [connection signal="overlay_changed" from="InvestigationHud" to="WalkableFloor" method="set_overlay_open"]
 [connection signal="finished" from="ThresholdReenactment" to="." method="_on_reenactment_finished"]
 
 [editable path="Investigation/HanSuPoint"]
+[editable path="Investigation/YardExit"]

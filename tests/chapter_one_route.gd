@@ -90,25 +90,150 @@ func _run() -> void:
 	_press_e()
 	await _room_ready("Corridor")
 	_check(_room.get_node("ChapterStatus").text.contains("封条已登记"), "Seal progress remains after another room change.")
+	await _play_back_yard_route(false)
+	await _restart()
+	await _interact_at(Vector2(350, 360), "领取委托")
+	_close()
+	await _interact_at(Vector2(793, 344), "前往走廊")
+	await _room_ready("Corridor")
+	await _play_back_yard_route(true)
+	await _restart()
+	_check(not _chapter.can_enter_supply_door(), "Restart clears the back-door authorization.")
+	_check(_chapter.reenactment_stage == _chapter.ReenactmentStage.FIRST_PASS, "Restart resets the installed pad and reenactment stage.")
+	print("Chapter one route failures: ", _failures)
+	quit(int(_failures > 0))
+
+
+func _play_back_yard_route(backtrack: bool) -> void:
+	await _enter_back_yard()
+	_check(_player.position.is_equal_approx(Vector2(227, 372)), "Arrive in the yard at the outer passage.")
+	await _capture("06-back-yard")
+	await _interact_at(Vector2(730, 346), "检查器材门")
+	_check(current_scene == _room and _room.get_node("WalkHint").text == "先去推车旁找韩素", "The closed supply door points to Han Su.")
+
+	if not backtrack:
+		await _inspect_cart_sheet()
+		_check(not _chapter.can_enter_supply_door(), "The cart sheet alone does not grant entry.")
+	await _interact_at(Vector2(390, 367), "查看后门授权")
+	_check(_hud.header.text == "后门授权" and _hud.description.text.contains("有效至周四晚。签字：何青"), "Han Su shows the signed authorization and grants entry.")
+	await _check_card("back-door authorization")
+	await _capture("08-back-door-authorization")
+	_close()
+	await _reread("后门授权", "何青")
+	await _interact_at(Vector2(390, 367), "查看后门授权")
+	_check(_log.entries().size() == (3 if backtrack else 5), "Seeing the authorization again does not duplicate evidence.")
+	_close()
+	await _enter_102()
+	_check(_player.position.is_equal_approx(Vector2(550, 280)), "Enter 102 on the inside of the supply door.")
+	_check(_room.get_node("Scenery/FootPad").visible, "The pad starts on the floor in a new game.")
+	await _interact_at(Vector2(580, 290), "查看地面轮痕")
+	_check(_hud.header.text.contains("轮痕"), "The wheel tracks can be investigated from the new entrance.")
+	_close()
+	await _interact_at(Vector2(722, 286), "看推车过门槛")
+	await _finish_presentation("第一次过门槛")
+	await _interact_at(Vector2(503, 280), "查看橡胶凳脚垫")
+	_check(_hud.evidence_action_button.text == "装回脚垫", "The pad can be installed after the first pass.")
+	_tap_button(_hud.evidence_action_button)
+	await _finish_presentation("装回脚垫")
+	_check(not _room.get_node("Scenery/FootPad").visible, "Installation removes the pad from the floor.")
+
+	if backtrack:
+		_check(not _log.has_entry(_chapter.SEAL.id) and not _log.has_entry(_chapter.CART_SHEET.id), "The seal and the cart sheet can be left for later.")
+		await _return_to_yard()
+		await _interact_at(Vector2(158, 346), "经外廊回走廊")
+		await _room_ready("Corridor")
+		_check(_player.position.is_equal_approx(Vector2(783, 378)), "Return near the corridor's outer passage.")
+		await _interact_at(Vector2(610, 352), "查看102 正门封条")
+		_check(_hud.header.text == "102 正门封条", "The seal can still be registered after installing the pad.")
+		_close()
+		await _enter_back_yard()
+		await _enter_102()
+		_check(not _room.get_node("Scenery/FootPad").visible, "The installed pad stays off the floor after a round trip.")
+		_check(not _room.get_node("Investigation/FootPadPoint").visible, "The installed pad no longer has a floor interaction.")
+
+	await _capture("09-room102-ready-for-second-pass")
+	await _interact_at(Vector2(722, 286), "再推一次")
+	await _finish_presentation("第二次过门槛")
+	_check(_log.has_entry(_chapter.REENACTMENT.id), "The second pass records the comparison.")
+	await _reread("推车复走", "前后轮照样磕过门槛")
+
+	await _return_to_yard()
+	if backtrack:
+		_check(_room.get_node("ChapterStatus").text.contains("随车单"), "A missing cart sheet is called out after completing the reenactment.")
+		await _inspect_cart_sheet()
+	await _reread("随车单", "折叠凳六把")
+	await _enter_102()
+	_check(not _room.get_node("Investigation/HanSuPoint").visible, "Completion survives a round trip without reopening either replay.")
+	_check(_room.get_node("ChapterStatus").text.contains("取用记录与推车复走已核对"), "The completed route is acknowledged after all evidence is collected.")
+	_check(_log.entries().size() == 8 and _chapter.story_time() == "周四 18:40", "A completed route retains all eight records and the scene time.")
+
+
+func _enter_back_yard() -> void:
+	await _interact_at(Vector2(783, 344), "经外廊去后院")
+	await _room_ready("BackYard")
+
+
+func _enter_102() -> void:
+	await _interact_at(Vector2(730, 346), "从器材门进 102")
+	await _room_ready("Room102")
+
+
+func _return_to_yard() -> void:
+	await _interact_at(Vector2(483, 257), "返回后院")
+	await _room_ready("BackYard")
+	_check(_player.position.is_equal_approx(Vector2(730, 373)), "Return to the outside of the supply door.")
+
+
+func _inspect_cart_sheet() -> void:
+	await _interact_at(Vector2(532, 372), "查看随车单")
+	_check(_hud.header.text == "随车单" and _hud.description.text.contains("韩素，折叠凳六把，领回活动室"), "The cart sheet records the holder, quantity and destination.")
+	await _check_card("cart sheet")
+	await _capture("07-cart-sheet")
+	_close()
+
+
+func _interact_at(position: Vector2, action: String) -> void:
+	await _walk_to(position)
+	if not _hud.interaction_button.visible or not _hud.interaction_button.text.ends_with(action):
+		_check(false, "Expected nearby action: %s. Found: %s" % [action, _hud.interaction_button.text])
+		quit(1)
+		return
+	_tap_button(_hud.interaction_button)
+	await _settle()
+
+
+func _finish_presentation(title: String) -> void:
+	await _settle()
+	_check(_hud.is_open() and _hud.header.text == title and not _hud.close_button.visible, "Started presentation: " + title)
+	var animation := _hud.presentation_slot.get_node("ThresholdReenactment/AnimationPlayer") as AnimationPlayer
+	animation.advance(3.5)
+	await _settle()
+	_check(not _hud.is_open(), "Presentation finished: " + title)
+
+
+func _restart() -> void:
 	# Exercise the actual restart UI, including cancel before confirming.
+	var recorded: int = _log.entries().size()
 	_tap_button(_hud.get_node("NotebookButton"))
 	await _settle()
-	_tap_button(_notebook_button("重新开始"))
+	var restart := _notebook_button("重新开始")
 	await _settle()
-	_check(_log.entries().size() == 3, "The restart confirmation does not clear progress prematurely.")
+	_tap_button(restart)
+	await _settle()
+	_check(_log.entries().size() == recorded, "The restart confirmation does not clear progress prematurely.")
 	_close()
 	await _settle()
 	_tap_button(_hud.get_node("NotebookButton"))
 	await _settle()
-	_tap_button(_notebook_button("重新开始"))
+	restart = _notebook_button("重新开始")
+	await _settle()
+	_tap_button(restart)
 	await _settle()
 	_tap_button(_hud.evidence_action_button)
 	await _room_ready("FrontDesk")
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted and not _chapter.corridor_visited, "Restart clears every note and first-chapter flag.")
 	_check(_player.position.is_equal_approx(Vector2(230, 420)), "Restart uses the starting entrance.")
 	_check(_chapter.story_time() == "周四 18:35", "Restart resets story time.")
-	print("Chapter one route failures: ", _failures)
-	quit(int(_failures > 0))
 
 
 func _room_ready(expected: String) -> void:
@@ -143,6 +268,7 @@ func _reread(title: String, expected: String) -> void:
 	var button := _notebook_button(title)
 	_check(button != null, "Notebook contains " + title)
 	if button != null:
+		await _settle()
 		_tap_button(button)
 		await _settle()
 		_check(_hud.header.text == title and _hud.description.text.contains(expected), "Notebook rereads " + title)
@@ -156,6 +282,7 @@ func _reread(title: String, expected: String) -> void:
 func _notebook_button(title: String) -> Button:
 	for button in _hud.notebook_list.get_children():
 		if button is Button and button.text == title:
+			_hud.notebook.ensure_control_visible(button)
 			return button
 	return null
 

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"chapter1_back_door_authorization"
+title = "后门授权"
+description = "临时授权：韩素可由 102 器材门取用器材，有效至周四晚。签字：何青。
+
+韩素：第六把凳子的脚垫找不着了，过门槛时凳脚会蹭车板。何老师同意你进屋，走，我让你听听门槛那一声。"
