@@ -1,10 +1,12 @@
 # 被引向的真相
 
-Godot 4.7.2 项目位于 `gotdot/`。当前主场景从第一章前台开始。
+Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，完成第一章后可进入第二章「原页复原」的首段。
 
 ## 当前试玩路线
 
-安卓测试包为 `chapter1-complete-1.0.10.apk`（版本号 11，Android 7.0 及以上，arm64，调试签名）。包名和签名与 1.0.9 一致，可直接覆盖安装。APK 保存在项目根目录，由 Git 忽略。
+安卓导出目标为 `chapter2-page-reconstruction-1.0.11.apk`（版本号 12，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
+
+### 第一章《上锁的教室》
 
 1. 打开游戏，从前台走到何青面前的柜台边。手机用左下角摇杆移动，电脑点击地面移动。
 2. 点右下角“领取委托”（电脑也可按 E）。笔记同时登记“102 调查委托”和“器材交接便笺”。点“展开周闻的便笺”可读完整原文，也可关闭后从笔记回看。
@@ -20,6 +22,13 @@ Godot 4.7.2 项目位于 `gotdot/`。当前主场景从第一章前台开始。
 
 雨棚、角色、推车和报修册采用占位图形。复走及章节收尾用画面和文字呈现。
 
+### 第二章「原页复原」
+
+1. 在第一章结尾选择「开始第二章」。关闭结尾后也可回前台找何青进入。时间切到周五 17:20，第一章笔记继续可查。
+2. 靠近柜台的手机和便签，登记 16:46 的群聊原图和 16:50 的收页记录。原图可与转发截图对照。绕到柜台右端还可查看登记夹与内袋。
+3. 看完两条时间证据后，从走廊绕外廊去后院，经器材门回到 102。先检查旧轮痕，再绕到长桌背后核对 A01。可原路返回前台补查。
+4. 查过内袋和两处 102 现场后，在前台向何青提交原页判断。错项会留在笔记里，玩家可以回查再提交。首段在确认原页的位置和发图、收页的先后后结束。
+
 笔记与进度保存在本局内存中，换房保留；关闭应用后重新打开会开始新一局。本版没有磁盘存档。
 
 ## 开发与验证
@@ -31,12 +40,12 @@ godot --editor --path gotdot
 godot --headless --path gotdot --script ../tests/chapter_one_route.gd
 godot --headless --path gotdot --script ../tests/room_102_inspection.gd
 godot --headless --path gotdot --script ../tests/room_102_reenactment.gd
-godot --headless --path gotdot --export-debug Android ../chapter1-complete-1.0.10.apk
+godot --headless --path gotdot --export-debug Android ../chapter2-page-reconstruction-1.0.11.apk
 ```
 
 导出使用编辑器中已配置的 JDK、Android SDK、同版本安卓模板和调试签名。不要提交签名文件或密码。
 
-`chapter_one_route.gd` 从新游戏开始，通过地面移动、触控按钮和 E 键验证从领委托到第一章结尾的流程。测试覆盖复走后补查、错答后回看再提交、挪桌后换房与绕行、A01 清点和章末重开。加 `-- --capture` 可在图形模式下保存关键页面到 `.test-runtime/`（先创建此目录），供人工检查。
+`chapter_one_route.gd` 从新游戏开始，通过地面移动、触控按钮和 E 键验证第一章及第二章首段。覆盖复走后补查、错答后回看再提交、挪桌后换房与绕行、A01 清点、次日接续、证据解锁及重开。加 `-- --capture` 可在图形模式下保存关键页面到 `.test-runtime/`（先创建此目录），供人工检查。
 
 102 的共用交互与复走也可通过直接运行 `gotdot/rooms/room_102.tscn` 单独验证。
 
@@ -45,6 +54,7 @@ godot --headless --path gotdot --export-debug Android ../chapter1-complete-1.0.1
 ## 本次结构
 
 - `chapters/chapter_one.gd` 管理第一章时间、目标、复走、推理和结案条件。`InvestigationLog` 保存本局证物和推理记录。
+- `chapters/chapter_two.gd` 根据已登记的线索推进第二章首段。前台和 102 复用调查点、笔记和换房，两个章节共用推理表单。
 - `rooms/room_transition.gd` 统一切场与新游戏重置。器材门由后院依据授权证物决定是否允许通行。
 - `rooms/investigation_room.tscn` 提供共用移动、调查与 HUD。前台、走廊和雨棚继承后配置本地场景和交互。
 - `investigation/*.tres` 保存证物文本和预览。韩素的占位外观由雨棚和 102 共用。
@@ -52,3 +62,5 @@ godot --headless --path gotdot --export-debug Android ../chapter1-complete-1.0.1
 前台委托与证物登记参考了任务状态集中维护的做法。[Quest System 的任务管理实现](https://github.com/shomykohai/quest-system/blob/d1d933c7b1822aceb637e3d6fe3a4814f973c3ee/addons/quest_system/quest_manager.gd)
 
 后院沿用现有的延迟换房方式。换房后由章节状态还原 102 的脚垫和复走进度。[Godot 官方换房示例](https://github.com/godotengine/godot-demo-projects/blob/master/loading/autoload/global.gd)
+
+第二章由首次登记证物触发进度刷新，房间根据章节进度显示当日的调查点。[QuestSystem 分步任务示例](https://github.com/shomykohai/advanced-quest-system-example/blob/main/quests/scripts/base_quest.gd)

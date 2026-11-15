@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/visitor_file_pocket.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"visitor_file_pocket"
+title = "登记夹与内袋"
+description = "登记夹上，周三与周五之间空着一对夹扣。夹背写着「含联系方式的原页用完请收入前台内袋，日常查阅只看来访日期与事项」。\n邵宁从内袋取出三张纸，只露出页首和纸角。"
+preview = ExtResource("2")
+preview_scale = 1.0

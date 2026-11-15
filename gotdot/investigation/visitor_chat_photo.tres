@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/visitor_chat_photo.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"visitor_chat_photo"
+title = "16:46 群聊原图"
+description = "周五 16:46 · 志愿者群\n「领到板了，放在二楼楼梯口」。原图右缘有只白杯，杯下露出周四访客页，页角有一道月牙形咖啡渍。转发截图截掉了这一侧。"
+preview = ExtResource("2")
+preview_scale = 1.0

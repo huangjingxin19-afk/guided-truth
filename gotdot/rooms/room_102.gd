@@ -4,7 +4,7 @@ const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 const InvestigationHud = preload("res://ui/investigation_hud.gd")
 const RoomInvestigation = preload("res://investigation/room_investigation.gd")
 const ThresholdReenactment = preload("res://rooms/room_102_threshold_reenactment.gd")
-const Reasoning = preload("res://ui/chapter_one_reasoning.gd")
+const Reasoning = preload("res://ui/reasoning_form.gd")
 const WalkableFloor = preload("res://rooms/walkable_floor.gd")
 const Stage = preload("res://chapters/chapter_one.gd").ReenactmentStage
 const Case = preload("res://chapters/chapter_one.gd").CaseStage
@@ -25,7 +25,9 @@ const DESK_SHIFT := Vector2(0, 28)
 
 
 func _ready() -> void:
+	_reasoning.setup(ChapterOne.ROUTE_CHOICES, ChapterOne.SOUND_CHOICES)
 	ChapterOne.progress_changed.connect(_refresh)
+	ChapterTwo.progress_changed.connect(_refresh)
 	_refresh()
 
 
@@ -41,6 +43,12 @@ func _refresh() -> void:
 	$ChapterStatus.text = ChapterOne.story_time() + "  ·  " + objective
 	$Investigation/YardExit.visible = ChapterOne.can_enter_supply_door()
 	_refresh_case()
+	if ChapterTwo.active:
+		$ChapterStatus.text = ChapterTwo.status()
+		$Investigation/WheelTracksPoint.evidence = ChapterTwo.TRACKS
+		$Investigation/WheelTracksPoint.tooltip_text = ChapterTwo.TRACKS.title
+		$Investigation/WheelTracksPoint.accessibility_name = ChapterTwo.TRACKS.title
+		$Investigation/ArchivePoint.interaction_label = "核对桌后 A01"
 
 
 func _refresh_case() -> void:
@@ -73,7 +81,7 @@ func _on_reasoning_submitted(route: int, sound: int) -> void:
 	if feedback.is_empty():
 		_hud.show_evidence(ChapterOne.CONCLUSION)
 	else:
-		_reasoning.show_feedback(feedback)
+		_reasoning.show_feedback("何青：" + feedback)
 
 
 func _on_drawer_requested() -> void:
@@ -99,6 +107,9 @@ func _pack_archive() -> void:
 
 func _on_archive_requested() -> void:
 	if _hud.is_open():
+		return
+	if ChapterTwo.active:
+		_investigation.inspect(ChapterTwo.ARCHIVE)
 		return
 	_investigation.clear_approach_hint()
 	if ChapterOne.case_stage == Case.PHOTOGRAPH:

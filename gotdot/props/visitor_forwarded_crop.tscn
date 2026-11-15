@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://props/visitor_chat_photo.tscn" id="1"]
+
+[node name="VisitorForwardedCrop" type="Node2D"]
+
+[node name="Crop" type="Control" parent="."]
+clip_contents = true
+offset_left = -115.0
+offset_top = -59.0
+offset_right = 115.0
+offset_bottom = 59.0
+mouse_filter = 2
+
+[node name="Photograph" parent="Crop" instance=ExtResource("1")]
+position = Vector2(174, 59)

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"visitor_receipt_note"
+title = "16:50 收页便签"
+description = "「16:50 收周四原页，摘录明早补」\n\n便签夹在前台登记夹旁，没有署名，也没有写原页存放的位置。"

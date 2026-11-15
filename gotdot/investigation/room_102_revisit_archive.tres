@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/a01_archive_box.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"room_102_revisit_archive"
+title = "102 桌后 A01"
+description = "桌后箱卡仍是 A01，箱口的白色补线和周四的清点照片相符。周四清点单记着，蓝布报修册和散页是从 102 下层抽屉整叠收进箱里的。"
+preview = ExtResource("2")
+preview_scale = 4.4

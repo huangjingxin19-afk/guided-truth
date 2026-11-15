@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"chapter_two_page_finding"
+title = "原页去向已核对"
+description = "周五 16:46 发出原图时，白杯还压着周四访客页。16:50 的便签记录了收页时间。前台内袋里有日期和月牙污渍相符的原页。\n102 的旧轮痕对应周四的折叠凳借还，桌后 A01 的纸资料登记自 102 下层抽屉。\n\n何青：「先把比对结果留在笔记里。我去问邵宁，确认当时是谁收的。」"

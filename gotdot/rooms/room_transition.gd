@@ -7,20 +7,26 @@ var is_changing := false
 
 
 func change_room(scene_path: String, entrance: StringName) -> void:
-	if is_changing:
-		return
-	is_changing = true
-	_change_room.call_deferred(scene_path, entrance, false)
+	_request_room_change(scene_path, entrance)
 
 
 func start_new_game() -> void:
+	_request_room_change(FRONT_DESK, &"Start", _reset_investigation)
+
+
+func start_chapter_two() -> void:
+	if ChapterTwo.can_start():
+		_request_room_change(FRONT_DESK, &"Start", ChapterTwo.start)
+
+
+func _request_room_change(scene_path: String, entrance: StringName, on_enter := Callable()) -> void:
 	if is_changing:
 		return
 	is_changing = true
-	_change_room.call_deferred(FRONT_DESK, &"Start", true)
+	_change_room.call_deferred(scene_path, entrance, on_enter)
 
 
-func _change_room(scene_path: String, entrance: StringName, new_game: bool) -> void:
+func _change_room(scene_path: String, entrance: StringName, on_enter: Callable) -> void:
 	var scene := load(scene_path) as PackedScene
 	if scene == null:
 		push_error("Cannot load room: " + scene_path)
@@ -39,10 +45,15 @@ func _change_room(scene_path: String, entrance: StringName, new_game: bool) -> v
 	if previous != null:
 		get_tree().root.remove_child(previous)
 		previous.queue_free()
-	if new_game:
-		InvestigationLog.reset()
-		ChapterOne.reset()
+	if on_enter.is_valid():
+		on_enter.call()
 	get_tree().root.add_child(room)
 	get_tree().current_scene = room
 	player.global_position = marker.global_position
 	is_changing = false
+
+
+func _reset_investigation() -> void:
+	InvestigationLog.reset()
+	ChapterTwo.reset()
+	ChapterOne.reset()

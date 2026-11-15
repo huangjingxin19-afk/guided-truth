@@ -13,7 +13,7 @@
 [ext_resource type="PackedScene" path="res://rooms/room_102_threshold_reenactment.tscn" id="11_reenactment"]
 [ext_resource type="Script" path="res://rooms/room_exit.gd" id="12_exit"]
 [ext_resource type="PackedScene" path="res://actors/han_su.tscn" id="13_han_su"]
-[ext_resource type="Script" path="res://ui/chapter_one_reasoning.gd" id="14_reasoning"]
+[ext_resource type="Script" path="res://ui/reasoning_form.gd" id="14_reasoning"]
 [ext_resource type="PackedScene" path="res://actors/he_qing.tscn" id="15_he_qing"]
 [ext_resource type="PackedScene" path="res://actors/zhou_wen.tscn" id="16_zhou_wen"]
 [ext_resource type="PackedScene" path="res://props/repair_ledger.tscn" id="17_ledger"]
@@ -422,6 +422,8 @@ visible = false
 [node name="Reasoning" type="VBoxContainer" parent="."]
 visible = false
 script = ExtResource("14_reasoning")
+first_question = "谁从哪扇门运了什么？"
+second_question = "拖响是怎么来的？"
 
 [connection signal="approach_requested" from="Investigation/FootPadPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="inspection_requested" from="Investigation/FootPadPoint" to="." method="_on_foot_pad_inspected"]

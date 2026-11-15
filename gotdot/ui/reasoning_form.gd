@@ -1,20 +1,23 @@
 extends VBoxContainer
 
-signal submitted(route: int, sound: int)
+signal submitted(first_answer: int, second_answer: int)
 
-var _route := ButtonGroup.new()
-var _sound := ButtonGroup.new()
+@export var first_question: String
+@export var second_question: String
+
+var _first_group := ButtonGroup.new()
+var _second_group := ButtonGroup.new()
 var _submit: Button
 var _feedback: Label
 
 
-func _ready() -> void:
+func setup(first_choices: Array, second_choices: Array) -> void:
 	add_theme_constant_override("separation", 10)
 	var questions := HBoxContainer.new()
 	questions.add_theme_constant_override("separation", 16)
 	add_child(questions)
-	_add_question(questions, "谁从哪扇门运了什么？", ChapterOne.ROUTE_CHOICES, _route)
-	_add_question(questions, "拖响是怎么来的？", ChapterOne.SOUND_CHOICES, _sound)
+	_add_question(questions, first_question, first_choices, _first_group)
+	_add_question(questions, second_question, second_choices, _second_group)
 
 	_feedback = Label.new()
 	_feedback.custom_minimum_size = Vector2(528, 28)
@@ -58,13 +61,13 @@ func _add_question(parent: HBoxContainer, title: String, choices: Array, group: 
 
 
 func _update_submit() -> void:
-	_submit.disabled = _route.get_pressed_button() == null or _sound.get_pressed_button() == null
+	_submit.disabled = _first_group.get_pressed_button() == null or _second_group.get_pressed_button() == null
 
 
 func _submit_choices() -> void:
 	submitted.emit(
-		_route.get_pressed_button().get_meta(&"answer"),
-		_sound.get_pressed_button().get_meta(&"answer")
+		_first_group.get_pressed_button().get_meta(&"answer"),
+		_second_group.get_pressed_button().get_meta(&"answer")
 	)
 
 
@@ -73,4 +76,4 @@ func clear_feedback() -> void:
 
 
 func show_feedback(message: String) -> void:
-	_feedback.text = "何青：" + message
+	_feedback.text = message

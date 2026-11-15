@@ -1,0 +1,11 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/wheel_tracks.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"room_102_revisit_tracks"
+title = "102 器材门旧轮痕"
+description = "双道轮痕从器材门延到长桌背后。对照周四的随车单和过槛记录，这条线对应韩素领回折叠凳时走的路线。沿轮痕绕到桌后，可以看到当晚清点过的 A01。"
+preview = ExtResource("2")

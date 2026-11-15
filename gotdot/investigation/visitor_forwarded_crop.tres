@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/visitor_forwarded_crop.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"visitor_forwarded_crop"
+title = "群聊转发截图"
+description = "转发消息里只剩展板这一侧。原图被裁掉的右缘里，还有杯子和纸角。"
+preview = ExtResource("2")
+preview_scale = 1.0

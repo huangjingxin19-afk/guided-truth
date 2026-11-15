@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://props/visitor_page_preview.gd" id="1"]
+
+[node name="VisitorFilePocket" type="Node2D"]
+
+[node name="Pocket" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-157, -54, 157, -54, 157, 55, -157, 55)
+color = Color(0.36, 0.31, 0.23, 1)
+
+[node name="Wednesday" type="Node2D" parent="."]
+position = Vector2(-140, -45)
+script = ExtResource("1")
+date_caption = "周三"
+corner = 0
+
+[node name="Thursday" type="Node2D" parent="."]
+position = Vector2(-41, -45)
+script = ExtResource("1")
+
+[node name="Friday" type="Node2D" parent="."]
+position = Vector2(58, -45)
+script = ExtResource("1")
+date_caption = "周五"
+corner = 2

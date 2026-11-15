@@ -6,6 +6,10 @@
 [ext_resource type="Script" path="res://rooms/room_exit.gd" id="4"]
 [ext_resource type="PackedScene" path="res://actors/he_qing.tscn" id="5_he_qing"]
 [ext_resource type="PackedScene" path="res://actors/zhou_wen.tscn" id="6_zhou_wen"]
+[ext_resource type="Resource" path="res://investigation/visitor_chat_photo.tres" id="7_photo"]
+[ext_resource type="Resource" path="res://investigation/visitor_receipt_note.tres" id="8_receipt"]
+[ext_resource type="Resource" path="res://investigation/visitor_file_pocket.tres" id="9_pocket"]
+[ext_resource type="Script" path="res://ui/reasoning_form.gd" id="10_reasoning"]
 
 [sub_resource type="RectangleShape2D" id="CounterShape"]
 size = Vector2(330, 38)
@@ -58,6 +62,33 @@ color = Color(0.9, 0.84, 0.68, 1)
 polygon = PackedVector2Array(54, -59, 80, -59, 85, -48, 58, -48)
 color = Color(0.86, 0.75, 0.48, 1)
 
+[node name="FridayPapers" type="Node2D" parent="WalkableFloor/DepthSort/Counter"]
+visible = false
+
+[node name="Phone" type="Polygon2D" parent="WalkableFloor/DepthSort/Counter/FridayPapers"]
+position = Vector2(-93, 2)
+polygon = PackedVector2Array(-19, -62, 17, -62, 21, -48, -19, -48)
+color = Color(0.28, 0.44, 0.46, 1)
+
+[node name="Screen" type="Polygon2D" parent="WalkableFloor/DepthSort/Counter/FridayPapers/Phone"]
+polygon = PackedVector2Array(-13, -59, 12, -59, 15, -51, -13, -51)
+color = Color(0.62, 0.81, 0.77, 1)
+
+[node name="Receipt" type="Polygon2D" parent="WalkableFloor/DepthSort/Counter/FridayPapers"]
+position = Vector2(97, 2)
+polygon = PackedVector2Array(-13, -60, 11, -60, 15, -47, -11, -47)
+color = Color(0.96, 0.81, 0.51, 1)
+
+[node name="FilePocket" type="Polygon2D" parent="WalkableFloor/DepthSort/Counter/FridayPapers"]
+position = Vector2(164, -21)
+polygon = PackedVector2Array(-25, -40, -9, -42, 4, -29, -19, -27)
+color = Color(0.78, 0.68, 0.5, 1)
+
+[node name="Clips" type="Line2D" parent="WalkableFloor/DepthSort/Counter/FridayPapers/FilePocket"]
+points = PackedVector2Array(-21, -39, -20, -35, -12, -36, -13, -40)
+width = 2.0
+default_color = Color(0.38, 0.32, 0.22, 1)
+
 [node name="HeQingPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="1" instance=ExtResource("3")]
 offset_left = 307.0
 offset_top = 179.0
@@ -101,15 +132,94 @@ position = Vector2(350, 360)
 [node name="CorridorStand" type="Marker2D" parent="Investigation" index="4"]
 position = Vector2(793, 344)
 
+[node name="PhotoPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="5" instance=ExtResource("3")]
+visible = false
+offset_left = 229.0
+offset_top = 245.0
+offset_right = 285.0
+offset_bottom = 280.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../WalkableFloor/DepthSort/Counter/FridayPapers/Phone")
+target_outline = PackedVector2Array(-17, 0, 17, 0, 17, 4, -17, 4)
+evidence = ExtResource("7_photo")
+inspection_distance = 54.0
+touch_padding = 78.0
+hint_stands = [NodePath("../PhotoStand")]
+approach_hint = "靠近柜台左侧的手机，查看群聊原图"
+
+[node name="Marker" parent="Investigation/PhotoPoint" index="0"]
+visible = false
+
+[node name="ReceiptPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="6" instance=ExtResource("3")]
+visible = false
+offset_left = 419.0
+offset_top = 245.0
+offset_right = 473.0
+offset_bottom = 280.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../WalkableFloor/DepthSort/Counter/FridayPapers/Receipt")
+target_outline = PackedVector2Array(-14, 0, 14, 0, 14, 4, -14, 4)
+evidence = ExtResource("8_receipt")
+inspection_distance = 54.0
+touch_padding = 78.0
+hint_stands = [NodePath("../ReceiptStand")]
+approach_hint = "靠近柜台上的收页便签"
+
+[node name="Marker" parent="Investigation/ReceiptPoint" index="0"]
+visible = false
+
+[node name="FilePocketPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="7" instance=ExtResource("3")]
+visible = false
+offset_left = 479.0
+offset_top = 245.0
+offset_right = 526.0
+offset_bottom = 282.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../WalkableFloor/DepthSort/Counter/FridayPapers/FilePocket")
+target_outline = PackedVector2Array(3, -7, 11, -7, 11, 6, 3, 6)
+evidence = ExtResource("9_pocket")
+inspection_distance = 30.0
+touch_padding = 67.0
+hint_stands = [NodePath("../FilePocketStand")]
+approach_hint = "从右边绕到柜台内侧看登记夹"
+
+[node name="Marker" parent="Investigation/FilePocketPoint" index="0"]
+visible = false
+
+[node name="PhotoStand" type="Marker2D" parent="Investigation" index="8"]
+position = Vector2(257, 351)
+
+[node name="ReceiptStand" type="Marker2D" parent="Investigation" index="9"]
+position = Vector2(447, 351)
+
+[node name="FilePocketStand" type="Marker2D" parent="Investigation" index="10"]
+position = Vector2(540, 294)
+
 [node name="FromCorridor" type="Marker2D" parent="Entrances" index="1"]
 position = Vector2(755, 374)
 
 [node name="RoomTitle" parent="." index="4"]
 text = "第一章 · 前台"
 
+[node name="Reasoning" type="VBoxContainer" parent="." index="8"]
+visible = false
+script = ExtResource("10_reasoning")
+first_question = "照片和收页哪个在先？"
+second_question = "周四的原页在哪里？"
+
 [connection signal="approach_requested" from="Investigation/HeQingPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/HeQingPoint" to="." method="_on_he_qing_interacted"]
 [connection signal="approach_requested" from="Investigation/CorridorExit" to="Investigation" method="show_approach_hint"]
+[connection signal="approach_requested" from="Investigation/PhotoPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/PhotoPoint" to="." method="_on_photo_inspected"]
+[connection signal="approach_requested" from="Investigation/ReceiptPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/ReceiptPoint" to="Investigation" method="inspect"]
+[connection signal="approach_requested" from="Investigation/FilePocketPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/FilePocketPoint" to="Investigation" method="inspect"]
+[connection signal="submitted" from="Reasoning" to="." method="_on_reasoning_submitted"]
 
 [editable path="Investigation/HeQingPoint"]
 [editable path="Investigation/CorridorExit"]
+[editable path="Investigation/PhotoPoint"]
+[editable path="Investigation/ReceiptPoint"]
+[editable path="Investigation/FilePocketPoint"]

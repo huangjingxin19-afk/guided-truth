@@ -1,5 +1,5 @@
 extends SceneTree
-## End-to-end first-chapter route through real movement and HUD input.
+## End-to-end first chapter and second-chapter opening through real HUD input.
 
 var _failures := 0
 var _room: Node
@@ -7,6 +7,7 @@ var _hud: CanvasLayer
 var _player: CharacterBody2D
 var _log: Node
 var _chapter: Node
+var _chapter_two: Node
 var _transition: Node
 
 
@@ -17,11 +18,13 @@ func _initialize() -> void:
 func _run() -> void:
 	_log = root.get_node("InvestigationLog")
 	_chapter = root.get_node("ChapterOne")
+	_chapter_two = root.get_node("ChapterTwo")
 	_transition = root.get_node("RoomTransition")
 	_transition.start_new_game()
 	await _room_ready("FrontDesk")
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted, "New game starts with an empty log and no commission.")
 	_check(_room.get_node("Investigation/CorridorExit").disabled, "Receive the commission before leaving the front desk.")
+	_check(not _room.get_node("Investigation/PhotoPoint").visible and not _chapter_two.can_start(), "Friday clues stay hidden before the chapter handoff.")
 	_tap(Vector2(350, 225))
 	await _settle()
 	_check(not _hud.is_open() and _log.entries().is_empty(), "A distant tap cannot accept the commission.")
@@ -102,7 +105,7 @@ func _run() -> void:
 	_check(_chapter.reenactment_stage == _chapter.ReenactmentStage.FIRST_PASS, "Restart resets the installed pad and reenactment stage.")
 	_check(_chapter.case_stage == _chapter.CaseStage.DEDUCTION, "Restart resets the conclusion and inventory stages.")
 	await _check_touchscreen_movement()
-	print("Chapter one route failures: ", _failures)
+	print("Chapter route failures: ", _failures)
 	quit(int(_failures > 0))
 
 
@@ -285,9 +288,114 @@ func _complete_case(try_wrong_answer: bool) -> void:
 	_check(_hud.header.text == "第一章完 · 上锁的教室" and _chapter.case_stage == _chapter.CaseStage.COMPLETE, "The final look at the sealed door completes Chapter One.")
 	await _check_card("chapter ending")
 	await _capture("13-ending")
-	_close()
+	if try_wrong_answer:
+		_close()
+	else:
+		await _play_chapter_two()
 	await _reread("A01 清点照片", "三针白色补线")
 	await _reread("A01 清点单", "已阅：周闻")
+
+
+func _play_chapter_two() -> void:
+	_check(_hud.evidence_action_button.text == "开始第二章", "The ending offers the next chapter.")
+	_tap_button(_hud.evidence_action_button)
+	await _room_ready("FrontDesk")
+	_check(_chapter_two.active and _room.get_node("ChapterStatus").text.begins_with("周五 17:20"), "The handoff starts Friday's investigation.")
+	_check(_chapter.case_stage == _chapter.CaseStage.COMPLETE and _log.has_entry(_chapter.SIGNED_INVENTORY.id), "The handoff retains the entire Thursday investigation.")
+	await _capture("14-chapter-two-front-desk")
+
+	await _interact_at(Vector2(793, 344), "前往走廊")
+	await _room_ready("Corridor")
+	await _enter_back_yard()
+	await _interact_at(Vector2(730, 346), "检查器材门")
+	_check(current_scene == _room and not _chapter_two.can_revisit_102(), "Thursday's authorization does not unlock the Friday revisit by itself.")
+	await _return_to_front_desk()
+
+	await _walk_to(Vector2(257, 351))
+	_press_e()
+	await _settle()
+	_check(_hud.header.text == "16:46 群聊原图" and _hud.preview_container.visible, "E records the timestamped photo and shows its preview.")
+	await _check_card("16:46 photo")
+	await _capture("15-chapter-two-photo")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "群聊转发截图" and _log.has_entry(_chapter_two.FORWARDED_CROP.id), "The forwarded crop can be compared and recorded separately.")
+	await _check_card("forwarded photo crop")
+	await _capture("15b-chapter-two-photo-crop")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "16:46 群聊原图", "The comparison returns to the original photo.")
+	_close()
+	await _settle()
+	_check(not _chapter_two.can_revisit_102(), "Both timestamped clues are required for the revisit.")
+
+	await _interact_at(Vector2(447, 351), "查看16:50 收页便签")
+	_check(_hud.header.text == "16:50 收页便签" and _hud.description.text.contains("没有署名"), "The receipt records the time and does not identify the filer.")
+	_close()
+	await _settle()
+	_check(_chapter_two.can_revisit_102() and not _chapter_two.can_submit_reasoning(), "The receipt unlocks 102, but the physical evidence is still required.")
+
+	await _interact_at(Vector2(793, 344), "前往走廊")
+	await _room_ready("Corridor")
+	await _enter_back_yard()
+	await _enter_102()
+	await _reread("16:46 群聊原图", "月牙形咖啡渍")
+	await _reread("16:50 收页便签", "摘录明早补")
+	await _interact_at(Vector2(580, 290), "查看102 器材门旧轮痕")
+	_check(_hud.header.text == "102 器材门旧轮痕", "The existing wheel track point records Friday's site observation.")
+	_close()
+	await _settle()
+	await _walk_to(Vector2(370, 438))
+	await _interact_at(Vector2(279, 283), "核对桌后 A01")
+	_check(_hud.header.text == "102 桌后 A01" and _hud.description.text.contains("102 下层抽屉"), "Walking around the table reaches the physical comparison at A01.")
+	await _check_card("Friday A01 comparison")
+	await _capture("16-chapter-two-a01")
+	_close()
+	await _settle()
+	_check(not _chapter_two.can_submit_reasoning(), "The 102 revisit alone cannot identify the original page.")
+	await _return_to_yard()
+	await _return_to_front_desk()
+	await _reread("102 器材门旧轮痕", "折叠凳")
+	await _reread("102 桌后 A01", "白色补线")
+
+	await _interact_at(Vector2(540, 294), "查看登记夹与内袋")
+	_check(_hud.header.text == "登记夹与内袋" and _hud.preview_container.visible, "The counter pocket reveals three partially covered originals.")
+	await _check_card("front desk file pocket")
+	await _capture("17-chapter-two-file-pocket")
+	_close()
+	await _settle()
+	await _interact_at(Vector2(350, 360), "提交原页判断")
+	var reasoning: Control = _hud.presentation_slot.get_node("Reasoning")
+	var submit := reasoning.get_node("Submit") as Button
+	_check(submit.disabled, "Both the order and location are required.")
+	_tap_button(_choice(reasoning, _chapter_two.ORDER_CHOICES[1]))
+	_tap_button(_choice(reasoning, _chapter_two.LOCATION_CHOICES[0]))
+	_tap_button(submit)
+	await _settle()
+	_check(not _chapter_two.has_finding() and _hud.header.text == "核对周四原页", "A wrong location stays open for review.")
+	await _check_card("page reasoning")
+	await _capture("18-chapter-two-review")
+	_close()
+	await _settle()
+	await _reread("待复核 · 原页去向", "比一比原图与内袋页角")
+	await _reread("登记夹与内袋", "含联系方式的原页用完请收入前台内袋")
+	await _interact_at(Vector2(350, 360), "提交原页判断")
+	_tap_button(_choice(reasoning, _chapter_two.LOCATION_CHOICES[1]))
+	_tap_button(submit)
+	await _settle()
+	_check(_hud.header.text == "原页去向已核对" and _chapter_two.has_finding(), "The correct comparison records the first finding.")
+	_close()
+	await _settle()
+	await _reread("原页去向已核对", "日期和月牙污渍相符")
+
+
+func _return_to_front_desk() -> void:
+	await _interact_at(Vector2(158, 346), "经外廊回走廊")
+	await _room_ready("Corridor")
+	await _walk_to(Vector2(161, 344))
+	_tap_button(_hud.interaction_button)
+	await _room_ready("FrontDesk")
+	_check(_player.position.is_equal_approx(Vector2(755, 374)), "Backtracking to the front desk uses the corridor entrance.")
 
 
 func _choice(parent: Control, label: String) -> Button:
@@ -361,6 +469,7 @@ func _restart() -> void:
 	_tap_button(_hud.evidence_action_button)
 	await _room_ready("FrontDesk")
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted and not _chapter.corridor_visited, "Restart clears every note and first-chapter flag.")
+	_check(not _chapter_two.active and not _chapter_two.has_finding() and not _room.get_node("Investigation/PhotoPoint").visible, "Restart also clears Friday's progress and restores the Thursday front desk.")
 	_check(_player.position.is_equal_approx(Vector2(230, 420)), "Restart uses the starting entrance.")
 	_check(_chapter.story_time() == "周四 18:35", "Restart resets story time.")
 
@@ -413,7 +522,7 @@ func _check_card(context: String) -> void:
 	await _settle()
 	var card := _hud.get_node("Overlay/Card") as Control
 	var rect := card.get_global_rect()
-	_check(root.get_visible_rect().encloses(rect), "Evidence fits in the viewport: " + context)
+	_check(root.get_visible_rect().encloses(rect), "Evidence fits in the viewport: %s (%s)" % [context, rect])
 
 
 func _capture(label: String) -> void:

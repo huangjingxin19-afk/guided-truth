@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://props/visitor_page_preview.gd" id="1"]
+
+[node name="VisitorChatPhoto" type="Node2D"]
+
+[node name="PhotoFrame" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-174, -59, 174, -59, 174, 59, -174, 59)
+color = Color(0.91, 0.86, 0.73, 1)
+
+[node name="Wall" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-170, -55, 170, -55, 170, 13, -170, 13)
+color = Color(0.34, 0.42, 0.39, 1)
+
+[node name="Counter" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-170, 13, 170, 13, 170, 55, -170, 55)
+color = Color(0.58, 0.4, 0.26, 1)
+
+[node name="DisplayBoard" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-148, -44, 18, -36, 9, 43, -156, 36)
+color = Color(0.77, 0.77, 0.61, 1)
+
+[node name="BoardTrim" type="Line2D" parent="."]
+points = PackedVector2Array(-142, -37, 10, -29, 3, 36, -148, 29, -142, -37)
+width = 3.0
+default_color = Color(0.4, 0.55, 0.5, 1)
+
+[node name="VisitorPage" type="Node2D" parent="."]
+position = Vector2(76, -34)
+scale = Vector2(0.88, 0.88)
+script = ExtResource("1")
+
+[node name="WhiteCup" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(124, -41, 147, -43, 163, -37, 163, -18, 157, -8, 142, -5, 129, -9, 123, -18)
+color = Color(0.95, 0.94, 0.88, 1)
+
+[node name="CupRim" type="Line2D" parent="."]
+points = PackedVector2Array(125, -36, 132, -30, 149, -28, 161, -34)
+width = 2.0
+default_color = Color(0.73, 0.71, 0.65, 1)
