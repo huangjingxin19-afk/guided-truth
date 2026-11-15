@@ -180,7 +180,7 @@ func _enlarge_comparison_entry(entry: EvidenceEntry) -> void:
 func _confirm_new_game() -> void:
 	var prompt := EvidenceEntry.new()
 	prompt.title = "重新开始调查？"
-	prompt.description = "会清空本次笔记和调查进度，回到前台。"
+	prompt.description = "会清空本次笔记和存档进度，回到前台。"
 	show_evidence(prompt, false, "确认重新开始", new_game_requested.emit)
 
 

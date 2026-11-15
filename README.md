@@ -4,7 +4,7 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 
 ## 当前试玩路线
 
-安卓导出目标为 `chapter3-observation-1.0.13.apk`（版本号 14，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
+安卓导出目标为 `investigation-autosave-1.0.15.apk`（版本号 16，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
 
 ### 第一章《上锁的教室》
 
@@ -44,7 +44,9 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 
 详见[第三章开发计划](./第三章-开发计划.md)。两个观察近景共用一套占位人物和道具。
 
-笔记与进度保存在本局内存中，换房保留；关闭应用后重新打开会开始新一局。本版没有磁盘存档。
+登记线索、完成剧情步骤或换房后会自动存档。关闭应用再打开，会从上次房间的入口继续，保留笔记和剧情进度。笔记中的「重新开始」经确认后会重置存档。
+
+安卓测试包直接覆盖安装即可保留存档，包名和签名须相同，版本号须递增。卸载或清除应用数据会删除本地存档。自动存档从 1.0.14 开始记录。
 
 ## 开发与验证
 
@@ -55,17 +57,27 @@ godot --editor --path gotdot
 godot --headless --path gotdot --script ../tests/chapter_one_route.gd
 godot --headless --path gotdot --script ../tests/room_102_inspection.gd
 godot --headless --path gotdot --script ../tests/room_102_reenactment.gd
-godot --headless --path gotdot --export-debug Android ../chapter3-observation-1.0.13.apk
+godot --headless --path gotdot --export-debug Android ../investigation-autosave-1.0.15.apk
 ```
 
 导出使用编辑器中已配置的 JDK、Android SDK、同版本安卓模板和调试签名。不要提交签名文件或密码。
 
 `chapter_one_route.gd` 从新游戏开始，通过地面移动、触控按钮和 E 键验证前两章结案及第三章站位判断。覆盖错误重试、夜巡结尾重进、提前到后院补查、笔记双图对照、放大与返回，以及重开。默认跳过春册线索并重开第二章结尾，加 `-- --watch-pickup` 验证目击周闻收春册并直接进入第三章的路线。加 `-- --capture` 可在图形模式下保存关键页面到 `.test-runtime/`（先创建此目录）。
 
+`autosave.gd` 用独立进程验证三章续玩、备份恢复和重新开始。在专用于测试的 PowerShell 窗口中运行以下命令，让每次测试使用 `.test-runtime` 中新建的数据目录。
+
+```powershell
+$env:APPDATA = (New-Item -ItemType Directory -Force ".test-runtime/autosave-$([guid]::NewGuid())").FullName
+foreach ($phase in 'first','second','third','resume','backup','reset','damaged') {
+    godot --headless --path gotdot --script ../tests/autosave.gd -- $phase
+    if ($LASTEXITCODE -ne 0) { break }
+}
+```
+
 102 的共用交互与复走也可通过直接运行 `gotdot/rooms/room_102.tscn` 单独验证。
 
 1.0.8 的后院路线、1.0.9 的摇杆版和 1.0.11 的第二章首段已通过手机试玩。1.0.12 的完整第二章路线已于 2026-11-15 通过手机试玩。
-1.0.13 的第三章首段待手机验收。
+1.0.13 的第三章首段待手机验收。覆盖安装存档用 1.0.14 先玩出进度，再直接安装 1.0.15，检查是否能继续。
 
 ## 本次结构
 
@@ -73,6 +85,7 @@ godot --headless --path gotdot --export-debug Android ../chapter3-observation-1.
 - `chapters/chapter_two.gd` 根据已登记的线索推进第二章并管理故事时间。前台、走廊和 102 复用调查点、笔记和换房，两个章节共用推理表单。
 - `chapters/chapter_three.gd` 根据周六的委托和现场记录解锁开门、两处观察及站位判断。笔记使用共用 HUD 展示两张近景。
 - `rooms/room_transition.gd` 统一切场与新游戏重置。器材门由后院依据授权证物决定是否允许通行。
+- `save/save_game.gd` 在同一次操作结束后统一保存章节、证物和房间入口。启动时先恢复进度，由原房间逻辑还原可交互内容。存档采用本地 JSON 文件和上一份备份。[Godot 官方存读档示例](https://github.com/godotengine/godot-demo-projects/blob/master/loading/serialization/save_load_json.gd)
 - `rooms/investigation_room.tscn` 提供共用移动、调查与 HUD。前台、走廊和雨棚继承后配置本地场景和交互。
 - `investigation/*.tres` 保存证物文本和预览。韩素的占位外观由雨棚和 102 共用。
 

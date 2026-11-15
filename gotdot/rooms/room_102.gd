@@ -33,6 +33,8 @@ func _ready() -> void:
 
 
 func _refresh() -> void:
+	if not is_inside_tree():
+		return
 	var stage := ChapterOne.reenactment_stage
 	var pad_on_floor := stage == Stage.FIRST_PASS or stage == Stage.INSTALL_PAD
 	_foot_pad.visible = pad_on_floor

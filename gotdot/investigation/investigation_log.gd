@@ -11,6 +11,12 @@ func reset() -> void:
 	_entries.clear()
 
 
+func restore_entries(recorded: Array[EvidenceEntry]) -> void:
+	_entries.clear()
+	for entry in recorded:
+		_entries[entry.id] = entry
+
+
 func has_entry(id: StringName) -> bool:
 	return _entries.has(id)
 
