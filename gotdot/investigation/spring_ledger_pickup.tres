@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"spring_ledger_pickup"
+title = "回收筐里的蓝布册"
+description = "周闻把回收筐里封面带杯圈的蓝布报修册放进手提筐，几块空白挂牌盖在上面。\n\n周闻：「回收的我一块儿收。」"

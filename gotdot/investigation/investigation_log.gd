@@ -21,6 +21,15 @@ func record(entry: EvidenceEntry) -> void:
 		entry_recorded.emit(entry)
 
 
+func replace_with(entry: EvidenceEntry, superseded_ids: Array[StringName]) -> void:
+	if has_entry(entry.id):
+		return
+	_entries[entry.id] = entry
+	for id in superseded_ids:
+		_entries.erase(id)
+	entry_recorded.emit(entry)
+
+
 func entries() -> Array[EvidenceEntry]:
 	var recorded: Array[EvidenceEntry] = []
 	recorded.assign(_entries.values())

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/west_stair_notice.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"west_stair_accident"
+title = "西梯旧事故说明照片"
+description = "这份说明压在后来换过的疏散图下。\n\n「2019 年 11 月 8 日约 20:17，楼内停电。一名学员离队后于西梯跌落。事发前未收到西梯应急照明故障报告。」\n\n落款：周闻。"
+preview = ExtResource("2")
+preview_scale = 1.0

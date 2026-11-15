@@ -30,8 +30,9 @@ func _on_evidence_inspected(entry: Resource) -> void:
 
 func _on_supply_door_blocked() -> void:
 	if ChapterTwo.active:
+		var hint := "韩素已锁上器材门" if ChapterTwo.is_complete() else "先回前台核对原图和收页便签"
 		$Investigation.show_approach_hint(
-			$Investigation/PassageStand.global_position, "先回前台核对原图和收页便签"
+			$Investigation/PassageStand.global_position, hint
 		)
 		return
 	$Investigation.show_approach_hint(

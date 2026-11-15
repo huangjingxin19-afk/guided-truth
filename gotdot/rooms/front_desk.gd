@@ -9,7 +9,9 @@ const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 
 
 func _ready() -> void:
-	_reasoning.setup(ChapterTwo.ORDER_CHOICES, ChapterTwo.LOCATION_CHOICES)
+	if ChapterTwo.active:
+		$Scenery/ZhouWen.position = $Scenery/RecycleBasket.position + Vector2(28, -16)
+	_reasoning.setup(ChapterTwo.ORDER_CHOICES, ChapterTwo.PAGE_CHOICES)
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
 	_refresh()
@@ -28,12 +30,28 @@ func _refresh() -> void:
 	$Investigation/PhotoPoint.visible = ChapterTwo.active
 	$Investigation/ReceiptPoint.visible = ChapterTwo.active
 	$Investigation/FilePocketPoint.visible = ChapterTwo.active
+	$Scenery/ShaoNing.visible = ChapterTwo.active
+	$Investigation/ShaoNingPoint.visible = ChapterTwo.active
+	$Scenery/HandoverBoard.visible = ChapterTwo.has_withdrawn_photo()
+	$Investigation/HandoverBoardPoint.visible = ChapterTwo.has_withdrawn_photo()
+	var show_pickup := ChapterTwo.can_document_accident() and not ChapterTwo.is_complete()
+	var pickup_seen := InvestigationLog.has_entry(ChapterTwo.SPRING_LEDGER.id)
+	$Scenery/RecycleBasket.visible = show_pickup
+	$Scenery/RecycleBasket/SpringLedger.visible = not pickup_seen
+	$Investigation/SpringLedgerPoint.visible = show_pickup and not pickup_seen
 	if ChapterTwo.active:
-		$RoomTitle.text = "第二章 · 原页复原"
+		$RoomTitle.text = "第二章 · 少掉的一页"
 		$ChapterStatus.text = ChapterTwo.status()
 		$WalkableFloor/DepthSort/Counter/WorkOrder.hide()
 		$WalkableFloor/DepthSort/Counter/Note.hide()
-		$Scenery/ZhouWen.hide()
+		$Scenery/ZhouWen.visible = show_pickup and not pickup_seen
+		if ChapterTwo.has_withdrawn_photo():
+			var phone = $Investigation/PhotoPoint
+			phone.evidence = ChapterTwo.PHOTO_EXCERPT
+			phone.tooltip_text = ChapterTwo.PHOTO_EXCERPT.title
+			phone.accessibility_name = ChapterTwo.PHOTO_EXCERPT.title
+			phone.approach_hint = "靠近柜台左侧的手机，查看照片局部留档"
+		$Investigation/ShaoNingPoint.interaction_label = _shao_ning_action()
 		$Investigation/HeQingPoint.interaction_label = "核对原页委托"
 		if ChapterTwo.can_submit_reasoning():
 			$Investigation/HeQingPoint.interaction_label = "提交原页判断"
@@ -61,16 +79,68 @@ func _show_note() -> void:
 
 
 func _on_photo_inspected(entry: EvidenceEntry) -> void:
-	_investigation.inspect(entry, "对照转发截图", _show_forwarded_crop)
+	if ChapterTwo.has_withdrawn_photo():
+		_investigation.inspect(ChapterTwo.PHOTO_EXCERPT)
+	else:
+		_investigation.inspect(entry, "对照转发截图", _show_forwarded_crop)
 
 
 func _show_forwarded_crop() -> void:
+	if ChapterTwo.has_withdrawn_photo():
+		return
 	InvestigationLog.record(ChapterTwo.FORWARDED_CROP)
 	_hud.show_evidence(ChapterTwo.FORWARDED_CROP, false, "返回群聊原图", _show_original_photo)
 
 
 func _show_original_photo() -> void:
-	_hud.show_evidence(ChapterTwo.PHOTO, false, "对照转发截图", _show_forwarded_crop)
+	if not ChapterTwo.has_withdrawn_photo():
+		_hud.show_evidence(ChapterTwo.PHOTO, false, "对照转发截图", _show_forwarded_crop)
+
+
+func _shao_ning_action() -> String:
+	if ChapterTwo.has_withdrawn_photo():
+		return "向邵宁问登记摘录"
+	if ChapterTwo.has_finding():
+		return "向邵宁确认收页"
+	if InvestigationLog.has_entry(ChapterTwo.PHOTO.id):
+		return "请邵宁联系发图人"
+	return "问邵宁群聊传闻"
+
+
+func _on_shao_ning_interacted() -> void:
+	_investigation.clear_approach_hint()
+	if ChapterTwo.has_withdrawn_photo():
+		_hud.show_evidence(ChapterTwo.PHOTO_EXCERPT)
+	elif ChapterTwo.has_finding():
+		var confirmation := EvidenceEntry.new()
+		confirmation.title = "邵宁确认收页"
+		confirmation.description = (
+			"邵宁：「我看到号码就把纸收了。后来群里说有人翻桌子，我就更不敢先开口。」\n\n"
+			+ "何青：「照片先撤。以后有人问来过什么人，我给他看摘录。」"
+		)
+		_hud.show_evidence(confirmation, false, "保存局部并撤图", _save_photo_excerpt)
+	elif InvestigationLog.has_entry(ChapterTwo.PHOTO.id):
+		_investigation.inspect(ChapterTwo.PHOTO_CALL)
+	else:
+		var message := EvidenceEntry.new()
+		message.title = "邵宁的群聊消息"
+		message.description = "邵宁：「大家都在转截过的那一块。我问过发图的人，『群里这张有原图吗？请先别再转。』你可以先看柜台上最早那条。」"
+		_hud.show_evidence(message)
+
+
+func _save_photo_excerpt() -> void:
+	if ChapterTwo.archive_and_withdraw_photo():
+		_hud.show_evidence(ChapterTwo.PHOTO_EXCERPT)
+
+
+func _on_handover_board_inspected(entry: EvidenceEntry) -> void:
+	if ChapterTwo.has_withdrawn_photo():
+		_investigation.inspect(entry)
+
+
+func _on_spring_ledger_requested() -> void:
+	if ChapterTwo.can_document_accident() and not ChapterTwo.is_complete():
+		_investigation.inspect(ChapterTwo.SPRING_LEDGER)
 
 
 func _show_chapter_two_commission_or_reasoning() -> void:
@@ -89,8 +159,8 @@ func _show_chapter_two_commission_or_reasoning() -> void:
 		_hud.show_evidence(commission)
 
 
-func _on_reasoning_submitted(order: int, location: int) -> void:
-	var feedback := ChapterTwo.submit_reasoning(order, location)
+func _on_reasoning_submitted(order: int, candidate: int) -> void:
+	var feedback := ChapterTwo.submit_reasoning(order, candidate)
 	if feedback.is_empty():
 		_hud.show_evidence(ChapterTwo.FINDING)
 	else:

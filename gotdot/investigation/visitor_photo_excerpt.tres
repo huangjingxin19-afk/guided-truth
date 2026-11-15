@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/visitor_photo_detail.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"visitor_photo_excerpt"
+title = "16:46 群聊照片局部留档"
+description = "周五 16:46 · 周四页的日期、白杯和带月牙污渍的纸角。\n邵宁确认在 16:50 把原页收进前台内袋。群聊照片已撤，日常查阅只看日期和事项摘录。"
+preview = ExtResource("2")
+preview_scale = 1.4

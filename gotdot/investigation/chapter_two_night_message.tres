@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/night_patrol_window.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"chapter_two_night_message"
+title = "韩素的 21:10 夜巡消息"
+description = "器材架旁有人提着一只窄袋，抬了两次手。两声门铃后，韩素绕到后院，人已经走了。\n\n韩素：「昨天也有人站在那儿。我以为是你们在收东西。今天两边门我都锁了。」"
+preview = ExtResource("2")
+preview_scale = 1.0

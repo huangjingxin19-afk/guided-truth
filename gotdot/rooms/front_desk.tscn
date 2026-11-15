@@ -10,6 +10,9 @@
 [ext_resource type="Resource" path="res://investigation/visitor_receipt_note.tres" id="8_receipt"]
 [ext_resource type="Resource" path="res://investigation/visitor_file_pocket.tres" id="9_pocket"]
 [ext_resource type="Script" path="res://ui/reasoning_form.gd" id="10_reasoning"]
+[ext_resource type="PackedScene" path="res://props/visitor_file_pocket.tscn" id="11_candidates"]
+[ext_resource type="Resource" path="res://investigation/handover_notice.tres" id="12_notice"]
+[ext_resource type="PackedScene" path="res://props/handover_board_notice.tscn" id="13_board"]
 
 [sub_resource type="RectangleShape2D" id="CounterShape"]
 size = Vector2(330, 38)
@@ -37,6 +40,61 @@ mouse_filter = 2
 theme_override_font_sizes/font_size = 20
 text = "走廊 →
 102 正门"
+
+[node name="ShaoNing" type="Node2D" parent="Scenery" index="7"]
+position = Vector2(570, 317)
+visible = false
+
+[node name="Body" type="Polygon2D" parent="Scenery/ShaoNing"]
+polygon = PackedVector2Array(-13, -85, 13, -85, 20, -25, -20, -25)
+color = Color(0.31, 0.45, 0.57, 1)
+
+[node name="Head" type="Polygon2D" parent="Scenery/ShaoNing"]
+polygon = PackedVector2Array(-12, -112, 12, -112, 12, -88, -12, -88)
+color = Color(0.81, 0.65, 0.52, 1)
+
+[node name="Hair" type="Polygon2D" parent="Scenery/ShaoNing"]
+polygon = PackedVector2Array(-14, -117, 14, -117, 14, -105, -14, -104)
+color = Color(0.18, 0.17, 0.17, 1)
+
+[node name="Name" type="Label" parent="Scenery/ShaoNing"]
+offset_left = -20.0
+offset_top = -145.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "邵宁"
+
+[node name="HandoverBoard" type="Node2D" parent="Scenery" index="8"]
+position = Vector2(655, 303)
+visible = false
+
+[node name="Notice" parent="Scenery/HandoverBoard" instance=ExtResource("13_board")]
+position = Vector2(0, -79)
+scale = Vector2(0.46, 0.46)
+
+[node name="Caption" type="Label" parent="Scenery/HandoverBoard"]
+offset_left = -31.0
+offset_top = -53.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "公告板"
+
+[node name="RecycleBasket" type="Node2D" parent="Scenery" index="9"]
+position = Vector2(715, 310)
+visible = false
+
+[node name="SpringLedger" type="Polygon2D" parent="Scenery/RecycleBasket"]
+polygon = PackedVector2Array(-16, -34, 11, -34, 15, -15, -13, -15)
+color = Color(0.29, 0.38, 0.56, 1)
+
+[node name="CupRing" type="Line2D" parent="Scenery/RecycleBasket/SpringLedger"]
+points = PackedVector2Array(-5, -31, 3, -30, 8, -26, 4, -22, -4, -23, -8, -27, -5, -31)
+width = 1.5
+default_color = Color(0.72, 0.58, 0.39, 1)
+
+[node name="Basket" type="Polygon2D" parent="Scenery/RecycleBasket"]
+polygon = PackedVector2Array(-24, -21, 24, -21, 18, 0, -18, 0)
+color = Color(0.49, 0.37, 0.25, 1)
 
 [node name="Counter" type="StaticBody2D" parent="WalkableFloor/DepthSort" index="1"]
 position = Vector2(350, 316)
@@ -195,6 +253,68 @@ position = Vector2(447, 351)
 [node name="FilePocketStand" type="Marker2D" parent="Investigation" index="10"]
 position = Vector2(540, 294)
 
+[node name="ShaoNingPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="11" instance=ExtResource("3")]
+visible = false
+offset_left = 546.0
+offset_top = 172.0
+offset_right = 593.0
+offset_bottom = 335.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/ShaoNing")
+target_outline = PackedVector2Array(-19, -2, 19, -2, 19, 3, -19, 3)
+inspection_distance = 50.0
+touch_padding = 144.0
+hint_stands = [NodePath("../ShaoNingStand")]
+approach_hint = "靠近柜台右侧的邵宁"
+
+[node name="Marker" parent="Investigation/ShaoNingPoint" index="0"]
+visible = false
+
+[node name="ShaoNingStand" type="Marker2D" parent="Investigation" index="12"]
+position = Vector2(570, 360)
+
+[node name="HandoverBoardPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="13" instance=ExtResource("3")]
+visible = false
+offset_left = 582.0
+offset_top = 192.0
+offset_right = 728.0
+offset_bottom = 307.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/HandoverBoard")
+target_outline = PackedVector2Array(-22, -2, 22, -2, 22, 3, -22, 3)
+evidence = ExtResource("12_notice")
+inspection_distance = 53.0
+touch_padding = 111.0
+hint_stands = [NodePath("../HandoverBoardStand")]
+approach_hint = "到前台右侧查看公告板上的复核安排"
+
+[node name="Marker" parent="Investigation/HandoverBoardPoint" index="0"]
+visible = false
+
+[node name="HandoverBoardStand" type="Marker2D" parent="Investigation" index="14"]
+position = Vector2(655, 345)
+
+[node name="SpringLedgerPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="15" instance=ExtResource("3")]
+visible = false
+offset_left = 690.0
+offset_top = 273.0
+offset_right = 740.0
+offset_bottom = 314.0
+interaction_label = "问周闻收了什么"
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/RecycleBasket")
+target_outline = PackedVector2Array(-19, -5, 19, -5, 19, 3, -19, 3)
+inspection_distance = 51.0
+touch_padding = 40.0
+hint_stands = [NodePath("../SpringLedgerStand")]
+approach_hint = "靠近前台的回收筐"
+
+[node name="Marker" parent="Investigation/SpringLedgerPoint" index="0"]
+visible = false
+
+[node name="SpringLedgerStand" type="Marker2D" parent="Investigation" index="16"]
+position = Vector2(715, 352)
+
 [node name="FromCorridor" type="Marker2D" parent="Entrances" index="1"]
 position = Vector2(755, 374)
 
@@ -205,7 +325,8 @@ text = "第一章 · 前台"
 visible = false
 script = ExtResource("10_reasoning")
 first_question = "照片和收页哪个在先？"
-second_question = "周四的原页在哪里？"
+second_question = "哪张纸与原图一致？"
+second_choice_preview = ExtResource("11_candidates")
 
 [connection signal="approach_requested" from="Investigation/HeQingPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/HeQingPoint" to="." method="_on_he_qing_interacted"]
@@ -216,6 +337,12 @@ second_question = "周四的原页在哪里？"
 [connection signal="inspection_requested" from="Investigation/ReceiptPoint" to="Investigation" method="inspect"]
 [connection signal="approach_requested" from="Investigation/FilePocketPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="inspection_requested" from="Investigation/FilePocketPoint" to="Investigation" method="inspect"]
+[connection signal="approach_requested" from="Investigation/ShaoNingPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/ShaoNingPoint" to="." method="_on_shao_ning_interacted"]
+[connection signal="approach_requested" from="Investigation/HandoverBoardPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/HandoverBoardPoint" to="." method="_on_handover_board_inspected"]
+[connection signal="approach_requested" from="Investigation/SpringLedgerPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/SpringLedgerPoint" to="." method="_on_spring_ledger_requested"]
 [connection signal="submitted" from="Reasoning" to="." method="_on_reasoning_submitted"]
 
 [editable path="Investigation/HeQingPoint"]
@@ -223,3 +350,6 @@ second_question = "周四的原页在哪里？"
 [editable path="Investigation/PhotoPoint"]
 [editable path="Investigation/ReceiptPoint"]
 [editable path="Investigation/FilePocketPoint"]
+[editable path="Investigation/ShaoNingPoint"]
+[editable path="Investigation/HandoverBoardPoint"]
+[editable path="Investigation/SpringLedgerPoint"]

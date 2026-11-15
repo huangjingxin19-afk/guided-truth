@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://rooms/room_exit.gd" id="4"]
 [ext_resource type="Resource" path="res://investigation/front_door_seal.tres" id="5"]
 [ext_resource type="PackedScene" path="res://props/front_door_seal.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://props/west_stair_notice.tscn" id="7_notice"]
 
 [node name="Corridor" instance=ExtResource("1")]
 script = ExtResource("2")
@@ -76,6 +77,26 @@ mouse_filter = 2
 theme_override_font_sizes/font_size = 20
 text = "外廊 →
 去后院"
+
+[node name="WestStairBoard" type="Node2D" parent="Scenery" index="7"]
+position = Vector2(350, 303)
+visible = false
+
+[node name="Notice" parent="Scenery/WestStairBoard" instance=ExtResource("7_notice")]
+position = Vector2(0, -82)
+scale = Vector2(0.48, 0.48)
+
+[node name="Caption" type="Label" parent="Scenery/WestStairBoard"]
+offset_left = -28.0
+offset_top = -44.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "西梯口"
+
+[node name="NightShade" type="Polygon2D" parent="Scenery" index="8"]
+visible = false
+polygon = PackedVector2Array(96, 136, 864, 136, 864, 474, 96, 474)
+color = Color(0.07, 0.12, 0.19, 0.36)
 
 [node name="ArrivalHint" type="Label" parent="." index="8"]
 offset_left = 240.0
@@ -171,6 +192,45 @@ approach_hint = "靠近 102 正门，再看一眼封条"
 [node name="Marker" parent="Investigation/EndingPoint" index="0"]
 visible = false
 
+[node name="AccidentPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="8" instance=ExtResource("3")]
+visible = false
+offset_left = 282.0
+offset_top = 184.0
+offset_right = 417.0
+offset_bottom = 309.0
+interaction_label = "拍下旧事故说明"
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/WestStairBoard")
+target_outline = PackedVector2Array(-32, -3, 32, -3, 32, 3, -32, 3)
+inspection_distance = 53.0
+touch_padding = 120.0
+hint_stands = [NodePath("../WestStairStand")]
+approach_hint = "靠近西梯口的疏散图，拍下旧事故说明"
+
+[node name="Marker" parent="Investigation/AccidentPoint" index="0"]
+visible = false
+
+[node name="WestStairStand" type="Marker2D" parent="Investigation" index="9"]
+position = Vector2(350, 346)
+
+[node name="NightPatrolPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="10" instance=ExtResource("3")]
+visible = false
+offset_left = 528.0
+offset_top = 145.0
+offset_right = 667.0
+offset_bottom = 310.0
+interaction_label = "查看韩素夜巡"
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/Door102")
+target_outline = PackedVector2Array(-59, -4, 68, -4, 68, 4, -59, 4)
+inspection_distance = 58.0
+touch_padding = 165.0
+hint_stands = [NodePath("../SealStand")]
+approach_hint = "靠近 102 正门的窄窗"
+
+[node name="Marker" parent="Investigation/NightPatrolPoint" index="0"]
+visible = false
+
 [node name="FromFrontDesk" type="Marker2D" parent="Entrances" index="1"]
 position = Vector2(230, 374)
 
@@ -186,8 +246,14 @@ text = "第一章 · 102 门口"
 [connection signal="approach_requested" from="Investigation/YardExit" to="Investigation" method="show_approach_hint"]
 [connection signal="approach_requested" from="Investigation/EndingPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/EndingPoint" to="." method="_on_ending_requested"]
+[connection signal="approach_requested" from="Investigation/AccidentPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/AccidentPoint" to="." method="_on_accident_requested"]
+[connection signal="approach_requested" from="Investigation/NightPatrolPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/NightPatrolPoint" to="." method="_on_night_patrol_requested"]
 
 [editable path="Investigation/FrontDeskExit"]
 [editable path="Investigation/SealPoint"]
 [editable path="Investigation/YardExit"]
 [editable path="Investigation/EndingPoint"]
+[editable path="Investigation/AccidentPoint"]
+[editable path="Investigation/NightPatrolPoint"]

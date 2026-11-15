@@ -1,5 +1,5 @@
 extends SceneTree
-## End-to-end first chapter and second-chapter opening through real HUD input.
+## End-to-end first and second chapters through real HUD input.
 
 var _failures := 0
 var _room: Node
@@ -306,6 +306,8 @@ func _play_chapter_two() -> void:
 
 	await _interact_at(Vector2(793, 344), "前往走廊")
 	await _room_ready("Corridor")
+	_check(not _room.get_node("Investigation/AccidentPoint").visible, "The west stair investigation waits for the rescheduled handover.")
+	_check(not _room.get_node("Investigation/NightPatrolPoint").visible, "Night patrol cannot start on an early visit.")
 	await _enter_back_yard()
 	await _interact_at(Vector2(730, 346), "检查器材门")
 	_check(current_scene == _room and not _chapter_two.can_revisit_102(), "Thursday's authorization does not unlock the Friday revisit by itself.")
@@ -364,29 +366,98 @@ func _play_chapter_two() -> void:
 	await _capture("17-chapter-two-file-pocket")
 	_close()
 	await _settle()
+	_check(not _chapter_two.can_submit_reasoning(), "The photographer still needs to confirm the circumstances.")
+	await _interact_at(Vector2(570, 360), "请邵宁联系发图人")
+	_check(_hud.header.text == "发图人的证词" and _chapter_two.can_submit_reasoning(), "Shao Ning helps confirm when and why the photo was posted.")
+	_close()
+	await _settle()
 	await _interact_at(Vector2(350, 360), "提交原页判断")
 	var reasoning: Control = _hud.presentation_slot.get_node("Reasoning")
 	var submit := reasoning.get_node("Submit") as Button
-	_check(submit.disabled, "Both the order and location are required.")
+	_check(submit.disabled and reasoning.find_child("VisitorFilePocket", true, false) != null, "The form presents the three originals and requires both selections.")
 	_tap_button(_choice(reasoning, _chapter_two.ORDER_CHOICES[1]))
-	_tap_button(_choice(reasoning, _chapter_two.LOCATION_CHOICES[0]))
+	_tap_button(_choice(reasoning, _chapter_two.PAGE_CHOICES[0]))
 	_tap_button(submit)
 	await _settle()
-	_check(not _chapter_two.has_finding() and _hud.header.text == "核对周四原页", "A wrong location stays open for review.")
+	_check(not _chapter_two.has_finding() and _hud.header.text == "核对周四原页", "A wrong page stays open for review.")
 	await _check_card("page reasoning")
 	await _capture("18-chapter-two-review")
 	_close()
 	await _settle()
-	await _reread("待复核 · 原页去向", "比一比原图与内袋页角")
+	await _reread("待复核 · 原页比对", "比一比原图与内袋页角")
 	await _reread("登记夹与内袋", "含联系方式的原页用完请收入前台内袋")
 	await _interact_at(Vector2(350, 360), "提交原页判断")
-	_tap_button(_choice(reasoning, _chapter_two.LOCATION_CHOICES[1]))
+	_tap_button(_choice(reasoning, _chapter_two.PAGE_CHOICES[1]))
 	_tap_button(submit)
 	await _settle()
 	_check(_hud.header.text == "原页去向已核对" and _chapter_two.has_finding(), "The correct comparison records the first finding.")
 	_close()
 	await _settle()
 	await _reread("原页去向已核对", "日期和月牙污渍相符")
+
+	await _interact_at(Vector2(570, 360), "向邵宁确认收页")
+	_check(_hud.header.text == "邵宁确认收页" and _log.has_entry(_chapter_two.PHOTO.id), "The complete photo is still available until the player archives the excerpt.")
+	_close()
+	await _settle()
+	await _interact_at(Vector2(793, 344), "前往走廊")
+	await _room_ready("Corridor")
+	await _interact_at(Vector2(161, 344), "返回前台")
+	await _room_ready("FrontDesk")
+	await _interact_at(Vector2(570, 360), "向邵宁确认收页")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "16:46 群聊照片局部留档", "Archiving the cropped detail shows the replacement evidence.")
+	_check(_chapter_two.has_withdrawn_photo() and _chapter_two.can_revisit_102(), "Withdrawing the larger photos keeps the evidence path open.")
+	_check(not _log.has_entry(_chapter_two.PHOTO.id) and not _log.has_entry(_chapter_two.FORWARDED_CROP.id), "The original and forwarded crop are withdrawn from the notebook.")
+	await _check_card("photo excerpt")
+	await _capture("19-chapter-two-excerpt")
+	_close()
+	await _settle()
+	await _reread("16:46 群聊照片局部留档", "日期、白杯和带月牙污渍的纸角")
+	await _interact_at(Vector2(257, 351), "查看16:46 群聊照片局部留档")
+	_check(not _hud.evidence_action_button.visible and not _log.has_entry(_chapter_two.PHOTO.id), "The counter phone opens the excerpt without a path to restore the withdrawn photo.")
+	_close()
+	await _settle()
+
+	await _interact_at(Vector2(655, 345), "查看102 原地复核改签")
+	_check(_hud.description.text.contains("19:10") and _hud.description.text.contains("19:30"), "The notice records both times and the new location.")
+	await _check_card("revised handover")
+	await _capture("20-chapter-two-handover")
+	_close()
+	await _settle()
+	var watch_pickup := "--watch-pickup" in OS.get_cmdline_user_args()
+	if watch_pickup:
+		await _interact_at(Vector2(715, 352), "问周闻收了什么")
+		_check(_log.has_entry(_chapter_two.SPRING_LEDGER.id) and not _room.get_node("Scenery/RecycleBasket/SpringLedger").visible, "Seeing the optional pickup records it and removes the book from the basket.")
+		_close()
+		await _settle()
+	await _interact_at(Vector2(793, 344), "前往走廊")
+	await _room_ready("Corridor")
+	_check(not _room.get_node("Investigation/NightPatrolPoint").visible, "Night patrol waits for the accident photograph.")
+	await _interact_at(Vector2(350, 346), "拍下旧事故说明")
+	_check(_hud.header.text == "西梯旧事故说明照片" and _hud.description.text.contains("事发前未收到"), "The west stair notice is preserved for a later comparison.")
+	await _check_card("old accident notice")
+	await _capture("21-chapter-two-accident")
+	_close()
+	await _settle()
+	await _interact_at(Vector2(610, 352), "查看韩素夜巡")
+	_check(_hud.header.text == "周五 21:10 · 韩素巡楼" and _hud.preview_container.visible, "The door window shows the night patrol.")
+	await _check_card("night patrol")
+	await _capture("22-chapter-two-night-patrol")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_chapter_two.is_complete() and not _chapter_two.can_revisit_102(), "Reading Han Su's message ends the Friday investigation and locks the supply door.")
+	_check(_log.has_entry(_chapter_two.SPRING_LEDGER.id) == watch_pickup, "The optional spring ledger clue is tracked independently of chapter completion.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "第二章完 · 少掉的一页" and _hud.description.text.contains("雨棚下的人"), "The ending points to Chapter Three.")
+	await _capture("23-chapter-two-ending")
+	_close()
+	await _settle()
+	await _reread("韩素的 21:10 夜巡消息", "今天两边门我都锁了")
+	await _reread("西梯旧事故说明照片", "落款：周闻")
+	await _reread("102 原地复核改签", "A01 保持开箱")
+	await _reread("16:46 群聊照片局部留档", "邵宁确认")
 
 
 func _return_to_front_desk() -> void:
@@ -528,8 +599,13 @@ func _check_card(context: String) -> void:
 func _capture(label: String) -> void:
 	if not "--capture" in OS.get_cmdline_user_args():
 		return
-	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://../.test-runtime/" + label + ".png")
+	await process_frame
+	RenderingServer.force_draw(false)
+	var screenshot := root.get_texture().get_image()
+	_check(screenshot != null, "Rendered screenshot: " + label)
+	if screenshot != null:
+		var output := "res://../.test-runtime/" + label + ".png"
+		_check(screenshot.save_png(output) == OK, "Saved screenshot: " + label)
 
 
 func _close() -> void:

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/handover_board_notice.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"handover_notice"
+title = "102 原地复核改签"
+description = "划除：周六 19:10，送办公室复核。\n改为：周六 19:30，102 原地复核。何青先在前台等访客核对登记。\n\n韩素开门并照看室内物品，周闻在场分类，A01 保持开箱。何青到场核对箱卡和册数后封箱，旧教具另装。"
+preview = ExtResource("2")
+preview_scale = 1.0

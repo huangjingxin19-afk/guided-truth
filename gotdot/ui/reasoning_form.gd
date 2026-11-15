@@ -4,6 +4,7 @@ signal submitted(first_answer: int, second_answer: int)
 
 @export var first_question: String
 @export var second_question: String
+@export var second_choice_preview: PackedScene
 
 var _first_group := ButtonGroup.new()
 var _second_group := ButtonGroup.new()
@@ -17,7 +18,7 @@ func setup(first_choices: Array, second_choices: Array) -> void:
 	questions.add_theme_constant_override("separation", 16)
 	add_child(questions)
 	_add_question(questions, first_question, first_choices, _first_group)
-	_add_question(questions, second_question, second_choices, _second_group)
+	_add_question(questions, second_question, second_choices, _second_group, second_choice_preview)
 
 	_feedback = Label.new()
 	_feedback.custom_minimum_size = Vector2(528, 28)
@@ -37,7 +38,9 @@ func setup(first_choices: Array, second_choices: Array) -> void:
 	clear_feedback()
 
 
-func _add_question(parent: HBoxContainer, title: String, choices: Array, group: ButtonGroup) -> void:
+func _add_question(
+	parent: HBoxContainer, title: String, choices: Array, group: ButtonGroup, preview: PackedScene = null
+) -> void:
 	var column := VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_theme_constant_override("separation", 8)
@@ -46,6 +49,19 @@ func _add_question(parent: HBoxContainer, title: String, choices: Array, group: 
 	question.text = title
 	question.add_theme_font_size_override("font_size", 20)
 	column.add_child(question)
+	var options: BoxContainer = column
+	if preview != null:
+		var panel := Control.new()
+		panel.custom_minimum_size = Vector2(300, 106)
+		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		column.add_child(panel)
+		var illustration := preview.instantiate() as Node2D
+		illustration.position = panel.custom_minimum_size * 0.5
+		illustration.scale = Vector2.ONE * 0.92
+		panel.add_child(illustration)
+		options = HBoxContainer.new()
+		options.add_theme_constant_override("separation", 4)
+		column.add_child(options)
 	for index in choices.size():
 		var button := Button.new()
 		button.text = choices[index]
@@ -53,11 +69,12 @@ func _add_question(parent: HBoxContainer, title: String, choices: Array, group: 
 		button.toggle_mode = true
 		button.button_group = group
 		button.custom_minimum_size.y = 52
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.add_theme_font_size_override("font_size", 18)
 		button.add_theme_color_override("font_pressed_color", Color(1.0, 0.8, 0.46))
 		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		button.pressed.connect(_update_submit)
-		column.add_child(button)
+		options.add_child(button)
 
 
 func _update_submit() -> void:

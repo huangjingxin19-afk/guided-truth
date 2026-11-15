@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"visitor_photographer_call"
+title = "发图人的证词"
+description = "林禾：「你领展板的时候，前台是不是有只白杯子压着张纸？」\n\n志愿者：「有。我只拍了板子，拍完就发了。等一下……我看到了，我把那半边裁掉重发。」"

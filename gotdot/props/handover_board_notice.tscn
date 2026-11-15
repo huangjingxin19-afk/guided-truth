@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[node name="HandoverBoardNotice" type="Node2D"]
+
+[node name="Board" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-153, -53, 153, -53, 153, 53, -153, 53)
+color = Color(0.43, 0.32, 0.22, 1)
+
+[node name="Paper" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-135, -42, 135, -42, 135, 43, -135, 43)
+color = Color(0.88, 0.81, 0.63, 1)
+
+[node name="OldPlan" type="Label" parent="."]
+offset_left = -118.0
+offset_top = -35.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.31, 0.24, 0.21, 1)
+theme_override_font_sizes/font_size = 19
+text = "19:10  送办公室复核"
+
+[node name="Strike" type="Line2D" parent="."]
+points = PackedVector2Array(-120, -17, 101, -22)
+width = 3.0
+default_color = Color(0.56, 0.22, 0.17, 1)
+
+[node name="NewPlan" type="Label" parent="."]
+offset_left = -118.0
+offset_top = 4.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.23, 0.33, 0.31, 1)
+theme_override_font_sizes/font_size = 20
+text = "19:30  102 原地复核"
