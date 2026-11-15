@@ -23,15 +23,13 @@ func _run() -> void:
 	_two = root.get_node("ChapterTwo")
 	_three = root.get_node("ChapterThree")
 	_transition = root.get_node("RoomTransition")
-	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
-	await _settle()
-	if current_scene == null or not current_scene.has_node("InvestigationHud"):
-		push_error("The game did not launch into an investigation room.")
+	var args := OS.get_cmdline_user_args()
+	var phase := args[0] if args.size() == 1 else ""
+	if not await _enter_from_menu(phase):
 		quit(1)
 		return
 
-	var args := OS.get_cmdline_user_args()
-	match args[0] if args.size() == 1 else "":
+	match phase:
 		"first":
 			await _save_first_chapter()
 		"second":
@@ -43,8 +41,15 @@ func _run() -> void:
 			_damage_save("user://investigation.json")
 		"backup":
 			_check_third_chapter("Room102")
-			_check(current_scene.get_node("InvestigationHud").header.text == "存档提示", "The player is told that a backup was loaded.")
-			_transition.start_new_game()
+			var hud := current_scene.get_node("InvestigationHud")
+			_tap(hud.get_node("PauseButton"))
+			await _settle()
+			_tap(hud.get_node("PauseMenu/%ReturnButton"))
+			await _settle()
+			_check(current_scene.name == &"MainMenu" and not paused, "Return opens the active main menu.")
+			_tap(current_scene.get_node("%NewGameButton"))
+			await _settle()
+			_tap(current_scene.get_node("%ConfirmButton"))
 			await _settle()
 			_check_fresh_game()
 			_check(not FileAccess.file_exists("user://investigation.bak"), "Restart removes the previous game's backup.")
@@ -54,15 +59,41 @@ func _run() -> void:
 			_damage_save("user://investigation.bak")
 		"damaged":
 			_check_fresh_game()
-			_check(current_scene.get_node("InvestigationHud").header.text == "存档提示", "Unreadable saves show a notice.")
-			_one.accept_commission()
-			await _settle()
-			_check(FileAccess.get_file_as_string("user://investigation.json") == "{interrupted",
-				"An unreadable save is preserved until the player confirms a restart.")
+			_check(JSON.parse_string(FileAccess.get_file_as_string("user://investigation.json")) is Dictionary,
+				"An explicit overwrite replaces the unreadable file with a playable save.")
 		_:
 			_check(false, "Expected one phase: first, second, third, resume, backup, reset, damaged.")
 	print("Autosave failures: ", _failures)
 	quit(int(_failures > 0))
+
+
+func _enter_from_menu(phase: String) -> bool:
+	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
+	await _settle()
+	var menu := current_scene
+	if menu == null or menu.name != &"MainMenu":
+		_check(false, "The game launches into the main menu.")
+		return false
+	var can_continue := phase not in ["first", "damaged"]
+	var continue_button := menu.get_node("%ContinueButton") as Button
+	_check(continue_button.visible == can_continue, "Continue appears only for a playable save.")
+	if phase == "first":
+		_check(not FileAccess.file_exists("user://investigation.json"), "Opening the menu does not start an autosave.")
+	if phase == "backup":
+		_check(menu.get_node("%Notice").text.contains("上一份可用存档"), "The menu identifies backup recovery.")
+	if phase == "damaged":
+		_check(menu.get_node("%Notice").text.contains("未能读取存档"), "The menu identifies unreadable data.")
+	var button := continue_button if can_continue else menu.get_node("%NewGameButton") as Button
+	_tap(button)
+	await _settle()
+	if phase == "damaged":
+		_check(current_scene == menu and FileAccess.get_file_as_string("user://investigation.json") == "{interrupted",
+			"An unreadable save is preserved until the player confirms overwriting it.")
+		_tap(menu.get_node("%ConfirmButton"))
+		await _settle()
+	var entered := current_scene != null and current_scene.has_node("InvestigationHud")
+	_check(entered, "The main menu starts an investigation.")
+	return entered
 
 
 func _save_first_chapter() -> void:
@@ -77,6 +108,31 @@ func _save_first_chapter() -> void:
 	_one.finish_reenactment_step()
 	await _settle()
 	_check(FileAccess.file_exists("user://investigation.json"), "A completed step creates the autosave.")
+	var hud := current_scene.get_node("InvestigationHud")
+	_tap(hud.get_node("PauseButton"))
+	await _settle()
+	var pause_menu := hud.get_node("PauseMenu")
+	var save_button := pause_menu.get_node("%SaveButton") as Button
+	var status := pause_menu.get_node("%Status") as Label
+	var temporary := "user://investigation.json.tmp"
+	_check(DirAccess.make_dir_absolute(temporary) == OK, "Simulate a storage write failure.")
+	_tap(save_button)
+	await _settle()
+	_check(status.text.contains("保存失败") and paused, "A failed manual save is reported while paused.")
+	_tap(pause_menu.get_node("%ReturnButton"))
+	await _settle()
+	_check(current_scene.name == &"Room102" and paused, "A failed save leaves the player in the room.")
+	_check(DirAccess.remove_absolute(temporary) == OK, "Restore access to save storage.")
+	_tap(save_button)
+	await _settle()
+	_check(status.text.begins_with("已保存"), "Manual save reports success after writing.")
+	_tap(pause_menu.get_node("%ReturnButton"))
+	await _settle()
+	_check(current_scene.name == &"MainMenu" and not paused, "A saved investigation returns to the menu.")
+	_tap(current_scene.get_node("%ContinueButton"))
+	await _settle()
+	_check(current_scene.name == &"Room102" and _one.reenactment_stage == _one.ReenactmentStage.SECOND_PASS,
+		"Continuing in the same application restores the saved investigation.")
 
 
 func _resume_first_and_save_second() -> void:
@@ -145,6 +201,15 @@ func _damage_save(path: String) -> void:
 	if file != null:
 		file.store_string("{interrupted")
 		file.close()
+
+
+func _tap(button: Button) -> void:
+	var position := button.get_global_transform_with_canvas() * (button.size * 0.5)
+	for pressed in [true, false]:
+		var touch := InputEventScreenTouch.new()
+		touch.position = position
+		touch.pressed = pressed
+		root.push_input(touch, true)
 
 
 func _settle() -> void:

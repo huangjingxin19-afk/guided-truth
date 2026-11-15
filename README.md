@@ -4,17 +4,17 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 
 ## 当前试玩路线
 
-安卓导出目标为 `investigation-autosave-1.0.15.apk`（版本号 16，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
+安卓导出目标为 `investigation-menu-1.0.16.apk`（版本号 17，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
 
 ### 第一章《上锁的教室》
 
-1. 打开游戏，从前台走到何青面前的柜台边。手机用左下角摇杆移动，电脑点击地面移动。
+1. 在主菜单选「开始新游戏」，从前台走到何青面前的柜台边。手机用左下角摇杆移动，电脑点击地面移动。
 2. 点右下角“领取委托”（电脑也可按 E）。笔记同时登记“102 调查委托”和“器材交接便笺”。点“展开周闻的便笺”可读完整原文，也可关闭后从笔记回看。
 3. 靠近右侧走廊入口，用交互键“前往走廊”。首次到达时故事时间从周四 18:35 推进至 18:40。先打开笔记，确认委托、便笺都仍在。
 4. 走到 102 正门前查看封条。正门保持上锁。去走廊右侧选“经外廊去后院”，也可以先到后院再回来补查。
 5. 在后院雨棚找推车旁的韩素，查看何青签过的后门授权。查看推车上的随车单，核对谁在什么时候领回了什么。两份证物都能从笔记回看。
 6. 韩素同意后，靠近雨棚右侧门口，选“从器材门进 102”。在室内查轮痕，找韩素看第一次过槛，再查脚垫并点“装回脚垫”。找韩素“再推一次”，在笔记里回看“推车复走”。
-7. 可以随时关闭笔记或证物页，从器材门原路返回补查。可在装好脚垫后走回走廊，再进 102 继续第二次过槛。笔记中的“重新开始”经确认后会清空本局并回到前台。
+7. 可以随时关闭笔记或证物页，从器材门原路返回补查。可在装好脚垫后走回走廊，再进 102 继续第二次过槛。
 
 8. 核对封条、后门授权、随车单和推车复走后，靠近 102 右侧的何青，选「向何青提交推理」。两题各选一项。若需要复核，可关闭推理页，打开笔记或回现场补查，再找何青提交。
 9. 推理通过后，从长桌右端绕到下层抽屉前，查看报修册和散页，再装入 A01。走到箱边拍清点照片，找桌后的周闻签字。笔记可回看白色补线和签过「已阅」的清点单。
@@ -44,7 +44,9 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 
 详见[第三章开发计划](./第三章-开发计划.md)。两个观察近景共用一套占位人物和道具。
 
-登记线索、完成剧情步骤或换房后会自动存档。关闭应用再打开，会从上次房间的入口继续，保留笔记和剧情进度。笔记中的「重新开始」经确认后会重置存档。
+登记线索、完成剧情步骤或换房后会自动存档。点右上角「暂停」，或在电脑按 Esc，打开暂停菜单后可以继续游戏、立即保存或保存并返回主菜单。Android 返回键和 Esc 会先关闭当前可关闭的笔记、证物或推理页。演出可以暂停并从原处继续。
+
+「继续调查」从上次存档的房间入口恢复，保留笔记和剧情进度。手动保存和自动保存共用同一份进度。已有存档时，主菜单的「开始新游戏」需要确认覆盖。
 
 安卓测试包直接覆盖安装即可保留存档，包名和签名须相同，版本号须递增。卸载或清除应用数据会删除本地存档。自动存档从 1.0.14 开始记录。
 
@@ -54,19 +56,21 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 
 ```powershell
 godot --editor --path gotdot
-godot --headless --path gotdot --script ../tests/chapter_one_route.gd
 godot --headless --path gotdot --script ../tests/room_102_inspection.gd
 godot --headless --path gotdot --script ../tests/room_102_reenactment.gd
-godot --headless --path gotdot --export-debug Android ../investigation-autosave-1.0.15.apk
+godot --headless --path gotdot --export-debug Android ../investigation-menu-1.0.16.apk
 ```
 
 导出使用编辑器中已配置的 JDK、Android SDK、同版本安卓模板和调试签名。不要提交签名文件或密码。
 
-`chapter_one_route.gd` 从新游戏开始，通过地面移动、触控按钮和 E 键验证前两章结案及第三章站位判断。覆盖错误重试、夜巡结尾重进、提前到后院补查、笔记双图对照、放大与返回，以及重开。默认跳过春册线索并重开第二章结尾，加 `-- --watch-pickup` 验证目击周闻收春册并直接进入第三章的路线。加 `-- --capture` 可在图形模式下保存关键页面到 `.test-runtime/`（先创建此目录）。
+`chapter_one_route.gd` 从主菜单开始，通过地面移动、触控按钮和 E 键验证前两章结案及第三章站位判断。覆盖错误重试、夜巡结尾重进、提前到后院补查、笔记双图对照、放大与返回，以及在主菜单确认或取消重开。默认跳过春册线索并重开第二章结尾，加 `-- --watch-pickup` 验证目击周闻收春册并直接进入第三章的路线。加 `-- --capture` 可在图形模式下保存关键页面到 `.test-runtime/`（先创建此目录）。
 
-`autosave.gd` 用独立进程验证三章续玩、备份恢复和重新开始。在专用于测试的 PowerShell 窗口中运行以下命令，让每次测试使用 `.test-runtime` 中新建的数据目录。
+`autosave.gd` 用独立进程验证三章续玩、备份恢复、手动保存失败与重试，以及覆盖旧档。在专用于测试的 PowerShell 窗口中运行以下命令，为两个测试分别使用新的数据目录。
 
 ```powershell
+$env:APPDATA = (New-Item -ItemType Directory -Force ".test-runtime/route-$([guid]::NewGuid())").FullName
+godot --headless --path gotdot --script ../tests/chapter_one_route.gd
+
 $env:APPDATA = (New-Item -ItemType Directory -Force ".test-runtime/autosave-$([guid]::NewGuid())").FullName
 foreach ($phase in 'first','second','third','resume','backup','reset','damaged') {
     godot --headless --path gotdot --script ../tests/autosave.gd -- $phase
@@ -77,7 +81,7 @@ foreach ($phase in 'first','second','third','resume','backup','reset','damaged')
 102 的共用交互与复走也可通过直接运行 `gotdot/rooms/room_102.tscn` 单独验证。
 
 1.0.8 的后院路线、1.0.9 的摇杆版和 1.0.11 的第二章首段已通过手机试玩。1.0.12 的完整第二章路线已于 2026-11-15 通过手机试玩。
-1.0.13 的第三章首段待手机验收。覆盖安装存档用 1.0.14 先玩出进度，再直接安装 1.0.15，检查是否能继续。
+1.0.13 的第三章首段待手机验收。用 1.0.14 或 1.0.15 玩出进度再覆盖安装 1.0.16，从主菜单点「继续调查」，检查房间、笔记和剧情。试玩时也可在推车演出中暂停和继续，并试一次手动保存后返回主菜单。
 
 ## 本次结构
 
@@ -85,7 +89,8 @@ foreach ($phase in 'first','second','third','resume','backup','reset','damaged')
 - `chapters/chapter_two.gd` 根据已登记的线索推进第二章并管理故事时间。前台、走廊和 102 复用调查点、笔记和换房，两个章节共用推理表单。
 - `chapters/chapter_three.gd` 根据周六的委托和现场记录解锁开门、两处观察及站位判断。笔记使用共用 HUD 展示两张近景。
 - `rooms/room_transition.gd` 统一切场与新游戏重置。器材门由后院依据授权证物决定是否允许通行。
-- `save/save_game.gd` 在同一次操作结束后统一保存章节、证物和房间入口。启动时先恢复进度，由原房间逻辑还原可交互内容。存档采用本地 JSON 文件和上一份备份。[Godot 官方存读档示例](https://github.com/godotengine/godot-demo-projects/blob/master/loading/serialization/save_load_json.gd)
+- `save/save_game.gd` 在同一次操作结束后统一保存章节、证物和房间入口。选择继续调查时先恢复进度，由原房间逻辑还原可交互内容。存档采用本地 JSON 文件和上一份备份。[Godot 官方存读档示例](https://github.com/godotengine/godot-demo-projects/blob/master/loading/serialization/save_load_json.gd)
+- `ui/main_menu.tscn` 预留 `BackgroundArt` 和 `TitleArt`。主菜单、暂停和调查 HUD 共用 `ui/investigation_theme.tres`，可在场景和主题中接入正式素材。[Godot 官方暂停菜单示例](https://github.com/godotengine/godot-demo-projects/blob/master/2d/platformer/gui/pause_menu.gd)
 - `rooms/investigation_room.tscn` 提供共用移动、调查与 HUD。前台、走廊和雨棚继承后配置本地场景和交互。
 - `investigation/*.tres` 保存证物文本和预览。韩素的占位外观由雨棚和 102 共用。
 

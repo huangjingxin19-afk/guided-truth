@@ -2,64 +2,8 @@
 
 [ext_resource type="Script" path="res://ui/investigation_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://ui/touch_joystick.gd" id="2_joystick"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
-content_margin_left = 16.0
-content_margin_top = 6.0
-content_margin_right = 16.0
-content_margin_bottom = 6.0
-bg_color = Color(0.22, 0.28, 0.27, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
-content_margin_left = 16.0
-content_margin_top = 6.0
-content_margin_right = 16.0
-content_margin_bottom = 6.0
-bg_color = Color(0.28, 0.37, 0.34, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
-content_margin_left = 16.0
-content_margin_top = 6.0
-content_margin_right = 16.0
-content_margin_bottom = 6.0
-bg_color = Color(0.16, 0.23, 0.22, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="Theme" id="Theme_investigation"]
-default_font_size = 22
-Button/colors/font_color = Color(0.94, 0.88, 0.75, 1)
-Button/colors/font_hover_color = Color(1, 0.96, 0.86, 1)
-Button/styles/hover = SubResource("StyleBoxFlat_button_hover")
-Button/styles/normal = SubResource("StyleBoxFlat_button")
-Button/styles/pressed = SubResource("StyleBoxFlat_button_pressed")
-Label/colors/font_color = Color(0.94, 0.88, 0.75, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-content_margin_left = 28.0
-content_margin_top = 22.0
-content_margin_right = 28.0
-content_margin_bottom = 24.0
-bg_color = Color(0.12, 0.15, 0.15, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.4, 0.4, 0.33, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[ext_resource type="Theme" path="res://ui/investigation_theme.tres" id="3_theme"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="4_pause"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_preview"]
 bg_color = Color(0.45, 0.36, 0.28, 1)
@@ -79,7 +23,7 @@ offset_top = 22.0
 offset_right = -96.0
 offset_bottom = 70.0
 mouse_default_cursor_shape = 2
-theme = SubResource("Theme_investigation")
+theme = ExtResource("3_theme")
 text = "笔记"
 
 [node name="TouchJoystick" type="Control" parent="."]
@@ -105,14 +49,14 @@ offset_bottom = -40.0
 grow_horizontal = 0
 focus_mode = 0
 mouse_default_cursor_shape = 2
-theme = SubResource("Theme_investigation")
+theme = ExtResource("3_theme")
 action_mode = 0
 
 [node name="Overlay" type="ColorRect" parent="."]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = SubResource("Theme_investigation")
+theme = ExtResource("3_theme")
 color = Color(0.04, 0.05, 0.05, 0.73)
 
 [node name="Card" type="PanelContainer" parent="Overlay"]
@@ -125,7 +69,6 @@ offset_top = -192.0
 offset_right = 300.0
 offset_bottom = 192.0
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="Content" type="VBoxContainer" parent="Overlay/Card"]
 layout_mode = 2
@@ -204,7 +147,23 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
+[node name="PauseButton" type="Button" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -88.0
+offset_top = 22.0
+offset_right = -20.0
+offset_bottom = 70.0
+mouse_default_cursor_shape = 2
+theme = ExtResource("3_theme")
+text = "暂停"
+
+[node name="PauseMenu" parent="." instance=ExtResource("4_pause")]
+visible = false
+
 [connection signal="pressed" from="NotebookButton" to="." method="_on_notebook_pressed"]
+[connection signal="pressed" from="PauseButton" to="." method="_on_back_requested"]
+[connection signal="back_requested" from="PauseMenu" to="." method="_on_back_requested"]
 [connection signal="pressed" from="InteractionButton" to="." method="_on_interaction_pressed"]
 [connection signal="pressed" from="Overlay/Card/Content/HeaderRow/CloseButton" to="." method="_on_close_pressed"]
 [connection signal="pressed" from="Overlay/Card/Content/Evidence/EvidenceAction" to="." method="_on_evidence_action_pressed"]

@@ -1,7 +1,6 @@
 extends SceneTree
 
 const ThresholdReenactment = preload("res://rooms/room_102_threshold_reenactment.gd")
-const InvestigationHud = preload("res://ui/investigation_hud.gd")
 const REENACTMENT_ID := &"room102_cart_reenactment"
 
 var _failures := 0
@@ -15,7 +14,7 @@ func _run() -> void:
 	var room := (load("res://rooms/room_102.tscn") as PackedScene).instantiate()
 	root.add_child(room)
 	var player := room.get_node("WalkableFloor/DepthSort/LinHe") as CharacterBody2D
-	var hud := room.get_node("InvestigationHud") as InvestigationHud
+	var hud := room.get_node("InvestigationHud") as CanvasLayer
 	var reenactment := room.get_node("ThresholdReenactment") as ThresholdReenactment
 	var animation := reenactment.get_node("AnimationPlayer") as AnimationPlayer
 	var wheel := reenactment.get_node("WheelImpact") as AudioStreamPlayer
@@ -33,7 +32,8 @@ func _run() -> void:
 	player.global_position = Vector2(503, 280)
 	await _inspect(foot_pad_point)
 	_check(hud.is_open() and not hud.evidence_action_button.visible, "Early inspection cannot install the pad.")
-	_tap_button(hud.close_button)
+	_press_escape()
+	_check(not hud.is_open() and not paused, "Escape closes an open evidence page before pausing.")
 
 	wheel.stream = _temporary_stream()
 	scrape.stream = _temporary_stream()
@@ -43,6 +43,14 @@ func _run() -> void:
 	await _inspect(hud.interaction_button)
 	_check(hud.header.text == "第一次过门槛" and not hud.close_button.visible, "First pass opens a locked presentation.")
 	_check(_entry_count(log) == 0 and not pad.visible and not scratch.visible, "First pass starts with a bare leg and no scratch.")
+	_tap_button(hud.get_node("PauseButton"))
+	var animation_position := animation.current_animation_position
+	await create_timer(0.12).timeout
+	_check(paused and not animation.can_process() and is_equal_approx(animation.current_animation_position, animation_position),
+		"Pausing freezes the moving cart and the animation clock.")
+	hud.get_node("PauseMenu").notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	_check(not paused and animation.can_process() and hud.overlay.visible,
+		"Android Back resumes the same reenactment.")
 	await _advance(animation, 0.73)
 	_check(wheel.playing and not scrape.playing, "First front wheel plays the impact only.")
 	wheel.stop()
@@ -139,6 +147,14 @@ func _wait_for_input() -> void:
 	await physics_frame
 	await physics_frame
 	await process_frame
+
+
+func _press_escape() -> void:
+	for pressed in [true, false]:
+		var key := InputEventKey.new()
+		key.keycode = KEY_ESCAPE
+		key.pressed = pressed
+		root.push_input(key, true)
 
 
 func _tap_button(button: Button) -> void:

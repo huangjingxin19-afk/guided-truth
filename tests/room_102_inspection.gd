@@ -3,11 +3,10 @@ extends SceneTree
 const ROOM_PATH := "res://rooms/room_102.tscn"
 const FOOT_PAD_TOUCH := Vector2(551, 251)
 const TRACKS_TOUCH := Vector2(627, 277)
-const InvestigationHud = preload("res://ui/investigation_hud.gd")
 
 var _failures := 0
 var _player: CharacterBody2D
-var _hud: InvestigationHud
+var _hud: CanvasLayer
 
 
 func _initialize() -> void:
@@ -71,7 +70,7 @@ func _run() -> void:
 
 
 func _expect_contextual_interaction() -> void:
-	var action := _hud.interaction_button
+	var action: Button = _hud.interaction_button
 	_player.global_position = Vector2(307, 439)
 	await _wait_for_inspection()
 	_check(not action.visible, "No operation is shown far from clues.")

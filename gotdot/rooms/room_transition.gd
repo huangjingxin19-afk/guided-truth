@@ -4,7 +4,7 @@ extends Node
 const FRONT_DESK := "res://rooms/front_desk.tscn"
 const CORRIDOR := "res://rooms/corridor.tscn"
 
-signal room_entered(scene_path: String, entrance: StringName, new_game: bool)
+signal room_entered(scene_path: String, entrance: StringName)
 
 var is_changing := false
 
@@ -13,8 +13,8 @@ func change_room(scene_path: String, entrance: StringName) -> void:
 	_request_room_change(scene_path, entrance)
 
 
-func start_new_game() -> void:
-	_request_room_change(FRONT_DESK, &"Start", _reset_investigation, true)
+func start_new_game() -> bool:
+	return restore_room(FRONT_DESK, &"Start", _reset_investigation)
 
 
 func start_chapter_two() -> void:
@@ -31,17 +31,17 @@ func restore_room(scene_path: String, entrance: StringName, restore_progress: Ca
 	if is_changing:
 		return false
 	is_changing = true
-	return _change_room(scene_path, entrance, restore_progress, false)
+	return _change_room(scene_path, entrance, restore_progress)
 
 
-func _request_room_change(scene_path: String, entrance: StringName, on_enter := Callable(), new_game := false) -> void:
+func _request_room_change(scene_path: String, entrance: StringName, on_enter := Callable()) -> void:
 	if is_changing:
 		return
 	is_changing = true
-	_change_room.call_deferred(scene_path, entrance, on_enter, new_game)
+	_change_room.call_deferred(scene_path, entrance, on_enter)
 
 
-func _change_room(scene_path: String, entrance: StringName, on_enter: Callable, new_game: bool) -> bool:
+func _change_room(scene_path: String, entrance: StringName, on_enter: Callable) -> bool:
 	var scene := load(scene_path) as PackedScene
 	if scene == null:
 		push_error("Cannot load room: " + scene_path)
@@ -66,7 +66,7 @@ func _change_room(scene_path: String, entrance: StringName, on_enter: Callable, 
 	get_tree().current_scene = room
 	player.global_position = marker.global_position
 	is_changing = false
-	room_entered.emit(scene_path, entrance, new_game)
+	room_entered.emit(scene_path, entrance)
 	return true
 
 

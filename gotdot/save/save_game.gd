@@ -13,7 +13,6 @@ const ROOMS := {
 }
 
 var _session_open := false
-var _write_blocked := false
 var _save_queued := false
 var _reset_pending := false
 var _room := ""
@@ -30,61 +29,94 @@ func _ready() -> void:
 	RoomTransition.room_entered.connect(_on_room_entered)
 
 
-func open_session() -> String:
-	if _session_open:
-		return ""
+func checkpoint_status() -> Dictionary:
+	var loaded := _read_checkpoint()
+	var can_continue := loaded.has("state")
+	var has_save := FileAccess.file_exists(SAVE_PATH) or FileAccess.file_exists(BACKUP_PATH)
 	var notice := ""
-	var loaded := _read_save(SAVE_PATH)
-	if loaded.is_empty():
-		loaded = _read_save(BACKUP_PATH)
-		if loaded.has("state"):
-			notice = "已从上一份可用存档继续调查。"
-	if loaded.has("state") and _restore(loaded):
-		_last_saved_json = loaded.json
-	else:
-		_write_blocked = FileAccess.file_exists(SAVE_PATH) or FileAccess.file_exists(BACKUP_PATH)
-		if _write_blocked:
-			var reason := "此存档来自较新的游戏版本。" if loaded.has("newer") else "未能读取存档。"
-			notice = reason + "\n已保留原文件。如要建立新存档，请在笔记中确认「重新开始」。"
-		RoomTransition.restore_room(ROOMS.front_desk, &"Start", Callable())
+	if loaded.get("from_backup", false):
+		notice = "将从上一份可用存档继续调查。"
+	elif not can_continue and has_save:
+		notice = "此存档来自较新的游戏版本。" if loaded.has("newer") else "未能读取存档。"
+		notice += "原存档已保留。"
+	return {"can_continue": can_continue, "has_save": has_save, "notice": notice}
+
+
+func continue_game() -> bool:
+	var loaded := _read_checkpoint()
+	if _session_open or not loaded.has("state") or not _restore(loaded):
+		return false
+	_last_saved_json = loaded.json
 	_session_open = true
-	return notice
+	return true
+
+
+func start_new_game() -> bool:
+	if _session_open or not RoomTransition.start_new_game():
+		return false
+	_session_open = true
+	_reset_pending = true
+	_queue_save()
+	return true
+
+
+func close_session() -> void:
+	_session_open = false
+	_save_queued = false
+	_reset_pending = false
+	_room = ""
+	_entrance = ""
+	_last_saved_json = ""
+
+
+func is_session_open() -> bool:
+	return _session_open
+
+
+func save_now() -> Error:
+	return _save_progress(true)
 
 
 func _on_entry_recorded(_entry: EvidenceEntry) -> void:
 	_queue_save()
 
 
-func _on_room_entered(scene_path: String, entrance: StringName, new_game: bool) -> void:
+func _on_room_entered(scene_path: String, entrance: StringName) -> void:
 	var room_id: Variant = ROOMS.find_key(scene_path)
 	_room = "" if room_id == null else String(room_id)
 	_entrance = String(entrance)
-	if _session_open and new_game:
-		_write_blocked = false
-		_reset_pending = true
 	_queue_save()
 
 
 func _queue_save() -> void:
-	if _session_open and not _write_blocked and not _save_queued and not RoomTransition.is_changing:
+	if _session_open and not _save_queued and not RoomTransition.is_changing:
 		_save_queued = true
 		# A single interaction can update several entries and chapter flags.
 		_flush_save.call_deferred()
 
 
 func _flush_save() -> void:
+	if not _save_queued:
+		return
 	_save_queued = false
-	if _room.is_empty() or RoomTransition.is_changing:
-		return
+	var result := _save_progress(false)
+	if result != OK and result != ERR_BUSY:
+		push_warning("Could not save investigation progress: " + error_string(result))
+
+
+func _save_progress(force_write: bool) -> Error:
+	if not _session_open or _room.is_empty():
+		return ERR_UNAVAILABLE
+	if RoomTransition.is_changing:
+		return ERR_BUSY
 	var snapshot := JSON.stringify(_snapshot())
-	if not _reset_pending and snapshot == _last_saved_json:
-		return
+	if not force_write and not _reset_pending and snapshot == _last_saved_json:
+		return OK
 	var result := _write_checkpoint(snapshot)
 	if result == OK:
 		_last_saved_json = snapshot
 		_reset_pending = false
-	else:
-		push_warning("Could not save investigation progress: " + error_string(result))
+	return result
 
 
 func _snapshot() -> Dictionary:
@@ -110,6 +142,15 @@ func _snapshot() -> Dictionary:
 		"case": ChapterOne.CaseStage.keys()[ChapterOne.case_stage],
 		"evidence": evidence,
 	}
+
+
+func _read_checkpoint() -> Dictionary:
+	var loaded := _read_save(SAVE_PATH)
+	if loaded.is_empty():
+		loaded = _read_save(BACKUP_PATH)
+		if loaded.has("state"):
+			loaded.from_backup = true
+	return loaded
 
 
 func _read_save(path: String) -> Dictionary:
@@ -196,12 +237,11 @@ func _apply_progress(state: Dictionary, entries: Array[EvidenceEntry]) -> void:
 
 func _write_checkpoint(snapshot: String) -> Error:
 	if _reset_pending:
-		# After a successful restart, recovery must never bring back the previous game.
-		if FileAccess.file_exists(BACKUP_PATH):
-			var remove_result := DirAccess.remove_absolute(BACKUP_PATH)
-			if remove_result != OK:
-				return remove_result
-	elif not _last_saved_json.is_empty():
+		var result := _write_file(SAVE_PATH, snapshot)
+		if result == OK and FileAccess.file_exists(BACKUP_PATH):
+			return DirAccess.remove_absolute(BACKUP_PATH)
+		return result
+	if not _last_saved_json.is_empty() and snapshot != _last_saved_json:
 		var backup_result := _write_file(BACKUP_PATH, _last_saved_json)
 		if backup_result != OK:
 			return backup_result

@@ -3,15 +3,16 @@ extends CanvasLayer
 const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 const EvidenceComparison = preload("res://ui/evidence_comparison.gd")
 const TouchJoystick = preload("res://ui/touch_joystick.gd")
+const PauseMenu = preload("res://ui/pause_menu.gd")
 
 signal notebook_requested
 signal interaction_requested
-signal new_game_requested
 signal movement_changed(direction: Vector2, engaged: bool)
 signal overlay_changed(open: bool)
 
-@export var allow_new_game := false
 @onready var overlay: Control = $Overlay
+@onready var _pause_button: Button = $PauseButton
+@onready var _pause_menu: PauseMenu = $PauseMenu
 @onready var interaction_button: Button = $InteractionButton
 @onready var _joystick: TouchJoystick = $TouchJoystick
 @onready var header: Label = %Header
@@ -34,6 +35,8 @@ var _evidence_action := Callable()
 func _ready() -> void:
 	_joystick.movement_changed.connect(movement_changed.emit)
 	overlay.visibility_changed.connect(_on_overlay_visibility_changed)
+	close_button.visibility_changed.connect(_update_pause_button)
+	_pause_menu.visibility_changed.connect(_on_overlay_visibility_changed)
 	_on_overlay_visibility_changed()
 
 
@@ -45,10 +48,24 @@ func _on_overlay_visibility_changed() -> void:
 	var open := is_open()
 	overlay_changed.emit(open)
 	_joystick.visible = uses_touch_controls() and not open
+	_update_pause_button()
+
+
+func _update_pause_button() -> void:
+	_pause_button.visible = not _pause_menu.visible and (not overlay.visible or not close_button.visible)
 
 
 func is_open() -> bool:
-	return overlay.visible
+	return overlay.visible or _pause_menu.visible
+
+
+func _on_back_requested() -> void:
+	if _pause_menu.visible:
+		_pause_menu.resume()
+	elif overlay.visible and close_button.visible:
+		_on_close_pressed()
+	elif not RoomTransition.is_changing:
+		_pause_menu.open_menu()
 
 
 func set_interaction_prompt(label: String) -> void:
@@ -144,13 +161,6 @@ func show_notebook(entries: Array[EvidenceEntry], comparison_entries: Array[Evid
 		button.pressed.connect(show_evidence.bind(entry, true))
 		notebook_list.add_child(button)
 
-	if allow_new_game:
-		var restart := Button.new()
-		restart.text = "重新开始"
-		restart.custom_minimum_size.y = 52.0
-		restart.pressed.connect(_confirm_new_game)
-		notebook_list.add_child(restart)
-
 	_show_notebook_page()
 
 
@@ -175,13 +185,6 @@ func _enlarge_comparison_entry(entry: EvidenceEntry) -> void:
 	show_evidence(entry)
 	_return_action = _show_comparison
 	close_button.text = "返回对照"
-
-
-func _confirm_new_game() -> void:
-	var prompt := EvidenceEntry.new()
-	prompt.title = "重新开始调查？"
-	prompt.description = "会清空本次笔记和存档进度，回到前台。"
-	show_evidence(prompt, false, "确认重新开始", new_game_requested.emit)
 
 
 func _show_notebook_page() -> void:

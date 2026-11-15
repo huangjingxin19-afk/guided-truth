@@ -17,12 +17,19 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	if not OS.get_user_data_dir().replace("\\", "/").contains("/.test-runtime/"):
+		push_error("Use an isolated .test-runtime user data folder for the chapter route test.")
+		quit(1)
+		return
 	_log = root.get_node("InvestigationLog")
 	_chapter = root.get_node("ChapterOne")
 	_chapter_two = root.get_node("ChapterTwo")
 	_chapter_three = root.get_node("ChapterThree")
 	_transition = root.get_node("RoomTransition")
-	_transition.start_new_game()
+	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
+	await scene_changed
+	await _settle()
+	_tap_button(current_scene.get_node("%NewGameButton"))
 	await _room_ready("FrontDesk")
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted, "New game starts with an empty log and no commission.")
 	_check(_room.get_node("Investigation/CorridorExit").disabled, "Receive the commission before leaving the front desk.")
@@ -115,8 +122,7 @@ func _run() -> void:
 func _check_touchscreen_movement() -> void:
 	# Use Godot's built-in touch emulation to enter the same mode as the Android HUD.
 	Input.emulate_touch_from_mouse = true
-	_transition.start_new_game()
-	await _room_ready("FrontDesk")
+	await _restart()
 	var joystick := _hud.get_node("TouchJoystick") as Control
 	_check(joystick.visible and _room.get_node("WalkHint").text == "拖动左下角摇杆移动", "Touchscreen mode shows the joystick and its movement hint.")
 	var start := _player.global_position
@@ -137,6 +143,13 @@ func _check_touchscreen_movement() -> void:
 		await physics_frame
 		if _hud.interaction_button.visible:
 			break
+	_hud.get_node("PauseMenu").notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	_check(paused and not joystick.visible and not joystick.is_engaged(), "Opening the pause menu releases an active joystick.")
+	var paused_position := _player.global_position
+	_hud.get_node("PauseMenu").notification(Node.NOTIFICATION_WM_GO_BACK_REQUEST)
+	await _settle()
+	_check(not paused and joystick.visible and _player.global_position.is_equal_approx(paused_position),
+		"Resuming with the old touch still held does not move the player.")
 	_send_touch(drag.position, false)
 	await _settle()
 	_check(_player.global_position.distance_to(start) > 20.0 and _player.velocity.is_zero_approx(), "Dragging the joystick moves the player and releasing it stops movement.")
@@ -628,24 +641,23 @@ func _finish_presentation(title: String) -> void:
 
 
 func _restart() -> void:
-	# Exercise the actual restart UI, including cancel before confirming.
 	var recorded: int = _log.entries().size()
-	_tap_button(_hud.get_node("NotebookButton"))
+	_tap_button(_hud.get_node("PauseButton"))
+	_check(paused, "Pause the investigation before leaving.")
+	_tap_button(_hud.get_node("PauseMenu/%ReturnButton"))
+	await scene_changed
 	await _settle()
-	var restart := _notebook_button("重新开始")
-	await _settle()
-	_tap_button(restart)
+	var menu := current_scene
+	_check(menu.name == &"MainMenu" and not paused, "The pause menu returns to the main menu.")
+	_tap_button(menu.get_node("%NewGameButton"))
 	await _settle()
 	_check(_log.entries().size() == recorded, "The restart confirmation does not clear progress prematurely.")
-	_close()
+	_tap_button(menu.get_node("%CancelButton"))
 	await _settle()
-	_tap_button(_hud.get_node("NotebookButton"))
+	_check(menu.get_node("%ContinueButton").visible, "Cancelling keeps the saved investigation available.")
+	_tap_button(menu.get_node("%NewGameButton"))
 	await _settle()
-	restart = _notebook_button("重新开始")
-	await _settle()
-	_tap_button(restart)
-	await _settle()
-	_tap_button(_hud.evidence_action_button)
+	_tap_button(menu.get_node("%ConfirmButton"))
 	await _room_ready("FrontDesk")
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted and not _chapter.corridor_visited, "Restart clears every note and first-chapter flag.")
 	_check(not _chapter_two.active and not _chapter_two.has_finding() and not _room.get_node("Investigation/PhotoPoint").visible, "Restart also clears Friday's progress and restores the Thursday front desk.")
