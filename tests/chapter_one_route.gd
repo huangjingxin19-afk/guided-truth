@@ -579,6 +579,101 @@ func _play_chapter_three(start_directly: bool) -> void:
 	_check(_log.entries().size() == record_count, "Reopening the finding is idempotent.")
 	_close()
 	await _reread("人影在雨棚", "黄色卷尺")
+	await _play_saturday_return()
+
+
+func _play_saturday_return() -> void:
+	await _enter_back_yard()
+	await _interact_at(Vector2(626, 345), "查看门铃旁的留言")
+	_check(_hud.description.text.contains("脚有一个白的"), "The mailbox records both clues to identify the item.")
+	_close()
+	await _return_to_front_desk()
+	_check(not _chapter_three.can_confirm_appointment() and not _room.get_node("Investigation/DutyBoardPoint").visible,
+		"The appointment is unavailable before matching the loan card and talking to Han Su.")
+	await _interact_at(Vector2(246, 350), "核对三张借用卡")
+	var cards := _hud.presentation_slot.get_node("LoanCards") as Control
+	await _check_card("three loan cards")
+	await _capture("29-chapter-three-loan-cards")
+	var submit_card := cards.get_node("Submit") as Button
+	for answer in [_chapter_three.Loan.REEL, _chapter_three.Loan.BLACK_STAND]:
+		_tap_button(_choice(cards, _chapter_three.LOAN_CHOICES[answer]))
+		_tap_button(submit_card)
+		await _settle()
+		_check(not _log.has_entry(_chapter_three.LOAN_CARD.id) and cards.visible,
+			"Wrong cards can be reconsidered without recording a match.")
+	_tap_button(_choice(cards, _chapter_three.LOAN_CHOICES[_chapter_three.Loan.WHITE_STAND]))
+	_tap_button(submit_card)
+	await _settle()
+	_check(_hud.header.text == "12 号谱架借用卡" and _hud.description.text.contains("许南"), "The confirmed card records the borrower.")
+	_close()
+	await _interact_at(Vector2(466, 350), "查看借用物交回通知")
+	_check(_hud.description.text.contains("散场前") and _hud.description.text.contains("斜贴角"),
+		"The notice records the original wording and what Zhou Wen left on the board.")
+	await _check_card("return notice")
+	_close()
+	await _interact_at(Vector2(552, 387), "给韩素看交回通知")
+	_check(_hud.description.text.contains("七点二十五") and not _chapter_three.can_confirm_appointment(),
+		"The call establishes the place and time before the duty board is updated.")
+	_close()
+	await _interact_at(Vector2(655, 345), "登记赴约安排")
+	_check(_hud.evidence_action_button.text == "确认赴约" and _chapter_three.can_confirm_appointment(),
+		"The duty board is the final prerequisite for the explicit time advance.")
+	_close()
+	await _interact_at(Vector2(793, 344), "前往走廊")
+	await _room_ready("Corridor")
+	_check(not _chapter_three.appointment_started and _chapter_three.status().begins_with("周六 17:50"),
+		"The player can leave to recheck evidence without advancing time.")
+	await _interact_at(Vector2(161, 344), "返回前台")
+	await _room_ready("FrontDesk")
+	await _interact_at(Vector2(655, 345), "查看赴约安排")
+	_tap_button(_hud.evidence_action_button)
+	await _room_ready("Room102")
+	_check(_chapter_three.appointment_started and _chapter_three.status().begins_with("周六 19:25"),
+		"Confirming the duty board advances time only after Room 102 loads.")
+	await _interact_at(Vector2(483, 257), "返回后院")
+	_check(not _transition.is_changing and current_scene == _room and _room.get_node("WalkHint").text.contains("A01"),
+		"Trying to leave before taking the 19:25 record points back to the archive.")
+	await _capture("30-chapter-three-appointment-room")
+	await _interact_at(Vector2(279, 283), "查看19:25 · 离开 102 前")
+	_check(_hud.description.text.contains("白线朝上") and _hud.description.text.contains("G03"),
+		"Departure records the visible white stitching, desk and open equipment box.")
+	await _check_card("departure record")
+	await _capture("31-chapter-three-departure-record")
+	_close()
+	await _interact_at(Vector2(483, 257), "随韩素去雨棚")
+	await _room_ready("BackYard")
+	_check(not _room.get_node("Investigation/ReturnSignOffPoint").visible, "Inspect the returned item before asking Han Su to sign.")
+	await _interact_at(Vector2(594, 379), "核对许南带来的谱架")
+	_check(_hud.description.text.contains("桌脚蹭地") and _hud.description.text.contains("白色替换件"),
+		"The stand records the audible clue, Xu Nan's account and the physical match.")
+	await _check_card("returned stand")
+	await _capture("32-chapter-three-returned-stand")
+	_close()
+	await _interact_at(Vector2(657, 379), "请韩素签收")
+	_check(_hud.header.text == "19:27 · 后院签收联" and _chapter_three.can_submit_conclusion(),
+		"The signed receipt sets the final time and unlocks the conclusion.")
+	_close()
+	await _interact_at(Vector2(657, 379), "向韩素提交归还结论")
+	var form := _hud.presentation_slot.get_node("ReturnReasoning") as Control
+	var submit := form.get_node("Submit") as Button
+	_tap_button(_choice(form, _chapter_three.VISITOR_CHOICES[_chapter_three.Visitor.XU_NAN]))
+	_tap_button(_choice(form, _chapter_three.RETURN_CHOICES[_chapter_three.Loan.REEL]))
+	_tap_button(submit)
+	await _settle()
+	_check(not _chapter_three.is_complete() and form.visible, "A wrong conclusion does not end the chapter.")
+	_tap_button(_choice(form, _chapter_three.RETURN_CHOICES[_chapter_three.Loan.WHITE_STAND]))
+	_tap_button(submit)
+	await _settle()
+	_check(_chapter_three.is_complete() and _hud.header.text == "第三章完", "The correct conclusion completes Chapter Three.")
+	await _check_card("Chapter Three ending")
+	await _capture("33-chapter-three-ending")
+	var records: int = _log.entries().size()
+	_close()
+	await _interact_at(Vector2(657, 379), "回看第三章结案")
+	_check(_log.entries().size() == records, "Reopening the chapter ending preserves unique evidence entries.")
+	_close()
+	await _reread("19:25 · 离开 102 前", "三针白线")
+	await _reread("19:27 · 后院签收联", "韩素")
 
 
 func _return_to_front_desk() -> void:
@@ -662,6 +757,7 @@ func _restart() -> void:
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted and not _chapter.corridor_visited, "Restart clears every note and first-chapter flag.")
 	_check(not _chapter_two.active and not _chapter_two.has_finding() and not _room.get_node("Investigation/PhotoPoint").visible, "Restart also clears Friday's progress and restores the Thursday front desk.")
 	_check(not _chapter_three.active and not _chapter_three.has_location_finding() and _chapter_three.observation_pair().is_empty(), "Restart also clears Saturday's progress and comparison.")
+	_check(not _chapter_three.appointment_started and not _chapter_three.is_complete(), "Restart clears the appointment and Saturday conclusion.")
 	_check(_player.position.is_equal_approx(Vector2(230, 420)), "Restart uses the starting entrance.")
 	_check(_chapter.story_time() == "周四 18:35", "Restart resets story time.")
 

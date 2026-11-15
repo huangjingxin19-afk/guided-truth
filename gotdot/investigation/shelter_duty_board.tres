@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_return_paper.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_duty_board"
+title = "19:25 后院赴约"
+description = "值班板上写着「19:25 后院，韩素，谱架归还」。\n\n周闻看过值班板：「七点二十五，我先留屋里排箱？」\n韩素：「行，先别封箱，等我回来。」"
+preview = ExtResource("2")
+preview_scale = 4

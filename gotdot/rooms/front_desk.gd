@@ -6,12 +6,14 @@ const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 @onready var _investigation = $Investigation
 @onready var _hud = $InvestigationHud
 @onready var _reasoning = $Reasoning
+@onready var _loan_cards = $LoanCards
 
 
 func _ready() -> void:
 	if ChapterTwo.active:
 		$Scenery/ZhouWen.position = $Scenery/RecycleBasket.position + Vector2(28, -16)
 	_reasoning.setup(ChapterTwo.ORDER_CHOICES, ChapterTwo.PAGE_CHOICES)
+	_loan_cards.setup(ChapterThree.LOAN_CHOICES)
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
 	ChapterThree.progress_changed.connect(_refresh)
@@ -41,17 +43,7 @@ func _refresh() -> void:
 	$Scenery/RecycleBasket/SpringLedger.visible = not pickup_seen
 	$Investigation/SpringLedgerPoint.visible = show_pickup and not pickup_seen
 	if ChapterThree.active:
-		$RoomTitle.text = "第三章 · 前台"
-		$ChapterStatus.text = ChapterThree.status()
-		$WalkableFloor/DepthSort/Counter/WorkOrder.hide()
-		$WalkableFloor/DepthSort/Counter/Note.hide()
-		$WalkableFloor/DepthSort/Counter/FridayPapers.hide()
-		$Investigation/PhotoPoint.hide()
-		$Investigation/ReceiptPoint.hide()
-		$Investigation/FilePocketPoint.hide()
-		$Investigation/HeQingPoint.hide()
-		$Investigation/ShaoNingPoint.hide()
-		$Scenery/ZhouWen.hide()
+		_refresh_saturday()
 	elif ChapterTwo.active:
 		$RoomTitle.text = "第二章 · 少掉的一页"
 		$ChapterStatus.text = ChapterTwo.status()
@@ -72,6 +64,71 @@ func _refresh() -> void:
 			$Investigation/HeQingPoint.interaction_label = "回看原页判断"
 	elif ChapterTwo.can_start():
 		$Investigation/HeQingPoint.interaction_label = "开始第二章"
+
+
+func _refresh_saturday() -> void:
+	var before_appointment := not ChapterThree.appointment_started
+	var loan_confirmed := InvestigationLog.has_entry(ChapterThree.LOAN_CARD.id)
+	var notice_read := InvestigationLog.has_entry(ChapterThree.RETURN_NOTICE.id)
+	var call_made := InvestigationLog.has_entry(ChapterThree.CALL.id)
+	var papers = $WalkableFloor/DepthSort/Counter
+	$RoomTitle.text = "第三章 · 前台"
+	$ChapterStatus.text = ChapterThree.status()
+	papers.get_node("WorkOrder").hide()
+	papers.get_node("Note").hide()
+	papers.get_node("FridayPapers").hide()
+	$Investigation/PhotoPoint.hide()
+	$Investigation/ReceiptPoint.hide()
+	$Investigation/FilePocketPoint.hide()
+	$Investigation/HeQingPoint.hide()
+	$Investigation/ShaoNingPoint.hide()
+	$Investigation/HandoverBoardPoint.hide()
+	$Scenery/ZhouWen.visible = before_appointment and loan_confirmed
+	$Scenery/ZhouWen.position = Vector2(621, 317)
+	papers.get_node("SaturdayCards").visible = before_appointment and (ChapterThree.can_check_loan_cards() or loan_confirmed)
+	papers.get_node("SaturdayNotice").visible = before_appointment and loan_confirmed
+	$Scenery/SaturdayHanSu.visible = before_appointment and notice_read
+	$Scenery/HandoverBoard/ReturnNoticeCorner.visible = before_appointment and loan_confirmed
+	$Investigation/LoanCardsPoint.visible = papers.get_node("SaturdayCards").visible
+	$Investigation/LoanCardsPoint.interaction_label = "回看借用卡" if loan_confirmed else "核对三张借用卡"
+	$Investigation/ReturnNoticePoint.visible = papers.get_node("SaturdayNotice").visible
+	$Investigation/ReturnCallPoint.visible = $Scenery/SaturdayHanSu.visible
+	$Investigation/ReturnCallPoint.interaction_label = "回看归还通话" if call_made else "给韩素看交回通知"
+	$Scenery/HandoverBoard/AppointmentSlip.visible = InvestigationLog.has_entry(ChapterThree.DUTY_BOARD.id)
+	$Investigation/DutyBoardPoint.visible = before_appointment and call_made
+	$Investigation/DutyBoardPoint.interaction_label = "查看赴约安排" if ChapterThree.can_confirm_appointment() else "登记赴约安排"
+
+
+func _on_loan_cards_requested() -> void:
+	if ChapterThree.can_check_loan_cards():
+		_investigation.clear_approach_hint()
+		_hud.show_presentation(_loan_cards, "核对借用卡", true)
+	elif InvestigationLog.has_entry(ChapterThree.LOAN_CARD.id):
+		_investigation.inspect(ChapterThree.LOAN_CARD)
+
+
+func _on_loan_card_submitted(answer: int, _unused: int) -> void:
+	var feedback := ChapterThree.submit_loan_card(answer)
+	if feedback.is_empty():
+		_hud.show_evidence(ChapterThree.LOAN_CARD)
+	else:
+		_loan_cards.show_feedback(feedback)
+
+
+func _on_return_call_requested() -> void:
+	if InvestigationLog.has_entry(ChapterThree.RETURN_NOTICE.id):
+		_investigation.inspect(ChapterThree.CALL)
+
+
+func _on_duty_board_requested() -> void:
+	if not InvestigationLog.has_entry(ChapterThree.CALL.id) or _hud.is_open():
+		return
+	_investigation.clear_approach_hint()
+	InvestigationLog.record(ChapterThree.DUTY_BOARD)
+	if ChapterThree.can_confirm_appointment():
+		_hud.show_evidence(
+			ChapterThree.DUTY_BOARD, false, "确认赴约", RoomTransition.start_saturday_appointment
+		)
 
 
 func _on_he_qing_interacted() -> void:

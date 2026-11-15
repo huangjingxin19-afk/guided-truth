@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_return_paper.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_loan_card"
+title = "12 号谱架借用卡"
+description = "12 号折叠谱架 · 右后脚为白色替换件。\n借用人：许南。登记状态：未还。\n\n韩素看到名字顿了一下：「许南？他就是西梯受过伤的那个学员。我试着联系他。」"
+preview = ExtResource("2")
+preview_scale = 4

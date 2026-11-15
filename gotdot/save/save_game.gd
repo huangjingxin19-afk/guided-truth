@@ -140,6 +140,7 @@ func _snapshot() -> Dictionary:
 		"corridor_visited": ChapterOne.corridor_visited,
 		"reenactment": ChapterOne.ReenactmentStage.keys()[ChapterOne.reenactment_stage],
 		"case": ChapterOne.CaseStage.keys()[ChapterOne.case_stage],
+		"appointment_started": ChapterThree.appointment_started,
 		"evidence": evidence,
 	}
 
@@ -179,6 +180,10 @@ func _read_save(path: String) -> Dictionary:
 		return {}
 	if state.chapter >= 2 and state.case != "COMPLETE":
 		return {}
+	# Earlier checkpoints have no appointment flag.
+	var appointment_started: Variant = state.get("appointment_started", false)
+	if not appointment_started is bool or (appointment_started and state.chapter != 3):
+		return {}
 
 	var entries: Array[EvidenceEntry] = []
 	var ids := {}
@@ -189,6 +194,8 @@ func _read_save(path: String) -> Dictionary:
 		ids[entry.id] = true
 		entries.append(entry)
 	if state.chapter == 3 and not ids.has(ChapterTwo.NIGHT_MESSAGE.id):
+		return {}
+	if appointment_started and not ids.has(ChapterThree.DUTY_BOARD.id):
 		return {}
 	return {"state": state, "entries": entries, "json": contents}
 
@@ -220,6 +227,12 @@ func _restore(loaded: Dictionary) -> bool:
 		if RoomTransition.restore_room(ROOMS[state.room], StringName(state.entrance), apply_progress):
 			return true
 	if state.chapter == 3:
+		if state.get("appointment_started", false):
+			# A damaged room marker must still leave the player in a recoverable room.
+			var left_102: bool = loaded.entries.any(func(entry: EvidenceEntry) -> bool: return entry.id == ChapterThree.DEPARTURE.id)
+			if left_102:
+				return RoomTransition.restore_room(ROOMS.back_yard, &"FromRoom102", apply_progress)
+			return RoomTransition.restore_room(ROOMS.room_102, &"FromYard", apply_progress)
 		return RoomTransition.restore_room(ROOMS.corridor, &"Saturday", apply_progress)
 	return RoomTransition.restore_room(ROOMS.front_desk, &"Start", apply_progress)
 
@@ -233,6 +246,7 @@ func _apply_progress(state: Dictionary, entries: Array[EvidenceEntry]) -> void:
 	ChapterOne.case_stage = ChapterOne.CaseStage[state.case]
 	ChapterTwo.active = state.chapter >= 2
 	ChapterThree.active = state.chapter == 3
+	ChapterThree.appointment_started = state.get("appointment_started", false)
 
 
 func _write_checkpoint(snapshot: String) -> Error:

@@ -5,6 +5,7 @@ signal submitted(first_answer: int, second_answer: int)
 @export var first_question: String
 @export var second_question: String
 @export var second_choice_preview: PackedScene
+@export var submit_label := "提交结论"
 
 var _first_group := ButtonGroup.new()
 var _second_group: ButtonGroup
@@ -31,7 +32,7 @@ func setup(first_choices: Array, second_choices: Array = []) -> void:
 
 	_submit = Button.new()
 	_submit.name = "Submit"
-	_submit.text = "提交结论"
+	_submit.text = submit_label
 	_submit.custom_minimum_size.y = 48
 	_submit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_submit.disabled = true

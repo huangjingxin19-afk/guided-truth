@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_appointment_call"
+title = "许南的归还通话"
+description = "韩素原想等交接后在前台签收。林禾把通知里的地点指给她看，她拨通了许南的电话。\n\n许南：「我下班能赶到七点二十五。要是能在雨棚还，我就过来。」\n韩素：「好，我在后院等你。」"

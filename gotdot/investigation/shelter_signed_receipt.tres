@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_return_paper.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_signed_receipt"
+title = "19:27 · 后院签收联"
+description = "「周六 19:27，后院归还，韩素」\n12 号折叠谱架 · 右后脚白色替换件 · 许南。\n\n韩素在借用卡背面签字，把回执撕给许南。林禾收好签收联。签收时，器材门旁没有其他人经过。"
+preview = ExtResource("2")
+preview_scale = 4

@@ -13,6 +13,9 @@
 [ext_resource type="PackedScene" path="res://props/visitor_file_pocket.tscn" id="11_candidates"]
 [ext_resource type="Resource" path="res://investigation/handover_notice.tres" id="12_notice"]
 [ext_resource type="PackedScene" path="res://props/handover_board_notice.tscn" id="13_board"]
+[ext_resource type="PackedScene" path="res://actors/han_su.tscn" id="14_han_su"]
+[ext_resource type="PackedScene" path="res://props/shelter_return_paper.tscn" id="15_paper"]
+[ext_resource type="Resource" path="res://investigation/shelter_return_notice.tres" id="16_notice"]
 
 [sub_resource type="RectangleShape2D" id="CounterShape"]
 size = Vector2(330, 38)
@@ -96,6 +99,20 @@ default_color = Color(0.72, 0.58, 0.39, 1)
 polygon = PackedVector2Array(-24, -21, 24, -21, 18, 0, -18, 0)
 color = Color(0.49, 0.37, 0.25, 1)
 
+[node name="SaturdayHanSu" parent="Scenery" index="10" instance=ExtResource("14_han_su")]
+visible = false
+position = Vector2(552, 352)
+
+[node name="ReturnNoticeCorner" type="Polygon2D" parent="Scenery/HandoverBoard"]
+visible = false
+polygon = PackedVector2Array(-24, -55, -11, -51, -17, -43)
+color = Color(0.88, 0.81, 0.66, 1)
+
+[node name="AppointmentSlip" parent="Scenery/HandoverBoard" instance=ExtResource("15_paper")]
+visible = false
+position = Vector2(14, -46)
+scale = Vector2(0.68, 0.68)
+
 [node name="Counter" type="StaticBody2D" parent="WalkableFloor/DepthSort" index="1"]
 position = Vector2(350, 316)
 collision_mask = 0
@@ -146,6 +163,32 @@ color = Color(0.78, 0.68, 0.5, 1)
 points = PackedVector2Array(-21, -39, -20, -35, -12, -36, -13, -40)
 width = 2.0
 default_color = Color(0.38, 0.32, 0.22, 1)
+
+[node name="SaturdayCards" type="Node2D" parent="WalkableFloor/DepthSort/Counter"]
+visible = false
+position = Vector2(-104, -54)
+
+[node name="CardOne" parent="WalkableFloor/DepthSort/Counter/SaturdayCards" instance=ExtResource("15_paper")]
+position = Vector2(-16, 0)
+scale = Vector2(0.29, 0.43)
+
+[node name="CardTwo" parent="WalkableFloor/DepthSort/Counter/SaturdayCards" instance=ExtResource("15_paper")]
+scale = Vector2(0.29, 0.43)
+
+[node name="CardThree" parent="WalkableFloor/DepthSort/Counter/SaturdayCards" instance=ExtResource("15_paper")]
+position = Vector2(16, 0)
+scale = Vector2(0.29, 0.43)
+
+[node name="SaturdayNotice" type="Node2D" parent="WalkableFloor/DepthSort/Counter"]
+visible = false
+position = Vector2(116, -54)
+
+[node name="Notice" parent="WalkableFloor/DepthSort/Counter/SaturdayNotice" instance=ExtResource("15_paper")]
+scale = Vector2(0.9, 0.54)
+
+[node name="Cup" type="Polygon2D" parent="WalkableFloor/DepthSort/Counter/SaturdayNotice"]
+polygon = PackedVector2Array(-28, -15, -14, -15, -16, -1, -26, -1)
+color = Color(0.67, 0.78, 0.78, 1)
 
 [node name="HeQingPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="1" instance=ExtResource("3")]
 offset_left = 307.0
@@ -315,6 +358,87 @@ visible = false
 [node name="SpringLedgerStand" type="Marker2D" parent="Investigation" index="16"]
 position = Vector2(715, 352)
 
+[node name="LoanCardsPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="17" instance=ExtResource("3")]
+visible = false
+offset_left = 195.0
+offset_top = 237.0
+offset_right = 296.0
+offset_bottom = 318.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../WalkableFloor/DepthSort/Counter/SaturdayCards")
+target_outline = PackedVector2Array(-27, 59, 27, 59, 27, 66, -27, 66)
+inspection_distance = 52.0
+touch_padding = 90.0
+interaction_label = "核对三张借用卡"
+hint_stands = [NodePath("../LoanCardsStand")]
+approach_hint = "靠近柜台左端，核对三张借用卡"
+
+[node name="Marker" parent="Investigation/LoanCardsPoint" index="0"]
+visible = false
+
+[node name="LoanCardsStand" type="Marker2D" parent="Investigation" index="18"]
+position = Vector2(246, 350)
+
+[node name="ReturnNoticePoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="19" instance=ExtResource("3")]
+visible = false
+offset_left = 423.0
+offset_top = 232.0
+offset_right = 515.0
+offset_bottom = 318.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../WalkableFloor/DepthSort/Counter/SaturdayNotice")
+target_outline = PackedVector2Array(-26, 59, 26, 59, 26, 66, -26, 66)
+inspection_distance = 52.0
+touch_padding = 98.0
+evidence = ExtResource("16_notice")
+hint_stands = [NodePath("../ReturnNoticeStand")]
+approach_hint = "靠近柜台右端，查看周闻拿来的通知"
+
+[node name="Marker" parent="Investigation/ReturnNoticePoint" index="0"]
+visible = false
+
+[node name="ReturnNoticeStand" type="Marker2D" parent="Investigation" index="20"]
+position = Vector2(466, 350)
+
+[node name="ReturnCallPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="21" instance=ExtResource("3")]
+visible = false
+offset_left = 527.0
+offset_top = 263.0
+offset_right = 581.0
+offset_bottom = 353.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/SaturdayHanSu")
+target_outline = PackedVector2Array(-16, -5, 16, -5, 16, 5, -16, 5)
+inspection_distance = 54.0
+touch_padding = 93.0
+interaction_label = "给韩素看交回通知"
+hint_stands = [NodePath("../ReturnCallStand")]
+approach_hint = "到柜台右侧找韩素"
+
+[node name="Marker" parent="Investigation/ReturnCallPoint" index="0"]
+visible = false
+
+[node name="ReturnCallStand" type="Marker2D" parent="Investigation" index="22"]
+position = Vector2(552, 387)
+
+[node name="DutyBoardPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="23" instance=ExtResource("3")]
+visible = false
+offset_left = 590.0
+offset_top = 192.0
+offset_right = 726.0
+offset_bottom = 307.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/HandoverBoard")
+target_outline = PackedVector2Array(-22, -2, 22, -2, 22, 3, -22, 3)
+inspection_distance = 53.0
+touch_padding = 111.0
+interaction_label = "登记赴约安排"
+hint_stands = [NodePath("../HandoverBoardStand")]
+approach_hint = "到前台右侧，在值班板登记归还安排"
+
+[node name="Marker" parent="Investigation/DutyBoardPoint" index="0"]
+visible = false
+
 [node name="FromCorridor" type="Marker2D" parent="Entrances" index="1"]
 position = Vector2(755, 374)
 
@@ -327,6 +451,12 @@ script = ExtResource("10_reasoning")
 first_question = "照片和收页哪个在先？"
 second_question = "哪张纸与原图一致？"
 second_choice_preview = ExtResource("11_candidates")
+
+[node name="LoanCards" type="VBoxContainer" parent="." index="9"]
+visible = false
+script = ExtResource("10_reasoning")
+first_question = "哪张借用卡与留言对得上？"
+submit_label = "确认借用卡"
 
 [connection signal="approach_requested" from="Investigation/HeQingPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/HeQingPoint" to="." method="_on_he_qing_interacted"]
@@ -344,6 +474,15 @@ second_choice_preview = ExtResource("11_candidates")
 [connection signal="approach_requested" from="Investigation/SpringLedgerPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/SpringLedgerPoint" to="." method="_on_spring_ledger_requested"]
 [connection signal="submitted" from="Reasoning" to="." method="_on_reasoning_submitted"]
+[connection signal="approach_requested" from="Investigation/LoanCardsPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/LoanCardsPoint" to="." method="_on_loan_cards_requested"]
+[connection signal="approach_requested" from="Investigation/ReturnNoticePoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/ReturnNoticePoint" to="Investigation" method="inspect"]
+[connection signal="approach_requested" from="Investigation/ReturnCallPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/ReturnCallPoint" to="." method="_on_return_call_requested"]
+[connection signal="approach_requested" from="Investigation/DutyBoardPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/DutyBoardPoint" to="." method="_on_duty_board_requested"]
+[connection signal="submitted" from="LoanCards" to="." method="_on_loan_card_submitted"]
 
 [editable path="Investigation/HeQingPoint"]
 [editable path="Investigation/CorridorExit"]

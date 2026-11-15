@@ -36,6 +36,36 @@ func _run() -> void:
 			await _resume_first_and_save_second()
 		"third":
 			await _resume_second_and_save_third()
+		"appointment-plan":
+			await _resume_legacy_saturday_and_plan_appointment()
+		"appointment-start":
+			_check(current_scene.name == &"FrontDesk" and _three.can_confirm_appointment(),
+				"The saved duty board can still be confirmed after restart.")
+			_transition.start_saturday_appointment()
+			await _settle()
+			_check(current_scene.name == &"Room102" and _three.appointment_started, "Confirming starts the 19:25 scene.")
+		"appointment-return":
+			_check(current_scene.name == &"Room102" and _three.appointment_started and not _three.has_departure_record(),
+				"Resume the 19:25 appointment at 102 before recording the scene.")
+			_check(not current_scene.get_node("Investigation/YardExit").travel_allowed,
+				"The restored 102 door waits for the departure record.")
+			_log.record(_three.DEPARTURE)
+			_transition.change_room("res://rooms/back_yard.tscn", &"FromRoom102")
+			await _settle()
+			_log.record(_three.RETURNED_STAND)
+			_log.record(_three.RECEIPT)
+			await _settle()
+		"appointment-finish":
+			_check(current_scene.name == &"BackYard" and _three.can_submit_conclusion()
+				and _three.status().begins_with("周六 19:27"), "Resume the yard after signing, ready to submit the conclusion.")
+			_check(_three.submit_conclusion(_three.Visitor.XU_NAN, _three.Loan.WHITE_STAND).is_empty(),
+				"Submit the correct conclusion after restarting.")
+			await _settle()
+		"appointment-complete":
+			_check(current_scene.name == &"BackYard" and _three.is_complete() and _three.has_departure_record(),
+				"The conclusion and the 19:25 record survive together.")
+			_check(_log.has_entry(_three.RECEIPT.id) and _log.has_entry(_three.RETURN_NOTICE.id),
+				"Evidence for the final chapter remains in the notebook.")
 		"resume":
 			_check_third_chapter("BackYard")
 			_damage_save("user://investigation.json")
@@ -62,7 +92,7 @@ func _run() -> void:
 			_check(JSON.parse_string(FileAccess.get_file_as_string("user://investigation.json")) is Dictionary,
 				"An explicit overwrite replaces the unreadable file with a playable save.")
 		_:
-			_check(false, "Expected one phase: first, second, third, resume, backup, reset, damaged.")
+			_check(false, "Expected first, second, third, resume, backup, reset, damaged, or an appointment phase.")
 	print("Autosave failures: ", _failures)
 	quit(int(_failures > 0))
 
@@ -181,6 +211,22 @@ func _resume_second_and_save_third() -> void:
 	_log.record(_three.DESK_VIEW)
 	await _settle()
 	_transition.change_room("res://rooms/back_yard.tscn", &"FromRoom102")
+	await _settle()
+	# 1.0.16 wrote the same checkpoint fields except for the new appointment flag.
+	var checkpoint: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("user://investigation.json"))
+	checkpoint.erase("appointment_started")
+	var file := FileAccess.open("user://investigation.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(checkpoint))
+	file.close()
+
+
+func _resume_legacy_saturday_and_plan_appointment() -> void:
+	_check_third_chapter("BackYard")
+	_check(not _three.appointment_started, "A 1.0.16 checkpoint defaults to the 17:50 investigation.")
+	_check(_three.submit_location(_three.Location.SHELTER).is_empty(), "The legacy checkpoint can proceed past the observation.")
+	for entry in [_three.MESSAGE, _three.LOAN_CARD, _three.RETURN_NOTICE, _three.CALL, _three.DUTY_BOARD]:
+		_log.record(entry)
+	_transition.change_room("res://rooms/front_desk.tscn", &"FromCorridor")
 	await _settle()
 
 

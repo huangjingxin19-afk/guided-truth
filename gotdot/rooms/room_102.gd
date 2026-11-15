@@ -49,15 +49,35 @@ func _refresh() -> void:
 	$Scenery/ShelterGlass.visible = ChapterThree.active
 	$Investigation/DeskViewPoint.visible = ChapterThree.can_enter_supply_door()
 	if ChapterThree.active:
-		$ChapterStatus.text = ChapterThree.status()
-		$Investigation/WheelTracksPoint.hide()
-		$Investigation/ArchivePoint.hide()
+		_refresh_saturday()
 	elif ChapterTwo.active:
 		$ChapterStatus.text = ChapterTwo.status()
 		$Investigation/WheelTracksPoint.evidence = ChapterTwo.TRACKS
 		$Investigation/WheelTracksPoint.tooltip_text = ChapterTwo.TRACKS.title
 		$Investigation/WheelTracksPoint.accessibility_name = ChapterTwo.TRACKS.title
 		$Investigation/ArchivePoint.interaction_label = "核对桌后 A01"
+
+
+func _refresh_saturday() -> void:
+	var appointment := ChapterThree.appointment_started
+	var can_leave := not appointment or ChapterThree.has_departure_record()
+	$ChapterStatus.text = ChapterThree.status()
+	$Investigation/WheelTracksPoint.hide()
+	$Investigation/ArchivePoint.hide()
+	$Investigation/DeskViewPoint.visible = ChapterThree.can_enter_supply_door() and not appointment
+	$Investigation/DeparturePoint.visible = appointment
+	$Scenery/OpenG03.visible = appointment
+	$Scenery/ZhouWen.visible = appointment
+	$Scenery/HanSu.visible = appointment
+	if appointment:
+		$Scenery/ZhouWen.position = Vector2(354, 287)
+		$Scenery/HanSu.position = Vector2(419, 290)
+	$Investigation/YardExit.travel_allowed = can_leave
+	$Investigation/YardExit.interaction_label = "随韩素去雨棚" if appointment and can_leave else "返回后院"
+
+
+func _on_yard_exit_blocked() -> void:
+	_investigation.show_approach_hint($Investigation/ArchiveStand.global_position, "离开前，先到长桌后面记下 A01、桌脚和 G03")
 
 
 func _refresh_case() -> void:

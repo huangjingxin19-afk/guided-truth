@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_departure.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_102_departure"
+title = "19:25 · 离开 102 前"
+description = "韩素打开 A01，核对蓝布册和散页还在。册脊的三针白线朝上。长桌两只后脚的位置可辨，周闻经手的 G03 还敞着口。\n\n何青仍在前台。韩素请周闻等她回来再封箱，林禾陪她从器材门去雨棚。"
+preview = ExtResource("2")
+preview_scale = 1.6

@@ -3,6 +3,7 @@ extends Node
 
 const FRONT_DESK := "res://rooms/front_desk.tscn"
 const CORRIDOR := "res://rooms/corridor.tscn"
+const ROOM_102 := "res://rooms/room_102.tscn"
 
 signal room_entered(scene_path: String, entrance: StringName)
 
@@ -25,6 +26,11 @@ func start_chapter_two() -> void:
 func start_chapter_three() -> void:
 	if ChapterThree.can_start():
 		_request_room_change(CORRIDOR, &"Saturday", ChapterThree.start)
+
+
+func start_saturday_appointment() -> void:
+	if ChapterThree.can_confirm_appointment():
+		_request_room_change(ROOM_102, &"FromYard", ChapterThree.start_appointment)
 
 
 func restore_room(scene_path: String, entrance: StringName, restore_progress: Callable) -> bool:

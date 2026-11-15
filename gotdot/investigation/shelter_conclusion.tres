@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_conclusion"
+title = "第三章完"
+description = "两晚在雨棚出现的是许南。他带着 12 号白脚谱架来找韩素归还。周六两次观察中的周闻在同一处雨棚量借还凳，两处站位帮助林禾认清了昨夜人影所在的位置。\n\n许南问能不能等雨小一点再走。韩素倒了一杯热水，请他坐到长凳上。"

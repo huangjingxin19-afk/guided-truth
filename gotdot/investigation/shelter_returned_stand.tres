@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_folding_stand.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_returned_stand"
+title = "许南归还的白脚谱架"
+description = "屋里传来一声短促的摩擦。林禾看向器材门：「桌脚蹭地了。」\n许南从窄袋取出 12 号折叠谱架，右后脚是白色替换件，撑开略晃。周四他听见同班的人便绕到后院，周五晚来按铃、留了言。\n许南：「其实我就想说一句，谱架我用完了。」"
+preview = ExtResource("2")
+preview_scale = 2.4

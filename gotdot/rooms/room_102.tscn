@@ -19,6 +19,8 @@
 [ext_resource type="PackedScene" path="res://props/repair_ledger.tscn" id="17_ledger"]
 [ext_resource type="PackedScene" path="res://props/a01_archive_box.tscn" id="18_archive"]
 [ext_resource type="Resource" path="res://investigation/shelter_desk_view.tres" id="19_desk_view"]
+[ext_resource type="PackedScene" path="res://props/shelter_open_g03.tscn" id="20_g03"]
+[ext_resource type="Resource" path="res://investigation/shelter_102_departure.tres" id="21_departure"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_floor"]
 resource_local_to_scene = true
@@ -160,6 +162,10 @@ default_color = Color(0.28, 0.24, 0.20, 0.83)
 [node name="ArchiveBox" parent="Scenery" instance=ExtResource("18_archive")]
 visible = false
 position = Vector2(279, 247)
+
+[node name="OpenG03" parent="Scenery" instance=ExtResource("20_g03")]
+visible = false
+position = Vector2(407, 249)
 
 [node name="FootPad" parent="Scenery" instance=ExtResource("3_foot_pad")]
 position = Vector2(551, 251)
@@ -342,6 +348,24 @@ approach_hint = "走长桌右端，靠近玻璃隔断再观察"
 [node name="Marker" parent="Investigation/DeskViewPoint" index="0"]
 visible = false
 
+[node name="DeparturePoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") instance=ExtResource("6_point")]
+visible = false
+offset_left = 238.0
+offset_top = 216.0
+offset_right = 318.0
+offset_bottom = 275.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/ArchiveBox")
+target_outline = PackedVector2Array(-27, -10, 27, -10, 27, 14, -27, 14)
+inspection_distance = 43.0
+touch_padding = 42.0
+evidence = ExtResource("21_departure")
+hint_stands = [NodePath("../ArchiveStand")]
+approach_hint = "到长桌后靠近 A01，记下离开前的现场"
+
+[node name="Marker" parent="Investigation/DeparturePoint" index="0"]
+visible = false
+
 [node name="DeskViewStand" type="Marker2D" parent="Investigation"]
 position = Vector2(655, 265)
 
@@ -475,6 +499,7 @@ second_question = "拖响是怎么来的？"
 [connection signal="approach_requested" from="Investigation/HanSuPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/HanSuPoint" to="." method="_on_han_su_interaction_requested"]
 [connection signal="approach_requested" from="Investigation/YardExit" to="Investigation" method="show_approach_hint"]
+[connection signal="travel_blocked" from="Investigation/YardExit" to="." method="_on_yard_exit_blocked"]
 [connection signal="approach_requested" from="Investigation/ReasoningPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/ReasoningPoint" to="." method="_on_reasoning_requested"]
 [connection signal="approach_requested" from="Investigation/DrawerPoint" to="Investigation" method="show_approach_hint"]
@@ -485,6 +510,8 @@ second_question = "拖响是怎么来的？"
 [connection signal="interaction_requested" from="Investigation/SignOffPoint" to="." method="_on_sign_off_requested"]
 [connection signal="approach_requested" from="Investigation/DeskViewPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="inspection_requested" from="Investigation/DeskViewPoint" to="Investigation" method="inspect"]
+[connection signal="approach_requested" from="Investigation/DeparturePoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/DeparturePoint" to="Investigation" method="inspect"]
 [connection signal="movement_changed" from="InvestigationHud" to="WalkableFloor" method="steer"]
 [connection signal="notebook_requested" from="InvestigationHud" to="Investigation" method="open_notebook"]
 [connection signal="overlay_changed" from="InvestigationHud" to="WalkableFloor" method="set_overlay_open"]
