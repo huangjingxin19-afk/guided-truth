@@ -4,7 +4,7 @@ Godot 4.7.2 项目位于 `gotdot/`。当前主场景从第一章前台开始。
 
 ## 当前试玩路线
 
-安卓测试包为 `chapter1-joystick-1.0.9.apk`（版本号 10，arm64，调试签名）。沿用包名 `com.cool.room102test`，可覆盖同签名的旧测试包。APK 保存在项目根目录，由 Git 忽略。
+安卓测试包为 `chapter1-complete-1.0.10.apk`（版本号 11，Android 7.0 及以上，arm64，调试签名）。包名和签名与 1.0.9 一致，可直接覆盖安装。APK 保存在项目根目录，由 Git 忽略。
 
 1. 打开游戏，从前台走到何青面前的柜台边。手机用左下角摇杆移动，电脑点击地面移动。
 2. 点右下角“领取委托”（电脑也可按 E）。笔记同时登记“102 调查委托”和“器材交接便笺”。点“展开周闻的便笺”可读完整原文，也可关闭后从笔记回看。
@@ -13,8 +13,6 @@ Godot 4.7.2 项目位于 `gotdot/`。当前主场景从第一章前台开始。
 5. 在后院雨棚找推车旁的韩素，查看何青签过的后门授权。查看推车上的随车单，核对谁在什么时候领回了什么。两份证物都能从笔记回看。
 6. 韩素同意后，靠近雨棚右侧门口，选“从器材门进 102”。在室内查轮痕，找韩素看第一次过槛，再查脚垫并点“装回脚垫”。找韩素“再推一次”，在笔记里回看“推车复走”。
 7. 可以随时关闭笔记或证物页，从器材门原路返回补查。可在装好脚垫后走回走廊，再进 102 继续第二次过槛。笔记中的“重新开始”经确认后会清空本局并回到前台。
-
-1.0.9 APK 可试玩到复走结果登记和证物补查。当前 Godot 工程可继续完成第一章。
 
 8. 核对封条、后门授权、随车单和推车复走后，靠近 102 右侧的何青，选「向何青提交推理」。两题各选一项。若需要复核，可关闭推理页，打开笔记或回现场补查，再找何青提交。
 9. 推理通过后，从长桌右端绕到下层抽屉前，查看报修册和散页，再装入 A01。走到箱边拍清点照片，找桌后的周闻签字。笔记可回看白色补线和签过「已阅」的清点单。
@@ -33,7 +31,7 @@ godot --editor --path gotdot
 godot --headless --path gotdot --script ../tests/chapter_one_route.gd
 godot --headless --path gotdot --script ../tests/room_102_inspection.gd
 godot --headless --path gotdot --script ../tests/room_102_reenactment.gd
-godot --headless --path gotdot --export-debug Android ../chapter1-joystick-1.0.9.apk
+godot --headless --path gotdot --export-debug Android ../chapter1-complete-1.0.10.apk
 ```
 
 导出使用编辑器中已配置的 JDK、Android SDK、同版本安卓模板和调试签名。不要提交签名文件或密码。
@@ -42,7 +40,7 @@ godot --headless --path gotdot --export-debug Android ../chapter1-joystick-1.0.9
 
 102 的共用交互与复走也可通过直接运行 `gotdot/rooms/room_102.tscn` 单独验证。
 
-1.0.8 的后院路线和 1.0.9 的摇杆版均已通过手机试玩。
+1.0.8 的后院路线和 1.0.9 的摇杆版均已通过手机试玩。1.0.10 已验证 APK 对齐、签名、版本和新增资源，真机结案待验收。
 
 ## 本次结构
 
