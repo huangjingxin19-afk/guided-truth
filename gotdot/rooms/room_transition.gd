@@ -2,6 +2,7 @@ extends Node
 ## The only room-switching entry point. Exits supply a scene and entrance name.
 
 const FRONT_DESK := "res://rooms/front_desk.tscn"
+const CORRIDOR := "res://rooms/corridor.tscn"
 
 var is_changing := false
 
@@ -17,6 +18,11 @@ func start_new_game() -> void:
 func start_chapter_two() -> void:
 	if ChapterTwo.can_start():
 		_request_room_change(FRONT_DESK, &"Start", ChapterTwo.start)
+
+
+func start_chapter_three() -> void:
+	if ChapterThree.can_start():
+		_request_room_change(CORRIDOR, &"Saturday", ChapterThree.start)
 
 
 func _request_room_change(scene_path: String, entrance: StringName, on_enter := Callable()) -> void:
@@ -55,5 +61,6 @@ func _change_room(scene_path: String, entrance: StringName, on_enter: Callable) 
 
 func _reset_investigation() -> void:
 	InvestigationLog.reset()
+	ChapterThree.reset()
 	ChapterTwo.reset()
 	ChapterOne.reset()

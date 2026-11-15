@@ -7,18 +7,20 @@ signal submitted(first_answer: int, second_answer: int)
 @export var second_choice_preview: PackedScene
 
 var _first_group := ButtonGroup.new()
-var _second_group := ButtonGroup.new()
+var _second_group: ButtonGroup
 var _submit: Button
 var _feedback: Label
 
 
-func setup(first_choices: Array, second_choices: Array) -> void:
+func setup(first_choices: Array, second_choices: Array = []) -> void:
 	add_theme_constant_override("separation", 10)
 	var questions := HBoxContainer.new()
 	questions.add_theme_constant_override("separation", 16)
 	add_child(questions)
 	_add_question(questions, first_question, first_choices, _first_group)
-	_add_question(questions, second_question, second_choices, _second_group, second_choice_preview)
+	if not second_choices.is_empty():
+		_second_group = ButtonGroup.new()
+		_add_question(questions, second_question, second_choices, _second_group, second_choice_preview)
 
 	_feedback = Label.new()
 	_feedback.custom_minimum_size = Vector2(528, 28)
@@ -78,18 +80,24 @@ func _add_question(
 
 
 func _update_submit() -> void:
-	_submit.disabled = _first_group.get_pressed_button() == null or _second_group.get_pressed_button() == null
+	_submit.disabled = _first_group.get_pressed_button() == null or (
+		_second_group != null and _second_group.get_pressed_button() == null
+	)
 
 
 func _submit_choices() -> void:
+	var second_answer := -1
+	if _second_group != null:
+		second_answer = int(_second_group.get_pressed_button().get_meta(&"answer"))
 	submitted.emit(
 		_first_group.get_pressed_button().get_meta(&"answer"),
-		_second_group.get_pressed_button().get_meta(&"answer")
+		second_answer
 	)
 
 
 func clear_feedback() -> void:
-	_feedback.text = "各选一项。需要补查时可关闭此页，打开笔记。"
+	var prompt := "各选一项。" if _second_group != null else "选一项。"
+	_feedback.text = prompt + "需要补查时可关闭此页，打开笔记。"
 
 
 func show_feedback(message: String) -> void:

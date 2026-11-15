@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_desk_view.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_desk_view"
+title = "桌后观察"
+description = "握着黄色卷尺的是周闻。他正弯腰往借还凳的另一端量。"
+preview = ExtResource("2")
+preview_scale = 1.65

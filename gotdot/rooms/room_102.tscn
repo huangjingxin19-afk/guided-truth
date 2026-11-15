@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://actors/zhou_wen.tscn" id="16_zhou_wen"]
 [ext_resource type="PackedScene" path="res://props/repair_ledger.tscn" id="17_ledger"]
 [ext_resource type="PackedScene" path="res://props/a01_archive_box.tscn" id="18_archive"]
+[ext_resource type="Resource" path="res://investigation/shelter_desk_view.tres" id="19_desk_view"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_floor"]
 resource_local_to_scene = true
@@ -88,6 +89,28 @@ offset_top = 126.0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 16
 text = "器材门"
+
+[node name="ShelterGlass" type="Node2D" parent="Scenery"]
+visible = false
+position = Vector2(654, 231)
+
+[node name="Frame" type="Polygon2D" parent="Scenery/ShelterGlass"]
+polygon = PackedVector2Array(-45, -115, 73, -115, 73, -23, -45, -23)
+color = Color(0.2, 0.27, 0.27, 1)
+
+[node name="Pane" type="Polygon2D" parent="Scenery/ShelterGlass"]
+polygon = PackedVector2Array(-39, -109, 67, -109, 67, -29, -39, -29)
+color = Color(0.47, 0.57, 0.53, 1)
+
+[node name="Mullion" type="Line2D" parent="Scenery/ShelterGlass"]
+points = PackedVector2Array(-19, -109, -19, -29)
+width = 4.0
+default_color = Color(0.22, 0.32, 0.31, 1)
+
+[node name="Reflection" type="Line2D" parent="Scenery/ShelterGlass"]
+points = PackedVector2Array(-7, -79, 19, -105)
+width = 3.0
+default_color = Color(0.66, 0.75, 0.69, 1)
 
 [node name="FrontDoor" type="Polygon2D" parent="Scenery"]
 color = Color(0.32, 0.26, 0.22, 1)
@@ -301,6 +324,27 @@ approach_hint = "绕到长桌后面，请周闻在清点单上签字"
 [node name="Marker" parent="Investigation/SignOffPoint" index="0"]
 visible = false
 
+[node name="DeskViewPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") instance=ExtResource("6_point")]
+visible = false
+offset_left = 608.0
+offset_top = 115.0
+offset_right = 729.0
+offset_bottom = 235.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/ShelterGlass")
+target_outline = PackedVector2Array(-34, 1, 40, 1, 40, 6, -34, 6)
+inspection_distance = 45.0
+touch_padding = 124.0
+evidence = ExtResource("19_desk_view")
+hint_stands = [NodePath("../DeskViewStand")]
+approach_hint = "走长桌右端，靠近玻璃隔断再观察"
+
+[node name="Marker" parent="Investigation/DeskViewPoint" index="0"]
+visible = false
+
+[node name="DeskViewStand" type="Marker2D" parent="Investigation"]
+position = Vector2(655, 265)
+
 [node name="ReasoningStand" type="Marker2D" parent="Investigation"]
 position = Vector2(789, 303)
 
@@ -440,6 +484,8 @@ second_question = "拖响是怎么来的？"
 [connection signal="interaction_requested" from="Investigation/ArchivePoint" to="." method="_on_archive_requested"]
 [connection signal="approach_requested" from="Investigation/SignOffPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/SignOffPoint" to="." method="_on_sign_off_requested"]
+[connection signal="approach_requested" from="Investigation/DeskViewPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/DeskViewPoint" to="Investigation" method="inspect"]
 [connection signal="movement_changed" from="InvestigationHud" to="WalkableFloor" method="steer"]
 [connection signal="notebook_requested" from="InvestigationHud" to="Investigation" method="open_notebook"]
 [connection signal="overlay_changed" from="InvestigationHud" to="WalkableFloor" method="set_overlay_open"]
@@ -451,3 +497,4 @@ second_question = "拖响是怎么来的？"
 [editable path="Investigation/ReasoningPoint"]
 [editable path="Investigation/ArchivePoint"]
 [editable path="Investigation/SignOffPoint"]
+[editable path="Investigation/DeskViewPoint"]

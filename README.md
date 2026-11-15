@@ -1,10 +1,10 @@
 # 被引向的真相
 
-Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续玩到第二章《少掉的一页》结案。
+Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续玩到第三章《雨棚下的人》的站位判断。
 
 ## 当前试玩路线
 
-安卓导出目标为 `chapter2-complete-1.0.12.apk`（版本号 13，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
+安卓导出目标为 `chapter3-observation-1.0.13.apk`（版本号 14，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
 
 ### 第一章《上锁的教室》
 
@@ -34,6 +34,16 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 
 详见[第二章开发计划](./第二章-开发计划.md)。新增人物、公告和夜巡近景沿用占位画法。
 
+### 第三章《雨棚下的人》首段
+
+1. 在第二章结尾点「开始第三章」。若已关闭结尾，靠近 102 正门回看夜巡消息，再打开结尾。
+2. 周六 17:50，在走廊找韩素接委托。靠近正门看高窗，右侧仍可核对封条。记下器材架后的人影和黄色卷尺。
+3. 经外廊去后院，请韩素开器材门。进 102 后沿长桌后方走到玻璃隔断，选择「查看桌后观察」。
+4. 打开笔记，选「对照高窗与桌后」。可单独放大任一张图，再返回并排对照。两张图登记后也可分别从笔记回看。
+5. 经后院返回走廊，向韩素说明人影的位置。若选错，可关掉推理页补查后再提交。本版试玩到确认站位为止。
+
+详见[第三章开发计划](./第三章-开发计划.md)。两个观察近景共用一套占位人物和道具。
+
 笔记与进度保存在本局内存中，换房保留；关闭应用后重新打开会开始新一局。本版没有磁盘存档。
 
 ## 开发与验证
@@ -45,21 +55,23 @@ godot --editor --path gotdot
 godot --headless --path gotdot --script ../tests/chapter_one_route.gd
 godot --headless --path gotdot --script ../tests/room_102_inspection.gd
 godot --headless --path gotdot --script ../tests/room_102_reenactment.gd
-godot --headless --path gotdot --export-debug Android ../chapter2-complete-1.0.12.apk
+godot --headless --path gotdot --export-debug Android ../chapter3-observation-1.0.13.apk
 ```
 
 导出使用编辑器中已配置的 JDK、Android SDK、同版本安卓模板和调试签名。不要提交签名文件或密码。
 
-`chapter_one_route.gd` 从新游戏开始，通过地面移动、触控按钮和 E 键验证两章结案。覆盖复走后补查、挪桌后绕行、A01 清点、错选原页后重试、撤图留证、改签、西梯拍照、夜巡收尾及重开。默认跳过春册线索，加 `-- --watch-pickup` 验证目击周闻收走春册的路线。加 `-- --capture` 可在图形模式下保存关键页面到 `.test-runtime/`（先创建此目录），供人工检查。
+`chapter_one_route.gd` 从新游戏开始，通过地面移动、触控按钮和 E 键验证前两章结案及第三章站位判断。覆盖错误重试、夜巡结尾重进、提前到后院补查、笔记双图对照、放大与返回，以及重开。默认跳过春册线索并重开第二章结尾，加 `-- --watch-pickup` 验证目击周闻收春册并直接进入第三章的路线。加 `-- --capture` 可在图形模式下保存关键页面到 `.test-runtime/`（先创建此目录）。
 
 102 的共用交互与复走也可通过直接运行 `gotdot/rooms/room_102.tscn` 单独验证。
 
 1.0.8 的后院路线、1.0.9 的摇杆版和 1.0.11 的第二章首段已通过手机试玩。1.0.12 的完整第二章路线已于 2026-11-15 通过手机试玩。
+1.0.13 的第三章首段待手机验收。
 
 ## 本次结构
 
 - `chapters/chapter_one.gd` 管理第一章时间、目标、复走、推理和结案条件。`InvestigationLog` 保存本局证物和推理记录。
 - `chapters/chapter_two.gd` 根据已登记的线索推进第二章并管理故事时间。前台、走廊和 102 复用调查点、笔记和换房，两个章节共用推理表单。
+- `chapters/chapter_three.gd` 根据周六的委托和现场记录解锁开门、两处观察及站位判断。笔记使用共用 HUD 展示两张近景。
 - `rooms/room_transition.gd` 统一切场与新游戏重置。器材门由后院依据授权证物决定是否允许通行。
 - `rooms/investigation_room.tscn` 提供共用移动、调查与 HUD。前台、走廊和雨棚继承后配置本地场景和交互。
 - `investigation/*.tres` 保存证物文本和预览。韩素的占位外观由雨棚和 102 共用。

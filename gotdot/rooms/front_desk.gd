@@ -14,6 +14,7 @@ func _ready() -> void:
 	_reasoning.setup(ChapterTwo.ORDER_CHOICES, ChapterTwo.PAGE_CHOICES)
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
+	ChapterThree.progress_changed.connect(_refresh)
 	_refresh()
 
 
@@ -39,7 +40,19 @@ func _refresh() -> void:
 	$Scenery/RecycleBasket.visible = show_pickup
 	$Scenery/RecycleBasket/SpringLedger.visible = not pickup_seen
 	$Investigation/SpringLedgerPoint.visible = show_pickup and not pickup_seen
-	if ChapterTwo.active:
+	if ChapterThree.active:
+		$RoomTitle.text = "第三章 · 前台"
+		$ChapterStatus.text = ChapterThree.status()
+		$WalkableFloor/DepthSort/Counter/WorkOrder.hide()
+		$WalkableFloor/DepthSort/Counter/Note.hide()
+		$WalkableFloor/DepthSort/Counter/FridayPapers.hide()
+		$Investigation/PhotoPoint.hide()
+		$Investigation/ReceiptPoint.hide()
+		$Investigation/FilePocketPoint.hide()
+		$Investigation/HeQingPoint.hide()
+		$Investigation/ShaoNingPoint.hide()
+		$Scenery/ZhouWen.hide()
+	elif ChapterTwo.active:
 		$RoomTitle.text = "第二章 · 少掉的一页"
 		$ChapterStatus.text = ChapterTwo.status()
 		$WalkableFloor/DepthSort/Counter/WorkOrder.hide()

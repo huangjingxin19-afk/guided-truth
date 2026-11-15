@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"shelter_location_finding"
+title = "人影在雨棚"
+description = "两处都看见了周闻的黄色卷尺。桌后能看到玻璃边框挡在他身前，脚下是室外湿地面。昨晚从高窗看过去，对应的是同一处雨棚。\n\n韩素：「就是那个位置。昨天那人拿着比这长得多的东西。」"

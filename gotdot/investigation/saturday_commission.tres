@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"saturday_commission"
+title = "韩素的委托"
+description = "韩素：「昨晚巡楼前，我刚锁过器材门。正门的封条也在。我只从高窗看见半个人影。你能帮我看看，他站在哪儿、是来做什么的吗？」"

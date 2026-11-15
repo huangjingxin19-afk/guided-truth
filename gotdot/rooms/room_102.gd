@@ -28,6 +28,7 @@ func _ready() -> void:
 	_reasoning.setup(ChapterOne.ROUTE_CHOICES, ChapterOne.SOUND_CHOICES)
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
+	ChapterThree.progress_changed.connect(_refresh)
 	_refresh()
 
 
@@ -43,7 +44,13 @@ func _refresh() -> void:
 	$ChapterStatus.text = ChapterOne.story_time() + "  ·  " + objective
 	$Investigation/YardExit.visible = ChapterOne.can_enter_supply_door()
 	_refresh_case()
-	if ChapterTwo.active:
+	$Scenery/ShelterGlass.visible = ChapterThree.active
+	$Investigation/DeskViewPoint.visible = ChapterThree.can_enter_supply_door()
+	if ChapterThree.active:
+		$ChapterStatus.text = ChapterThree.status()
+		$Investigation/WheelTracksPoint.hide()
+		$Investigation/ArchivePoint.hide()
+	elif ChapterTwo.active:
 		$ChapterStatus.text = ChapterTwo.status()
 		$Investigation/WheelTracksPoint.evidence = ChapterTwo.TRACKS
 		$Investigation/WheelTracksPoint.tooltip_text = ChapterTwo.TRACKS.title

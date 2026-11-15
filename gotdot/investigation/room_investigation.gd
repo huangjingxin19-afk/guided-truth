@@ -72,7 +72,7 @@ func inspect(entry: EvidenceEntry, action_label := "", action := Callable()) -> 
 
 
 func open_notebook() -> void:
-	hud.show_notebook(InvestigationLog.entries())
+	hud.show_notebook(InvestigationLog.entries(), ChapterThree.observation_pair())
 
 
 func clear_approach_hint() -> void:

@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 InvestigationLog="*res://investigation/investigation_log.gd"
 ChapterOne="*res://chapters/chapter_one.gd"
 ChapterTwo="*res://chapters/chapter_two.gd"
+ChapterThree="*res://chapters/chapter_three.gd"
 RoomTransition="*res://rooms/room_transition.gd"
 
 [display]

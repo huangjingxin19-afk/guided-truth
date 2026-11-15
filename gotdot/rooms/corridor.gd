@@ -3,10 +3,14 @@ extends Node2D
 const Case = preload("res://chapters/chapter_one.gd").CaseStage
 const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 
+@onready var _location_reasoning = $LocationReasoning
+
 
 func _ready() -> void:
+	_location_reasoning.setup(ChapterThree.LOCATION_CHOICES)
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
+	ChapterThree.progress_changed.connect(_refresh)
 	ChapterOne.visit_corridor()
 	_refresh()
 
@@ -23,6 +27,13 @@ func _refresh() -> void:
 	$Investigation/NightPatrolPoint.visible = ChapterTwo.can_watch_night_patrol()
 	$Scenery/NightShade.visible = ChapterTwo.is_complete()
 	$Scenery/Door102/Window.color = Color(0.24, 0.29, 0.27) if ChapterOne.case_stage >= Case.EPILOGUE else Color(0.58, 0.59, 0.39)
+	$WalkableFloor/DepthSort/SaturdayHanSu.visible = ChapterThree.active
+	$Investigation/SaturdaySealPoint.visible = ChapterThree.active
+	$Investigation/SaturdayHanSuPoint.visible = ChapterThree.active
+	$Investigation/HighWindowPoint.visible = ChapterThree.can_observe_high_window()
+	if ChapterThree.active:
+		_refresh_saturday()
+		return
 	if ChapterOne.can_enter_supply_door() or InvestigationLog.has_entry(ChapterOne.SEAL.id):
 		$ArrivalHint.text = "正门仍锁着。右侧经外廊通往后院。"
 	else:
@@ -40,6 +51,45 @@ func _refresh() -> void:
 			$Investigation/AccidentPoint.interaction_label = "回看旧事故说明"
 	elif ChapterTwo.can_start():
 		$ChapterStatus.text = ChapterOne.story_time() + "  ·  第一章已完成，回前台可开始第二章"
+
+
+func _refresh_saturday() -> void:
+	$RoomTitle.text = "第三章 · 走廊"
+	$ChapterStatus.text = ChapterThree.status()
+	$Scenery/NightShade.hide()
+	$Scenery/Door102/Window.color = Color(0.44, 0.54, 0.51)
+	$Investigation/SealPoint.hide()
+	$Investigation/NightPatrolPoint.hide()
+	$Investigation/AccidentPoint.interaction_label = "回看旧事故说明"
+	$ArrivalHint.text = "正门仍锁着。右侧经外廊通往后院。"
+	var han_su_point = $Investigation/SaturdayHanSuPoint
+	if ChapterThree.has_location_finding():
+		han_su_point.interaction_label = "回看人影位置"
+	elif ChapterThree.can_submit_location():
+		han_su_point.interaction_label = "向韩素说明人影位置"
+	elif ChapterThree.can_observe_high_window():
+		han_su_point.interaction_label = "回看韩素的委托"
+
+
+func _on_saturday_han_su_requested() -> void:
+	var hud = $InvestigationHud
+	if hud.is_open():
+		return
+	if ChapterThree.has_location_finding():
+		$Investigation.inspect(ChapterThree.LOCATION_FINDING)
+	elif ChapterThree.can_submit_location():
+		$Investigation.clear_approach_hint()
+		hud.show_presentation(_location_reasoning, "判断人影的位置", true)
+	else:
+		$Investigation.inspect(ChapterThree.COMMISSION)
+
+
+func _on_location_submitted(location: int, _unused: int) -> void:
+	var feedback := ChapterThree.submit_location(location)
+	if feedback.is_empty():
+		$InvestigationHud.show_evidence(ChapterThree.LOCATION_FINDING)
+	else:
+		_location_reasoning.show_feedback("韩素：" + feedback)
 
 
 func _on_seal_inspected(_entry: Resource) -> void:
@@ -87,5 +137,5 @@ func _finish_night_patrol() -> void:
 func _show_friday_ending() -> void:
 	var ending := EvidenceEntry.new()
 	ending.title = "第二章完 · 少掉的一页"
-	ending.description = "周四的访客页收回了内袋，西梯的旧说明留在林禾的笔记里。\n\n两扇门都锁着，韩素看见的人站在哪里？\n\n第三章《雨棚下的人》待续"
-	$InvestigationHud.show_evidence(ending)
+	ending.description = "周四的访客页收回了内袋，西梯的旧说明留在林禾的笔记里。\n\n两扇门都锁着，韩素看见的人站在哪里？\n\n第三章《雨棚下的人》"
+	$InvestigationHud.show_evidence(ending, false, "开始第三章", RoomTransition.start_chapter_three)

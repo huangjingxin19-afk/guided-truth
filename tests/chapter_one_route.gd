@@ -1,5 +1,5 @@
 extends SceneTree
-## End-to-end first and second chapters through real HUD input.
+## End-to-end chapter routes through real HUD input.
 
 var _failures := 0
 var _room: Node
@@ -8,6 +8,7 @@ var _player: CharacterBody2D
 var _log: Node
 var _chapter: Node
 var _chapter_two: Node
+var _chapter_three: Node
 var _transition: Node
 
 
@@ -19,12 +20,14 @@ func _run() -> void:
 	_log = root.get_node("InvestigationLog")
 	_chapter = root.get_node("ChapterOne")
 	_chapter_two = root.get_node("ChapterTwo")
+	_chapter_three = root.get_node("ChapterThree")
 	_transition = root.get_node("RoomTransition")
 	_transition.start_new_game()
 	await _room_ready("FrontDesk")
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted, "New game starts with an empty log and no commission.")
 	_check(_room.get_node("Investigation/CorridorExit").disabled, "Receive the commission before leaving the front desk.")
 	_check(not _room.get_node("Investigation/PhotoPoint").visible and not _chapter_two.can_start(), "Friday clues stay hidden before the chapter handoff.")
+	_check(not _chapter_three.can_start(), "Saturday requires the Friday ending.")
 	_tap(Vector2(350, 225))
 	await _settle()
 	_check(not _hud.is_open() and _log.entries().is_empty(), "A distant tap cannot accept the commission.")
@@ -451,13 +454,118 @@ func _play_chapter_two() -> void:
 	_tap_button(_hud.evidence_action_button)
 	await _settle()
 	_check(_hud.header.text == "第二章完 · 少掉的一页" and _hud.description.text.contains("雨棚下的人"), "The ending points to Chapter Three.")
+	_check(_hud.evidence_action_button.text == "开始第三章", "The Friday ending can start Saturday.")
+	await _check_card("Friday ending")
 	await _capture("23-chapter-two-ending")
-	_close()
-	await _settle()
+	await _play_chapter_three(watch_pickup)
 	await _reread("韩素的 21:10 夜巡消息", "今天两边门我都锁了")
 	await _reread("西梯旧事故说明照片", "落款：周闻")
 	await _reread("102 原地复核改签", "A01 保持开箱")
 	await _reread("16:46 群聊照片局部留档", "邵宁确认")
+
+
+func _play_chapter_three(start_directly: bool) -> void:
+	if not start_directly:
+		_close()
+		await _settle()
+		await _interact_at(Vector2(610, 352), "回看夜巡消息")
+		_tap_button(_hud.evidence_action_button)
+		await _settle()
+		_check(_hud.header.text == "第二章完 · 少掉的一页", "The Friday ending reopens after dismissal.")
+	_tap_button(_hud.evidence_action_button)
+	await _room_ready("Corridor")
+	_check(_chapter_three.active and _room.get_node("ChapterStatus").text.begins_with("周六 17:50"), "The handoff starts on Saturday.")
+	_check(not _room.get_node("Scenery/NightShade").visible and not _room.get_node("Investigation/NightPatrolPoint").visible, "Saturday replaces Friday's night patrol at the door.")
+	await _capture("24-chapter-three-corridor")
+
+	await _interact_at(Vector2(465, 395), "找韩素了解夜巡")
+	_check(_log.has_entry(_chapter_three.COMMISSION.id), "Han Su's commission unlocks the high window.")
+	_close()
+	await _interact_at(Vector2(647, 348), "查看102 正门封条")
+	_check(_hud.header.text == "102 正门封条", "Saturday's seal remains inspectable.")
+	_close()
+
+	await _enter_back_yard()
+	await _interact_at(Vector2(730, 346), "检查器材门")
+	_check(not _transition.is_changing and _room.get_node("WalkHint").text.contains("正门高窗"), "An early visit to the yard points back to the high window.")
+	await _interact_at(Vector2(158, 346), "经外廊回走廊")
+	await _room_ready("Corridor")
+	await _interact_at(Vector2(588, 345), "查看正门高窗")
+	_check(_hud.header.text == "正门高窗" and _log.has_entry(_chapter_three.HIGH_WINDOW.id), "The high-window observation records its own evidence.")
+	await _check_card("high window observation")
+	await _capture("25-chapter-three-high-window")
+	_close()
+	_tap_button(_hud.get_node("NotebookButton"))
+	await _settle()
+	_check(_notebook_button("对照高窗与桌后") == null, "The notebook waits for both observations before offering comparison.")
+	_close()
+
+	await _enter_back_yard()
+	await _interact_at(Vector2(730, 346), "检查器材门")
+	_check(_room.get_node("WalkHint").text.contains("请韩素打开器材门"), "The high window gives a new way to open the supply door.")
+	await _interact_at(Vector2(390, 367), "请韩素打开器材门")
+	_check(_chapter_three.can_enter_supply_door() and _hud.header.text == "周六器材门", "Han Su opens the door for Saturday.")
+	_close()
+	await _enter_102()
+	await _walk_to(Vector2(690, 426))
+	_tap(Vector2(656, 173))
+	await _settle()
+	_check(not _hud.is_open() and not _log.has_entry(_chapter_three.DESK_VIEW.id), "The glass cannot be examined from the front of the long desk.")
+	await _interact_at(Vector2(655, 265), "查看桌后观察")
+	_check(_hud.header.text == "桌后观察" and _chapter_three.can_submit_location(), "Walking around the desk records the second view and unlocks the finding.")
+	await _check_card("desk observation")
+	await _capture("26-chapter-three-desk-view")
+	_close()
+	await _return_to_yard()
+	_check(_chapter_three.can_enter_supply_door(), "The Saturday door stays open on backtracking.")
+	await _interact_at(Vector2(158, 346), "经外廊回走廊")
+	await _room_ready("Corridor")
+
+	await _interact_at(Vector2(465, 395), "向韩素说明人影位置")
+	var form := _hud.presentation_slot.get_node("LocationReasoning") as Control
+	var submit := form.get_node("Submit") as Button
+	_check(submit.disabled, "The placement decision requires a selected answer.")
+	_tap_button(_choice(form, "在 102 教室里"))
+	_tap_button(submit)
+	await _settle()
+	_check(not _chapter_three.has_location_finding() and form.find_children("*", "Label", false, false)[0].text.contains("玻璃边框"), "A wrong choice points to visible evidence and allows recovery.")
+	_close()
+
+	_tap_button(_hud.get_node("NotebookButton"))
+	await _settle()
+	var compare := _notebook_button("对照高窗与桌后")
+	await _settle()
+	_tap_button(compare)
+	await _settle()
+	_check(_hud.header.text == "对照高窗与桌后" and not form.visible, "The notebook compares both observations without the reasoning form over it.")
+	await _check_card("shelter comparison")
+	await _capture("27-chapter-three-comparison")
+	for view in ["正门高窗", "桌后观察"]:
+		_tap_button(_choice(_hud.presentation_slot, "放大" + view))
+		await _settle()
+		_check(_hud.header.text == view and _hud.close_button.text == "返回对照", "An enlarged view can return directly to comparison.")
+		await _check_card("enlarged " + view)
+		_close()
+		await _settle()
+		_check(_hud.header.text == "对照高窗与桌后", "Returning to comparison preserves both views.")
+	_close()
+	await _settle()
+	_check(_hud.header.text == "笔记" and _hud.notebook.visible, "Closing comparison returns to the notebook.")
+	_close()
+
+	await _interact_at(Vector2(465, 395), "向韩素说明人影位置")
+	_tap_button(_choice(form, "在玻璃外的后院雨棚"))
+	_tap_button(submit)
+	await _settle()
+	_check(_chapter_three.has_location_finding() and _hud.header.text == "人影在雨棚", "The correct finding completes the Saturday observation route.")
+	await _check_card("shelter finding")
+	await _capture("28-chapter-three-finding")
+	var record_count: int = _log.entries().size()
+	_close()
+	await _interact_at(Vector2(465, 395), "回看人影位置")
+	_check(_log.entries().size() == record_count, "Reopening the finding is idempotent.")
+	_close()
+	await _reread("人影在雨棚", "黄色卷尺")
 
 
 func _return_to_front_desk() -> void:
@@ -541,6 +649,7 @@ func _restart() -> void:
 	await _room_ready("FrontDesk")
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted and not _chapter.corridor_visited, "Restart clears every note and first-chapter flag.")
 	_check(not _chapter_two.active and not _chapter_two.has_finding() and not _room.get_node("Investigation/PhotoPoint").visible, "Restart also clears Friday's progress and restores the Thursday front desk.")
+	_check(not _chapter_three.active and not _chapter_three.has_location_finding() and _chapter_three.observation_pair().is_empty(), "Restart also clears Saturday's progress and comparison.")
 	_check(_player.position.is_equal_approx(Vector2(230, 420)), "Restart uses the starting entrance.")
 	_check(_chapter.story_time() == "周四 18:35", "Restart resets story time.")
 

@@ -237,6 +237,7 @@ text = "第一章 · 后院雨棚"
 [connection signal="approach_requested" from="Investigation/CorridorExit" to="Investigation" method="show_approach_hint"]
 [connection signal="approach_requested" from="Investigation/HanSuPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="inspection_requested" from="Investigation/HanSuPoint" to="." method="_on_evidence_inspected"]
+[connection signal="interaction_requested" from="Investigation/HanSuPoint" to="." method="_on_han_su_requested"]
 [connection signal="approach_requested" from="Investigation/CartPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="inspection_requested" from="Investigation/CartPoint" to="." method="_on_evidence_inspected"]
 [connection signal="approach_requested" from="Investigation/SupplyDoorExit" to="Investigation" method="show_approach_hint"]

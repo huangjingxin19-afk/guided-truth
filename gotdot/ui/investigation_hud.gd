@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
+const EvidenceComparison = preload("res://ui/evidence_comparison.gd")
 const TouchJoystick = preload("res://ui/touch_joystick.gd")
 
 signal notebook_requested
@@ -25,7 +26,8 @@ signal overlay_changed(open: bool)
 @onready var presentation_slot: CenterContainer = %Presentation
 
 var _preview: Node2D
-var _return_to_notebook := false
+var _comparison: EvidenceComparison
+var _return_action := Callable()
 var _evidence_action := Callable()
 
 
@@ -69,7 +71,7 @@ func _on_interaction_pressed() -> void:
 func show_evidence(
 	entry: EvidenceEntry, from_notebook := false, action_label := "", action := Callable()
 ) -> void:
-	_return_to_notebook = from_notebook
+	_return_action = _show_notebook_page if from_notebook else Callable()
 	header.text = entry.title
 	description.text = entry.description
 	close_button.text = "返回笔记" if from_notebook else "关闭"
@@ -98,12 +100,13 @@ func show_presentation(view: Control, title: String, closable := false) -> void:
 		view.reparent(presentation_slot, false)
 	_evidence_action = Callable()
 	header.text = title
-	_return_to_notebook = false
+	_return_action = Callable()
 	close_button.text = "关闭"
 	close_button.visible = closable
 	evidence.hide()
 	notebook.hide()
-	view.show()
+	for child: Control in presentation_slot.get_children():
+		child.visible = child == view
 	presentation_slot.show()
 	overlay.show()
 	if closable:
@@ -115,7 +118,7 @@ func close_presentation() -> void:
 	overlay.hide()
 
 
-func show_notebook(entries: Array[EvidenceEntry]) -> void:
+func show_notebook(entries: Array[EvidenceEntry], comparison_entries: Array[EvidenceEntry] = []) -> void:
 	for child in notebook_list.get_children():
 		notebook_list.remove_child(child)
 		child.queue_free()
@@ -124,6 +127,14 @@ func show_notebook(entries: Array[EvidenceEntry]) -> void:
 		var message := Label.new()
 		message.text = "还没有记录。"
 		notebook_list.add_child(message)
+
+	if comparison_entries.size() == 2:
+		var compare := Button.new()
+		compare.text = "对照高窗与桌后"
+		compare.custom_minimum_size.y = 52.0
+		compare.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		compare.pressed.connect(_open_comparison.bind(comparison_entries))
+		notebook_list.add_child(compare)
 
 	for entry in entries:
 		var button := Button.new()
@@ -143,6 +154,29 @@ func show_notebook(entries: Array[EvidenceEntry]) -> void:
 	_show_notebook_page()
 
 
+func _open_comparison(entries: Array[EvidenceEntry]) -> void:
+	if is_instance_valid(_comparison):
+		presentation_slot.remove_child(_comparison)
+		_comparison.queue_free()
+	_comparison = EvidenceComparison.new()
+	_comparison.setup(entries, preview_container.get_theme_stylebox("panel"))
+	_comparison.entry_selected.connect(_enlarge_comparison_entry)
+	presentation_slot.add_child(_comparison)
+	_show_comparison()
+
+
+func _show_comparison() -> void:
+	show_presentation(_comparison, "对照高窗与桌后", true)
+	_return_action = _show_notebook_page
+	close_button.text = "返回笔记"
+
+
+func _enlarge_comparison_entry(entry: EvidenceEntry) -> void:
+	show_evidence(entry)
+	_return_action = _show_comparison
+	close_button.text = "返回对照"
+
+
 func _confirm_new_game() -> void:
 	var prompt := EvidenceEntry.new()
 	prompt.title = "重新开始调查？"
@@ -151,7 +185,7 @@ func _confirm_new_game() -> void:
 
 
 func _show_notebook_page() -> void:
-	_return_to_notebook = false
+	_return_action = Callable()
 	header.text = "笔记"
 	close_button.text = "关闭"
 	close_button.show()
@@ -170,8 +204,8 @@ func _on_notebook_pressed() -> void:
 
 func _on_close_pressed() -> void:
 	_evidence_action = Callable()
-	if _return_to_notebook:
-		_show_notebook_page()
+	if _return_action.is_valid():
+		_return_action.call()
 	else:
 		overlay.hide()
 

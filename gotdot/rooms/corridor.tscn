@@ -7,6 +7,9 @@
 [ext_resource type="Resource" path="res://investigation/front_door_seal.tres" id="5"]
 [ext_resource type="PackedScene" path="res://props/front_door_seal.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://props/west_stair_notice.tscn" id="7_notice"]
+[ext_resource type="PackedScene" path="res://actors/han_su.tscn" id="8_han_su"]
+[ext_resource type="Resource" path="res://investigation/shelter_high_window.tres" id="9_high_window"]
+[ext_resource type="Script" path="res://ui/reasoning_form.gd" id="10_reasoning"]
 
 [node name="Corridor" instance=ExtResource("1")]
 script = ExtResource("2")
@@ -97,6 +100,10 @@ text = "西梯口"
 visible = false
 polygon = PackedVector2Array(96, 136, 864, 136, 864, 474, 96, 474)
 color = Color(0.07, 0.12, 0.19, 0.36)
+
+[node name="SaturdayHanSu" parent="WalkableFloor/DepthSort" index="1" instance=ExtResource("8_han_su")]
+visible = false
+position = Vector2(465, 358)
 
 [node name="ArrivalHint" type="Label" parent="." index="8"]
 offset_left = 240.0
@@ -231,14 +238,82 @@ approach_hint = "靠近 102 正门的窄窗"
 [node name="Marker" parent="Investigation/NightPatrolPoint" index="0"]
 visible = false
 
+[node name="SaturdayHanSuPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="11" instance=ExtResource("3")]
+visible = false
+offset_left = 439.0
+offset_top = 275.0
+offset_right = 490.0
+offset_bottom = 367.0
+interaction_label = "找韩素了解夜巡"
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../WalkableFloor/DepthSort/SaturdayHanSu")
+target_outline = PackedVector2Array(-18, -5, 18, -5, 18, 5, -18, 5)
+inspection_distance = 53.0
+touch_padding = 86.0
+hint_stands = [NodePath("../SaturdayHanSuStand")]
+approach_hint = "靠近 102 正门旁的韩素"
+
+[node name="Marker" parent="Investigation/SaturdayHanSuPoint" index="0"]
+visible = false
+
+[node name="SaturdayHanSuStand" type="Marker2D" parent="Investigation" index="12"]
+position = Vector2(465, 395)
+
+[node name="HighWindowPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="13" instance=ExtResource("3")]
+visible = false
+offset_left = 548.0
+offset_top = 178.0
+offset_right = 622.0
+offset_bottom = 306.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/Door102")
+target_outline = PackedVector2Array(-40, -4, 23, -4, 23, 4, -40, 4)
+inspection_distance = 58.0
+touch_padding = 130.0
+evidence = ExtResource("9_high_window")
+hint_stands = [NodePath("../SealStand")]
+approach_hint = "靠近高窗，从玻璃往器材架看"
+
+[node name="Marker" parent="Investigation/HighWindowPoint" index="0"]
+visible = false
+
+[node name="SaturdaySealPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="14" instance=ExtResource("3")]
+visible = false
+offset_left = 623.0
+offset_top = 233.0
+offset_right = 666.0
+offset_bottom = 306.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/Door102")
+target_outline = PackedVector2Array(30, -4, 66, -4, 66, 4, 30, 4)
+inspection_distance = 58.0
+touch_padding = 78.0
+evidence = ExtResource("5")
+hint_stands = [NodePath("../SaturdaySealStand")]
+approach_hint = "靠近正门右侧，核对原来的封条"
+
+[node name="Marker" parent="Investigation/SaturdaySealPoint" index="0"]
+visible = false
+
+[node name="SaturdaySealStand" type="Marker2D" parent="Investigation" index="15"]
+position = Vector2(647, 348)
+
 [node name="FromFrontDesk" type="Marker2D" parent="Entrances" index="1"]
 position = Vector2(230, 374)
 
 [node name="FromYard" type="Marker2D" parent="Entrances" index="2"]
 position = Vector2(783, 378)
 
+[node name="Saturday" type="Marker2D" parent="Entrances" index="3"]
+position = Vector2(422, 402)
+
 [node name="RoomTitle" parent="." index="4"]
 text = "第一章 · 102 门口"
+
+[node name="LocationReasoning" type="VBoxContainer" parent="." index="9"]
+visible = false
+script = ExtResource("10_reasoning")
+first_question = "从高窗看见的人影站在哪里？"
 
 [connection signal="approach_requested" from="Investigation/FrontDeskExit" to="Investigation" method="show_approach_hint"]
 [connection signal="approach_requested" from="Investigation/SealPoint" to="Investigation" method="show_approach_hint"]
@@ -250,6 +325,13 @@ text = "第一章 · 102 门口"
 [connection signal="interaction_requested" from="Investigation/AccidentPoint" to="." method="_on_accident_requested"]
 [connection signal="approach_requested" from="Investigation/NightPatrolPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/NightPatrolPoint" to="." method="_on_night_patrol_requested"]
+[connection signal="approach_requested" from="Investigation/SaturdayHanSuPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/SaturdayHanSuPoint" to="." method="_on_saturday_han_su_requested"]
+[connection signal="approach_requested" from="Investigation/HighWindowPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/HighWindowPoint" to="Investigation" method="inspect"]
+[connection signal="approach_requested" from="Investigation/SaturdaySealPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="inspection_requested" from="Investigation/SaturdaySealPoint" to="." method="_on_seal_inspected"]
+[connection signal="submitted" from="LocationReasoning" to="." method="_on_location_submitted"]
 
 [editable path="Investigation/FrontDeskExit"]
 [editable path="Investigation/SealPoint"]
@@ -257,3 +339,6 @@ text = "第一章 · 102 门口"
 [editable path="Investigation/EndingPoint"]
 [editable path="Investigation/AccidentPoint"]
 [editable path="Investigation/NightPatrolPoint"]
+[editable path="Investigation/SaturdayHanSuPoint"]
+[editable path="Investigation/HighWindowPoint"]
+[editable path="Investigation/SaturdaySealPoint"]

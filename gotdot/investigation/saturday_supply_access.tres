@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"saturday_supply_access"
+title = "周六器材门"
+description = "韩素用钥匙打开器材门。「走桌子右边，到里面再看看。靠着门看的时候，器材架会挡住一截。」"
