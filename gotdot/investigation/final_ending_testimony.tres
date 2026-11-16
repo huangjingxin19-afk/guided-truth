@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_ending_testimony"
+title = "许南的签字陈述"
+description = "「那晚我跟着老师走西梯。灯一下黑了，前面的人停住了。我伸手想摸扶手，脚踩空了。后来他们问我怎么自己走到那边，我就开始想，是不是我记错了。」"

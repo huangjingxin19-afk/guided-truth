@@ -1,6 +1,9 @@
 extends Node2D
 
 const HanSuActor = preload("res://actors/han_su.gd")
+const FinalEnding = preload("res://ui/final_ending.gd")
+
+var _final_ending := FinalEnding.new()
 
 @onready var _investigation = $Investigation
 @onready var _hud = $InvestigationHud
@@ -88,6 +91,16 @@ func _refresh_final_review() -> void:
 	$Scenery/Bench.position = Vector2(597, 321)
 	$Investigation/SupplyDoorExit.travel_allowed = true
 	$Investigation/SupplyDoorExit.interaction_label = "从器材门回 102"
+	if InvestigationLog.has_entry(ChapterThree.CONFRONTATION.id):
+		$RoomTitle.text = "尾声 · 后院雨棚"
+		$WalkableFloor/DepthSort/HanSu.show()
+		$WalkableFloor/DepthSort/HanSu.position = Vector2(657, 343)
+		$WalkableFloor/DepthSort/HanSu.pose = HanSuActor.Pose.FRONT
+		$WalkableFloor/DepthSort/XuNan.show()
+		$WalkableFloor/DepthSort/ReturnedStand.show()
+		$Investigation/ReturnSignOffPoint.show()
+		$Investigation/ReturnSignOffPoint.interaction_label = "听许南讲述西梯那一晚"
+		$Investigation/ReturnSignOffPoint.approach_hint = "到长凳旁找许南和韩素"
 
 
 func _on_han_su_requested() -> void:
@@ -104,6 +117,12 @@ func _on_returned_stand_requested() -> void:
 
 
 func _on_return_sign_off_requested() -> void:
+	if _hud.is_open():
+		return
+	if InvestigationLog.has_entry(ChapterThree.CONFRONTATION.id):
+		_investigation.clear_approach_hint()
+		_final_ending.show_epilogue(_hud, ChapterThree.record_ending, _go_to_front_desk)
+		return
 	if ChapterThree.is_complete():
 		if ChapterThree.final_review_started:
 			_investigation.inspect(ChapterThree.CONCLUSION)
@@ -116,6 +135,10 @@ func _on_return_sign_off_requested() -> void:
 		_hud.show_presentation(_reasoning, "核对两晚的来访", true)
 	elif InvestigationLog.has_entry(ChapterThree.RETURNED_STAND.id):
 		_investigation.inspect(ChapterThree.RECEIPT)
+
+
+func _go_to_front_desk() -> void:
+	RoomTransition.change_room("res://rooms/front_desk.tscn", &"FromCorridor")
 
 
 func _on_return_conclusion_submitted(visitor: int, item: int) -> void:

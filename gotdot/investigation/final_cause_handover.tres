@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_cause_handover"
+title = "归因 · 改签让周闻接触 A01"
+description = "访客页查清后，复核从办公室改到 102，A01 保持开箱，周闻获准留屋分类。他从前台回收筐取走带杯圈的春册。终章暂停移交时，带杯圈的春册出现在 A01 箱口。"

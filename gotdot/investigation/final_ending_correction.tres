@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_ending_correction"
+title = "更正告示与清点补记"
+description = "当晚更正告示｜事故发生前，中心已收到西梯应急照明故障报告。原说明对应表述有误。相关原件已保留，疏散经过将根据现有材料和当事人陈述补充核实。\n\nA01 清点补记｜A01 原收秋季报修存根一册。蓝布封面，书脊下端白线三针。周六于 102 的 G03 旧谱架箱中取回，单独留存。\n\n补记人：林禾、何青。周四原句保留。"

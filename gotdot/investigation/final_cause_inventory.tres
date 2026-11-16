@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_cause_inventory"
+title = "归因 · 首次清点让周闻知道原册下落"
+description = "周闻递来的器材便笺把调查引向 18:40 的后院。林禾随韩素进 102 核实取凳经过，发现白线秋册并清点入 A01。周闻在清点单上签了「已阅」，知道原册将随 A01 移交。"

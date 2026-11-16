@@ -31,6 +31,7 @@ signal overlay_changed(open: bool)
 var _preview: Node2D
 var _comparison: EvidenceComparison
 var _return_action := Callable()
+var _notebook_return := Callable()
 var _evidence_action := Callable()
 var _evidence_secondary_action := Callable()
 
@@ -145,7 +146,10 @@ func close_presentation() -> void:
 	overlay.hide()
 
 
-func show_notebook(entries: Array[EvidenceEntry], comparison_entries: Array[EvidenceEntry] = []) -> void:
+func show_notebook(
+	entries: Array[EvidenceEntry], comparison_entries: Array[EvidenceEntry] = [], on_close := Callable()
+) -> void:
+	_notebook_return = on_close
 	for child in notebook_list.get_children():
 		notebook_list.remove_child(child)
 		child.queue_free()
@@ -174,6 +178,7 @@ func show_notebook(entries: Array[EvidenceEntry], comparison_entries: Array[Evid
 		notebook_list.add_child(button)
 
 	_show_notebook_page()
+	notebook.scroll_vertical = 0
 
 
 func show_comparison(
@@ -204,9 +209,9 @@ func _enlarge_comparison_entry(entry: EvidenceEntry, return_to_comparison: Calla
 
 
 func _show_notebook_page() -> void:
-	_return_action = Callable()
+	_return_action = _notebook_return
 	header.text = "笔记"
-	close_button.text = "关闭"
+	close_button.text = "返回推理" if _notebook_return.is_valid() else "关闭"
 	close_button.show()
 	_evidence_action = Callable()
 	evidence.hide()

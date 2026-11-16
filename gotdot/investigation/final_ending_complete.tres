@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://ui/final_ending_desk_marks.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_ending_complete"
+title = "把那一行写全"
+description = "林禾关上灯。长桌后露出一小段地面，桌脚旁的两道位置痕迹都还在。\n\n全案结束"
+preview = ExtResource("2")
+preview_scale = 2.4

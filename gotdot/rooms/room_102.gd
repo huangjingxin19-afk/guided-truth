@@ -6,6 +6,9 @@ const InvestigationHud = preload("res://ui/investigation_hud.gd")
 const RoomInvestigation = preload("res://investigation/room_investigation.gd")
 const ThresholdReenactment = preload("res://rooms/room_102_threshold_reenactment.gd")
 const Reasoning = preload("res://ui/reasoning_form.gd")
+const FinalReasoning = preload("res://chapters/final_reasoning.gd")
+const FinalReasoningView = preload("res://ui/final_reasoning_view.gd")
+const FinalEnding = preload("res://ui/final_ending.gd")
 const WalkableFloor = preload("res://rooms/walkable_floor.gd")
 const Stage = preload("res://chapters/chapter_one.gd").ReenactmentStage
 const Case = preload("res://chapters/chapter_one.gd").CaseStage
@@ -17,6 +20,9 @@ const ACCIDENT_EXCERPTS: Array[String] = [
 	"11 月 8 日 17:40 报修\n17:52 周闻签收\n「今晚西梯照常走，明早再修。」",
 	"11 月 8 日约 20:17 楼内停电\n「事发前未收到西梯应急照明故障报告。」",
 ]
+
+var _final_reasoning := FinalReasoningView.new()
+var _final_ending := FinalEnding.new()
 
 @onready var _investigation: RoomInvestigation = $Investigation
 @onready var _hud: InvestigationHud = $InvestigationHud
@@ -35,6 +41,15 @@ const ACCIDENT_EXCERPTS: Array[String] = [
 func _ready() -> void:
 	_reasoning.setup(ChapterOne.ROUTE_CHOICES, ChapterOne.SOUND_CHOICES)
 	_accident_reasoning.setup(ChapterThree.ACCIDENT_CLAIMS)
+	_final_reasoning.name = "FinalReasoningView"
+	_final_reasoning.hide()
+	add_child(_final_reasoning)
+	_final_reasoning.request_group.connect(_show_final_group)
+	_final_reasoning.submit_group.connect(_submit_final_group)
+	_final_reasoning.request_entry.connect(_review_final_proof)
+	_final_reasoning.hint_requested.connect(_show_final_hint)
+	_final_reasoning.request_motive.connect(_show_final_motive)
+	_final_reasoning.submit_motive.connect(_submit_final_motive)
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
 	ChapterThree.progress_changed.connect(_refresh)
@@ -130,10 +145,20 @@ func _refresh_final_review() -> void:
 	$Scenery/OpenG03.position = Vector2(697, 248)
 	$Scenery/FinalOpenG03.position = Vector2(697, 248)
 	$Investigation/G03Point.interaction_label = "检查 G03"
-	$Investigation/FinalHeQingPoint.interaction_label = "请打开 G03"
+	var has_ledger := _has_final_entry(ChapterThree.AUTUMN_LEDGER)
+	$Investigation/FinalHeQingPoint.interaction_label = "向何青核对正门封条" if has_ledger else "请打开 G03"
+	$Investigation/FinalHeQingPoint.approach_hint = "走到何青身边，核对正门封条" if has_ledger else "走到何青身边，请她打开 G03"
 	$Investigation/FinalHanSuPoint.interaction_label = "向韩素核对离场情况"
-	$Scenery/ZhouWen.show()
-	$Scenery/ZhouWen.position = Vector2(414, 274)
+	$Investigation/FinalReasoningPoint.visible = ChapterThree.can_submit_final_reasoning()
+	_desk.get_node("FinalDeskNotes").visible = $Investigation/FinalReasoningPoint.visible
+	var desk_action := "把三天的事放在一起"
+	if _has_final_entry(ChapterThree.CONFRONTATION):
+		desk_action = "回看周闻对质"
+	elif _has_final_entry(FinalReasoning.MOTIVE):
+		desk_action = "与周闻对质"
+	$Investigation/FinalReasoningPoint.interaction_label = desk_action
+	$Scenery/ZhouWen.hide()
+	$Scenery/FinalZhouWen.show()
 	var final_desk_position := _desk_start + Vector2(0, -28)
 	if _desk.position != final_desk_position:
 		_desk.position = final_desk_position
@@ -185,7 +210,10 @@ func _on_final_he_qing_requested() -> void:
 	if _hud.is_open() or not ChapterThree.handover_paused:
 		return
 	_investigation.clear_approach_hint()
-	if _has_final_entry(ChapterThree.G03_PHOTO):
+	if _has_final_entry(ChapterThree.AUTUMN_LEDGER):
+		ChapterThree.record_final_evidence(ChapterThree.SEAL_CONFIRMATION)
+		_hud.show_evidence(ChapterThree.SEAL_CONFIRMATION)
+	elif _has_final_entry(ChapterThree.G03_PHOTO):
 		ChapterThree.record_final_evidence(ChapterThree.G03_PERMISSION)
 		_hud.show_evidence(ChapterThree.G03_PERMISSION)
 	else:
@@ -261,6 +289,110 @@ func _on_accident_reasoning_submitted(answer: int, _unused: int) -> void:
 		_hud.show_evidence(ChapterThree.A047_FINDING)
 	else:
 		_accident_reasoning.show_feedback(feedback)
+
+
+func _on_final_reasoning_requested() -> void:
+	if _hud.is_open() or not ChapterThree.can_submit_final_reasoning():
+		return
+	_investigation.clear_approach_hint()
+	if _has_final_entry(FinalReasoning.MOTIVE):
+		_show_confrontation()
+	else:
+		_show_final_menu()
+
+
+func _show_final_menu() -> void:
+	var groups: Array[Dictionary] = []
+	for group in FinalReasoning.CASES.size():
+		groups.append({
+			"id": group,
+			"title": FinalReasoning.CASES[group].title,
+			"completed": _has_final_entry(FinalReasoning.FINDINGS[group]),
+		})
+	_final_reasoning.show_group_menu(groups)
+	_show_final_form()
+
+
+func _show_final_form(in_group := false) -> void:
+	_hud.show_presentation(
+		_final_reasoning, "把三天的事放在一起", true,
+		_show_final_menu if in_group else Callable(), "返回分组" if in_group else "关闭"
+	)
+
+
+func _show_final_group(group: int) -> void:
+	if group == -1:
+		_show_final_menu()
+		return
+	var finding: EvidenceEntry = FinalReasoning.FINDINGS[group]
+	if _has_final_entry(finding):
+		_hud.show_evidence(finding, false, "返回分组", _show_final_menu)
+		return
+	var notes := ChapterThree.final_evidence_ids()
+	var available: Array[StringName] = []
+	var proofs: Array[Dictionary] = []
+	proofs.assign(FinalReasoning.PROOFS)
+	for proof in proofs:
+		if FinalReasoning.proof_is_available(proof, notes):
+			available.append(proof.key)
+	var current: Dictionary = FinalReasoning.CASES[group]
+	var changes: Array[String] = []
+	changes.assign(current.changes)
+	_final_reasoning.show_group(group, current.title, changes, proofs, available)
+	if not FinalReasoning.proof_is_available(FinalReasoning.PROOFS[current.proof], notes):
+		_final_reasoning.show_feedback(FinalReasoning.missing_proof_hint(group, notes), true, true)
+	_show_final_form(true)
+
+
+func _show_final_hint(group: int) -> void:
+	var current: Dictionary = FinalReasoning.CASES[group]
+	var notes := ChapterThree.final_evidence_ids()
+	var hint: String = current.hint
+	if not FinalReasoning.proof_is_available(FinalReasoning.PROOFS[current.proof], notes):
+		hint += "\n" + FinalReasoning.missing_proof_hint(group, notes)
+	_final_reasoning.show_feedback(hint, true, true)
+
+
+func _review_final_proof(key: StringName) -> void:
+	for proof: Dictionary in FinalReasoning.PROOFS:
+		if proof.key == key:
+			var records: Array[EvidenceEntry] = InvestigationLog.entries().filter(
+				func(entry: EvidenceEntry) -> bool:
+					return entry.id in proof.required or entry.id in proof.get("alternatives", [])
+			)
+			_hud.show_notebook(records, [], _show_final_form.bind(true))
+			return
+
+
+func _submit_final_group(group: int, change: int, proof: int) -> void:
+	var feedback := ChapterThree.submit_final_group(group, change, proof)
+	if feedback.is_empty():
+		_hud.show_evidence(FinalReasoning.FINDINGS[group], false, "返回分组", _show_final_menu)
+	else:
+		_final_reasoning.show_feedback(feedback)
+
+
+func _show_final_motive() -> void:
+	var claims: Array[String] = []
+	claims.assign(ChapterThree.ACCIDENT_CLAIMS)
+	_final_reasoning.show_motive(FinalReasoning.MOTIVE_ITEMS, claims)
+	_show_final_form(true)
+
+
+func _submit_final_motive(item: int, claim: int) -> void:
+	var feedback := ChapterThree.submit_final_motive(item, claim)
+	if feedback.is_empty():
+		_hud.show_evidence(FinalReasoning.MOTIVE, false, "与周闻对质", _show_confrontation)
+	else:
+		_final_reasoning.show_feedback(feedback, true, true)
+
+
+func _show_confrontation() -> void:
+	_final_ending.show_confrontation(_hud, ChapterThree.record_ending, _go_to_epilogue)
+
+
+func _go_to_epilogue() -> void:
+	RoomTransition.change_room("res://rooms/back_yard.tscn", &"FromRoom102")
 
 
 func _on_final_han_su_requested() -> void:

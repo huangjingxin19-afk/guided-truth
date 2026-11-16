@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_cause_receipt"
+title = "归因 · 雨棚签收留下换册时机"
+description = "周闻找来归还通知，又看过 19:25 的值班板。林禾和韩素离场时秋册仍在 A01，至 19:27 签收，两人都在器材门外。正门封条未破，周闻留在屋内。春册被放入 A01，秋册藏在他经手的 G03 谱架下。"

@@ -831,6 +831,210 @@ func _resume_after_final_ledger() -> void:
 	await _settle()
 	_check(_chapter_three.status().contains("旧事故说明已核对"),
 		"The final objective reports that the old incident statement was checked.")
+	await _play_final_chapter()
+
+
+func _play_final_chapter() -> void:
+	var final_reasoning := load("res://chapters/final_reasoning.gd")
+	_check(final_reasoning.completed_count(_chapter_three.final_evidence_ids()) == 0,
+		"The 1.0.20 A-047 checkpoint begins with zero of three causal groups complete.")
+	_check(_room.get_node("Investigation/FinalReasoningPoint").visible,
+		"The final reasoning point becomes available after A-047.")
+	await _interact_at(Vector2(552, 389), "把三天的事放在一起")
+	var view := _final_reasoning_view()
+	var status := view.find_child("StatusLabel", true, false) as Label if view != null else null
+	_check(view != null and status != null,
+		"The final reasoning view opens from the shared interaction point.")
+	if view == null:
+		return
+	_check(_final_button(view, "Group1Button") != null
+		and _final_button(view, "Group2Button") != null
+		and _final_button(view, "Group3Button") != null,
+		"All three groups are available from the initial zero-of-three checkpoint.")
+	_check(status.text.contains("0/3"), "The initial reasoning progress is zero of three.")
+	_check(root.get_visible_rect().encloses(_hud.presentation_slot.get_global_rect()),
+		"The final reasoning view fits the viewport.")
+	await _capture("10-final-reasoning")
+	await _tap_final_button(view, "Group3Button")
+	_check(_final_button(view, "ProofButton1").disabled,
+		"The receipt proof correctly waits for the missing front-door seal confirmation.")
+	await _tap_final_button(view, "BackButton")
+	_close()
+	await _settle()
+	_check(not _log.has_entry(_chapter_three.SEAL_CONFIRMATION.id),
+		"The default investigation has not yet recorded the final seal confirmation.")
+	await _interact_at(Vector2(795, 335), "向何青核对正门封条")
+	_check(_log.has_entry(_chapter_three.SEAL_CONFIRMATION.id),
+		"The default route can supply the missing seal confirmation from He Qing.")
+	_close()
+	await _interact_at(Vector2(552, 389), "把三天的事放在一起")
+	view = _final_reasoning_view()
+	await _tap_final_button(view, "Group3Button")
+	await _tap_final_button(view, "ChangeButton2")
+	await _tap_final_button(view, "ProofButton1")
+	await _tap_final_button(view, "SubmitButton")
+	_check(_log.has_entry(final_reasoning.FINDINGS[2].id),
+		"The third causal group can be solved first with the receipt evidence.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	await _tap_final_button(view, "Group1Button")
+	await _tap_final_button(view, "ChangeButton0")
+	await _tap_final_button(view, "ProofButton0")
+	await _tap_final_button(view, "SubmitButton")
+	_check(not _log.has_entry(final_reasoning.FINDINGS[0].id)
+		and view.find_child("StatusLabel", true, false).text.contains("实际变化还对不上"),
+		"A wrong first-group answer gives feedback without recording a finding.")
+	await _tap_final_button(view, "GroupMenuButton")
+	_close()
+	await _settle()
+	_tap_button(_hud.get_node("PauseButton"))
+	await _settle()
+	_tap_button(_hud.get_node("PauseMenu/%ReturnButton"))
+	await scene_changed
+	await _settle()
+	_check(current_scene.name == "MainMenu", "Leave the incomplete final reasoning for the main menu.")
+	_tap_button(current_scene.get_node("%ContinueButton"))
+	await _room_ready("Room102")
+	_check(_log.has_entry(final_reasoning.FINDINGS[2].id)
+		and not _log.has_entry(final_reasoning.FINDINGS[0].id),
+		"Continue retains the completed third group and discards the failed first attempt.")
+	await _interact_at(Vector2(552, 389), "把三天的事放在一起")
+	view = _final_reasoning_view()
+	await _tap_final_button(view, "Group1Button")
+	await _tap_final_button(view, "ChangeButton1")
+	await _tap_final_button(view, "ProofButton0")
+	await _tap_final_button(view, "SubmitButton")
+	_check(_log.has_entry(final_reasoning.FINDINGS[0].id),
+		"The corrected first-group answer is recorded.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	await _tap_final_button(view, "Group2Button")
+	_check(_log.has_entry(_chapter_three.SHAO_NING_TESTIMONY.id)
+		and not _final_button(view, "ProofButton2").disabled,
+		"Shao Ning's testimony unlocks the second group's alternative proof.")
+	await _tap_final_button(view, "InspectButton2")
+	var shao_note := _notebook_button(_chapter_three.SHAO_NING_TESTIMONY.title)
+	_check(shao_note != null, "The second group can open Shao Ning's testimony from the notebook.")
+	if shao_note != null:
+		_tap_button(shao_note)
+		await _settle()
+		_check(_hud.header.text == _chapter_three.SHAO_NING_TESTIMONY.title
+			and _hud.description.text.contains("周闻就从筐里拿了那本"),
+			"The Shao Ning proof reopens with its saved account.")
+		_tap_button(_hud.close_button)
+		await _settle()
+		_tap_button(_hud.close_button)
+		await _settle()
+	await _tap_final_button(view, "ChangeButton0")
+	await _tap_final_button(view, "ProofButton2")
+	await _tap_final_button(view, "SubmitButton")
+	_check(_log.has_entry(final_reasoning.FINDINGS[1].id)
+		and final_reasoning.completed_count(_chapter_three.final_evidence_ids()) == 3,
+		"The second group completes the three findings using Shao Ning's testimony.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	await _tap_final_button(view, "MotiveButton")
+	await _tap_final_button(view, "ItemOption1")
+	await _tap_final_button(view, "ClaimOption1")
+	await _tap_final_button(view, "MotiveSubmitButton")
+	_check(_log.has_entry(final_reasoning.MOTIVE.id)
+		and _room.get_node("Investigation/FinalReasoningPoint").interaction_label == "与周闻对质",
+		"The final motive answer unlocks the confrontation at the same point.")
+	_close()
+	await _interact_at(Vector2(552, 389), "与周闻对质")
+	_check(_hud.header.text == "周闻把笔放下" and _hud.evidence_action_button.text == "问起那张便笺",
+		"The 102 confrontation opens with Zhou Wen and the equipment note.")
+	await _check_card("final confrontation")
+	await _capture("11-final-confrontation")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.evidence_action_button.text == "出示旧事故说明",
+		"The confrontation moves from the note to the old incident statement.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.evidence_action_button.text == "留存原册",
+		"The statement leads to preserving the original ledger.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_log.has_entry(_chapter_three.CONFRONTATION.id)
+		and _hud.evidence_action_button.text == "去雨棚",
+		"The 102 confrontation is saved before moving to the yard.")
+	_tap_button(_hud.evidence_action_button)
+	await _room_ready("BackYard")
+	await _interact_at(Vector2(657, 379), "听许南讲述西梯那一晚")
+	_check(_hud.evidence_action_button.text == "听许南讲述",
+		"The yard conversation first asks consent to hear Xu Nan's account.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.evidence_action_button.text == "留存签字陈述",
+		"Xu Nan's testimony can be retained after the conversation.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_log.has_entry(_chapter_three.XU_NAN_TESTIMONY.id)
+		and _hud.evidence_action_button.text == "去前台",
+		"The signed testimony is saved before going to the front desk.")
+	_tap_button(_hud.evidence_action_button)
+	await _room_ready("FrontDesk")
+	await _interact_at(Vector2(350, 360), "补写清点记录")
+	_check(_hud.evidence_action_button.text == "贴出更正告示",
+		"The front desk first presents the correction notice.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.evidence_action_button.text == "共同签名并留档",
+		"The correction notice can be jointly signed at the front desk.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_log.has_entry(_chapter_three.CORRECTION.id)
+		and _hud.evidence_action_button.text == "熄灯",
+		"The corrected record is saved before ending the investigation.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_log.has_entry(_chapter_three.ENDING.id)
+		and _hud.header.text == "把那一行写全",
+		"Completing the final action displays the investigation ending.")
+	await _check_card("final ending")
+	await _capture("12-final-ending")
+	_close()
+	await _settle()
+	_tap_button(_hud.get_node("PauseButton"))
+	await _settle()
+	_tap_button(_hud.get_node("PauseMenu/%ReturnButton"))
+	await scene_changed
+	await _settle()
+	_tap_button(current_scene.get_node("%ContinueButton"))
+	await _room_ready("FrontDesk")
+	_check(_log.has_entry(_chapter_three.ENDING.id)
+		and _room.get_node("Investigation/HeQingPoint").interaction_label == "回看尾声",
+		"Continue restores the completed ending for review at the front desk.")
+	await _interact_at(Vector2(350, 360), "回看尾声")
+	_check(_hud.header.text == "把那一行写全", "The completed ending can be reread after restarting.")
+	_close()
+
+
+func _final_reasoning_view() -> Control:
+	for child in _hud.presentation_slot.get_children():
+		if child.has_method("show_group_menu"):
+			return child as Control
+	return null
+
+
+func _final_button(view: Control, node_name: String) -> Button:
+	if view == null:
+		return null
+	return view.find_child(node_name, true, false) as Button
+
+
+func _tap_final_button(view: Control, node_name: String) -> void:
+	var button := _final_button(view, node_name)
+	if button == null:
+		_check(false, "Final reasoning button exists: " + node_name)
+		return
+	var scroll := view.find_child("ReasoningScroll", true, false) as ScrollContainer
+	if scroll != null and scroll.is_ancestor_of(button):
+		scroll.ensure_control_visible(button)
+		await _settle()
+	_tap_button(button)
+	await _settle()
 
 
 func _play_a047() -> void:

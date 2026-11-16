@@ -113,6 +113,17 @@ visible = false
 position = Vector2(14, -46)
 scale = Vector2(0.68, 0.68)
 
+[node name="CorrectionNotice" type="Polygon2D" parent="Scenery/HandoverBoard"]
+visible = false
+position = Vector2(-13, -79)
+color = Color(0.89, 0.82, 0.64, 1)
+polygon = PackedVector2Array(-13, -14, 13, -14, 13, 14, -13, 14)
+
+[node name="Print" type="Line2D" parent="Scenery/HandoverBoard/CorrectionNotice"]
+points = PackedVector2Array(-8, -6, 8, -6, 8, -2, -8, -2, -8, 2, 8, 2, 8, 7, -8, 7)
+width = 1.0
+default_color = Color(0.40, 0.31, 0.24, 1)
+
 [node name="Counter" type="StaticBody2D" parent="WalkableFloor/DepthSort" index="1"]
 position = Vector2(350, 316)
 collision_mask = 0

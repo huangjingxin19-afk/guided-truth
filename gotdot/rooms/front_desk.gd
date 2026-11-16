@@ -2,6 +2,9 @@ extends Node2D
 
 const Case = preload("res://chapters/chapter_one.gd").CaseStage
 const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
+const FinalEnding = preload("res://ui/final_ending.gd")
+
+var _final_ending := FinalEnding.new()
 
 @onready var _investigation = $Investigation
 @onready var _hud = $InvestigationHud
@@ -106,6 +109,18 @@ func _refresh_saturday() -> void:
 		$Investigation/ShaoNingPoint.visible = ChapterThree.handover_paused
 		$Investigation/ShaoNingPoint.interaction_label = "向邵宁核对春册去向"
 		$Investigation/ShaoNingPoint.accessibility_name = $Investigation/ShaoNingPoint.interaction_label
+		if InvestigationLog.has_entry(ChapterThree.XU_NAN_TESTIMONY.id):
+			var complete := InvestigationLog.has_entry(ChapterThree.ENDING.id)
+			$RoomTitle.text = "尾声 · 前台"
+			$Scenery/HeQing.show()
+			$Investigation/HeQingPoint.show()
+			$Investigation/HeQingPoint.interaction_label = "回看尾声" if complete else "补写清点记录"
+			$Investigation/HeQingPoint.approach_hint = "到柜台边找何青"
+			var corrected := InvestigationLog.has_entry(ChapterThree.CORRECTION.id)
+			$Scenery/HandoverBoard/CorrectionNotice.visible = corrected
+			$Investigation/HandoverBoardPoint.visible = corrected
+			$Investigation/HandoverBoardPoint.evidence = ChapterThree.CORRECTION
+			$Scenery.modulate = Color(0.65, 0.68, 0.85) if complete else Color.WHITE
 
 
 func _on_loan_cards_requested() -> void:
@@ -141,6 +156,11 @@ func _on_duty_board_requested() -> void:
 
 
 func _on_he_qing_interacted() -> void:
+	if InvestigationLog.has_entry(ChapterThree.XU_NAN_TESTIMONY.id):
+		if not _hud.is_open():
+			_investigation.clear_approach_hint()
+			_final_ending.show_resolution(_hud, ChapterThree.record_ending)
+		return
 	if ChapterTwo.active:
 		_show_chapter_two_commission_or_reasoning()
 		return

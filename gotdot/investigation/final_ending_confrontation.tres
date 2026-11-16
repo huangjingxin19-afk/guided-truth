@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_ending_confrontation"
+title = "秋册留存登记"
+description = "何青当面把秋册和 G03 装载卡放进留存袋，重新登记。她收回原签字单，通知接收方暂停 A01 资料和 G03 的移交，其余箱子继续清点。\n\n周闻把手头的装载卡和正在修订的晚班手册交给何青，留在 102 等她记录经过。何青接手后续值班和移交。"

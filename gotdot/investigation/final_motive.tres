@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_motive"
+title = "终章推理 · 周闻想带走秋册"
+description = "周闻用同样是蓝布封面的春册补足了 A01 的册数，另把秋册放进由自己经手的 G03。秋册里的 A-047 记有 17:52 的签收和继续走西梯的批注，足以推翻旧说明里「事发前未收到西梯应急照明故障报告」这一句。"

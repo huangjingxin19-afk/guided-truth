@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" path="res://props/shelter_closed_g03.tscn" id="21_g03_closed"]
 [ext_resource type="Resource" path="res://investigation/shelter_102_departure.tres" id="21_departure"]
 [ext_resource type="PackedScene" path="res://props/final_open_g03.tscn" id="22_final_open_g03"]
+[ext_resource type="Texture2D" path="res://actors/zhouwen/idle/zhouwen_idle_front.png" id="23_zhou_wen_final"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_floor"]
 resource_local_to_scene = true
@@ -205,6 +206,12 @@ position = Vector2(789, 315)
 [node name="ZhouWen" parent="Scenery" instance=ExtResource("16_zhou_wen")]
 visible = false
 position = Vector2(371, 264)
+
+[node name="FinalZhouWen" type="Sprite2D" parent="Scenery"]
+visible = false
+texture_filter = 1
+position = Vector2(414, 224)
+texture = ExtResource("23_zhou_wen_final")
 
 [node name="Investigation" type="Node2D" parent="." node_paths=PackedStringArray("hud", "walk_hint", "stand_hint")]
 script = ExtResource("1_investigation")
@@ -428,6 +435,26 @@ touch_padding = 26.0
 hint_stands = [NodePath("../FinalHanSuStand")]
 approach_hint = "走到韩素身边，核对她离场时的情况"
 
+[node name="FinalReasoningPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") instance=ExtResource("6_point")]
+visible = false
+offset_left = 512.0
+offset_top = 263.0
+offset_right = 592.0
+offset_bottom = 365.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../FinalReasoningTarget")
+target_outline = PackedVector2Array(-26, -4, 26, -4, 26, 4, -26, 4)
+inspection_distance = 53.0
+touch_padding = 104.0
+hint_stands = [NodePath("../FinalReasoningStand")]
+approach_hint = "走到长桌前，整理三次调查的记录"
+
+[node name="FinalReasoningTarget" type="Marker2D" parent="Investigation"]
+position = Vector2(552, 365)
+
+[node name="FinalReasoningStand" type="Marker2D" parent="Investigation"]
+position = Vector2(552, 389)
+
 [node name="DeskViewStand" type="Marker2D" parent="Investigation"]
 position = Vector2(655, 265)
 
@@ -515,6 +542,22 @@ points = PackedVector2Array(-264, -61, 266, -61)
 width = 2.0
 default_color = Color(0.71, 0.52, 0.33, 1)
 
+[node name="FinalDeskNotes" type="Node2D" parent="WalkableFloor/DepthSort/LongDesk"]
+visible = false
+position = Vector2(184, -78)
+
+[node name="First" type="Polygon2D" parent="WalkableFloor/DepthSort/LongDesk/FinalDeskNotes"]
+color = Color(0.79, 0.71, 0.53, 1)
+polygon = PackedVector2Array(-23, -5, -12, -6, -10, 6, -21, 7)
+
+[node name="Second" type="Polygon2D" parent="WalkableFloor/DepthSort/LongDesk/FinalDeskNotes"]
+color = Color(0.91, 0.83, 0.67, 1)
+polygon = PackedVector2Array(-6, -6, 6, -6, 6, 6, -6, 6)
+
+[node name="Third" type="Polygon2D" parent="WalkableFloor/DepthSort/LongDesk/FinalDeskNotes"]
+color = Color(0.85, 0.76, 0.56, 1)
+polygon = PackedVector2Array(12, -6, 23, -4, 21, 7, 10, 5)
+
 [node name="LinHe" parent="WalkableFloor/DepthSort" instance=ExtResource("2_player")]
 position = Vector2(307, 439)
 
@@ -591,6 +634,8 @@ first_question = "旧说明里哪一句有误？"
 [connection signal="interaction_requested" from="Investigation/FinalHeQingPoint" to="." method="_on_final_he_qing_requested"]
 [connection signal="approach_requested" from="Investigation/FinalHanSuPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/FinalHanSuPoint" to="." method="_on_final_han_su_requested"]
+[connection signal="approach_requested" from="Investigation/FinalReasoningPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/FinalReasoningPoint" to="." method="_on_final_reasoning_requested"]
 [connection signal="approach_requested" from="Investigation/SignOffPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/SignOffPoint" to="." method="_on_sign_off_requested"]
 [connection signal="approach_requested" from="Investigation/DeskViewPoint" to="Investigation" method="show_approach_hint"]

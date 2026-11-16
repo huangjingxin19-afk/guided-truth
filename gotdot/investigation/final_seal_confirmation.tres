@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_seal_confirmation"
+title = "何青的正门封条复核"
+description = "何青：「19:28 复核前，我先到正门看过。编号和清点时相同，纸条在门缝处没断，边缘也没揭起。我是绕雨棚进来的。」\n\n连同韩素的器材门证词，可核对 19:25 到 19:27 之间的出入。"

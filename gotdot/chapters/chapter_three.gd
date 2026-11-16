@@ -4,6 +4,7 @@ extends Node
 signal progress_changed
 
 const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
+const FinalReasoning = preload("res://chapters/final_reasoning.gd")
 const COMMISSION = preload("res://investigation/saturday_commission.tres")
 const HIGH_WINDOW = preload("res://investigation/shelter_high_window.tres")
 const SUPPLY_ACCESS = preload("res://investigation/saturday_supply_access.tres")
@@ -30,10 +31,16 @@ const A047_REPAIR = preload("res://investigation/final_a047_repair.tres")
 const A047_FINDING = preload("res://investigation/final_a047_finding.tres")
 const HAN_SU_TESTIMONY = preload("res://investigation/final_han_su_testimony.tres")
 const SHAO_NING_TESTIMONY = preload("res://investigation/final_shao_ning_testimony.tres")
+const SEAL_CONFIRMATION = preload("res://investigation/final_seal_confirmation.tres")
+const CONFRONTATION = preload("res://investigation/final_ending_confrontation.tres")
+const XU_NAN_TESTIMONY = preload("res://investigation/final_ending_testimony.tres")
+const CORRECTION = preload("res://investigation/final_ending_correction.tres")
+const ENDING = preload("res://investigation/final_ending_complete.tres")
 const FINAL_BOX_ENTRIES: Array[EvidenceEntry] = [
 	G03_CARD, G03_TRACE, G03_PHOTO, G03_PERMISSION, G03_OPEN, AUTUMN_LEDGER,
 ]
-const FINAL_WITNESSES: Array[EvidenceEntry] = [HAN_SU_TESTIMONY, SHAO_NING_TESTIMONY]
+const FINAL_WITNESSES: Array[EvidenceEntry] = [HAN_SU_TESTIMONY, SHAO_NING_TESTIMONY, SEAL_CONFIRMATION]
+const ENDING_STEPS: Array[EvidenceEntry] = [CONFRONTATION, XU_NAN_TESTIMONY, CORRECTION, ENDING]
 
 const CHAPTER_ENTRIES := [
 	COMMISSION, HIGH_WINDOW, SUPPLY_ACCESS, DESK_VIEW, LOCATION_FINDING, MESSAGE,
@@ -141,6 +148,60 @@ func submit_accident_comparison(answer: int) -> String:
 	return ""
 
 
+func can_submit_final_reasoning() -> bool:
+	return handover_paused and InvestigationLog.has_entry(A047_FINDING.id)
+
+
+func final_evidence_ids() -> Dictionary:
+	var ids := {}
+	for entry in InvestigationLog.entries():
+		ids[entry.id] = true
+	return ids
+
+
+func submit_final_group(group: int, change: int, proof: int) -> String:
+	if not can_submit_final_reasoning():
+		return "先用 A-047 核对旧事故说明。"
+	var feedback := FinalReasoning.validate_group(group, change, proof, final_evidence_ids())
+	if feedback.is_empty():
+		InvestigationLog.record(FinalReasoning.FINDINGS[group])
+	return feedback
+
+
+func submit_final_motive(item: int, claim: int) -> String:
+	if not can_submit_final_reasoning() or (
+		FinalReasoning.completed_count(final_evidence_ids()) != FinalReasoning.FINDINGS.size()
+	):
+		return "先把三次调查带来的变化都核对清楚。"
+	if item != 1:
+		return "想想他藏进自己经手的 G03、准备一起运走的是哪件东西。"
+	if claim != AccidentClaim.NO_PRIOR_REPORT:
+		return "再比一下签收和事故的先后，想想哪句话站不住。"
+	InvestigationLog.record(FinalReasoning.MOTIVE)
+	return ""
+
+
+func record_ending(entry: EvidenceEntry) -> void:
+	var step := ENDING_STEPS.find(entry)
+	if step == -1:
+		return
+	var prerequisite: EvidenceEntry = FinalReasoning.MOTIVE if step == 0 else ENDING_STEPS[step - 1]
+	if InvestigationLog.has_entry(prerequisite.id):
+		InvestigationLog.record(entry)
+
+
+func final_checkpoint_is_valid(ids: Dictionary) -> bool:
+	if not FinalReasoning.checkpoint_is_valid(ids):
+		return false
+	var previous_recorded := ids.has(FinalReasoning.MOTIVE.id)
+	for entry in ENDING_STEPS:
+		var recorded := ids.has(entry.id)
+		if recorded and not previous_recorded:
+			return false
+		previous_recorded = recorded
+	return true
+
+
 func can_observe_high_window() -> bool:
 	return active and InvestigationLog.has_entry(COMMISSION.id)
 
@@ -242,7 +303,9 @@ func is_complete() -> bool:
 
 func status() -> String:
 	var time := "17:50"
-	if final_review_started:
+	if InvestigationLog.has_entry(CONFRONTATION.id):
+		time = "20:05"
+	elif final_review_started:
 		time = "19:28"
 	elif InvestigationLog.has_entry(RECEIPT.id):
 		time = "19:27"
@@ -253,8 +316,16 @@ func status() -> String:
 
 func _objective() -> String:
 	if handover_paused:
+		if InvestigationLog.has_entry(ENDING.id):
+			return "调查结束 · 把那一行写全"
+		if InvestigationLog.has_entry(XU_NAN_TESTIMONY.id):
+			return "到前台找何青，补写清点记录"
+		if InvestigationLog.has_entry(CONFRONTATION.id):
+			return "到雨棚听许南讲述西梯那一晚"
+		if InvestigationLog.has_entry(FinalReasoning.MOTIVE.id):
+			return "到长桌旁，在何青见证下与周闻对质"
 		if InvestigationLog.has_entry(A047_FINDING.id):
-			return "旧事故说明已核对，可在笔记回看结论"
+			return "旧事故说明已核对，到长桌整理三次调查"
 		if needs_accident_photo():
 			return "去走廊西梯口补拍旧事故说明"
 		if InvestigationLog.has_entry(A047_REPORT.id):
@@ -304,5 +375,8 @@ func _objective() -> String:
 
 
 func _on_entry_recorded(entry: EvidenceEntry) -> void:
-	if active and (entry in CHAPTER_ENTRIES or entry in FINAL_BOX_ENTRIES or entry in FINAL_WITNESSES):
+	if active and (
+		entry in CHAPTER_ENTRIES or entry in FINAL_BOX_ENTRIES or entry in FINAL_WITNESSES
+		or entry in FinalReasoning.FINDINGS or entry == FinalReasoning.MOTIVE or entry in ENDING_STEPS
+	):
 		progress_changed.emit()

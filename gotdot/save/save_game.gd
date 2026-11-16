@@ -229,6 +229,8 @@ func _read_save(path: String) -> Dictionary:
 		for entry in ChapterThree.FINAL_WITNESSES:
 			if ids.has(entry.id):
 				return {}
+	if not ChapterThree.final_checkpoint_is_valid(ids):
+		return {}
 	return {"state": state, "entries": entries, "json": contents}
 
 

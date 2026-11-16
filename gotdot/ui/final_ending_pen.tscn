@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://actors/zhouwen/actions/zhouwen_straighten_pen.png" id="1_pose"]
+[ext_resource type="Texture2D" path="res://props/desk_pen.png" id="2_pen"]
+
+[node name="StraightenPen" type="Node2D"]
+texture_filter = 1
+
+[node name="Wall" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-116, -57, 116, -57, 116, 56, -116, 56)
+color = Color(0.36, 0.33, 0.29, 1)
+
+[node name="Table" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-99, 6, 99, 6, 116, 26, -116, 26)
+color = Color(0.60, 0.44, 0.32, 1)
+
+[node name="ZhouWen" type="Sprite2D" parent="."]
+position = Vector2(-36, -54)
+centered = false
+texture = ExtResource("1_pose")
+
+[node name="TableFront" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-116, 26, 116, 26, 116, 56, -116, 56)
+color = Color(0.40, 0.27, 0.20, 1)
+
+[node name="Pen" type="Sprite2D" parent="."]
+position = Vector2(28, 9)
+centered = false
+texture = ExtResource("2_pen")
