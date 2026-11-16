@@ -1,0 +1,74 @@
+{
+  "game": "被引向的真相",
+  "assets": {
+    "gotdot/actors/hansu/idle/hansu_idle_front.png": {
+      "size": [
+        72,
+        108
+      ],
+      "mode": "RGBA",
+      "anchor": [
+        36,
+        104
+      ],
+      "feet_y": 104
+    },
+    "gotdot/actors/hansu/actions/hansu_pushcart_right.png": {
+      "size": [
+        72,
+        108
+      ],
+      "mode": "RGBA",
+      "anchor": [
+        36,
+        104
+      ],
+      "feet_y": 104
+    },
+    "gotdot/props/pushcart_loaded_right.png": {
+      "size": [
+        128,
+        86
+      ],
+      "mode": "RGBA",
+      "wheel_contact_bottom_y": 81
+    }
+  },
+  "alignment_preview": {
+    "canvas_size": [
+      212,
+      125
+    ],
+    "actor_top_left": [
+      10,
+      0
+    ],
+    "cart_top_left": [
+      46,
+      22
+    ],
+    "actor_foot_baseline_y": 104,
+    "cart_wheel_baseline_y": 104,
+    "render_order": [
+      "cart",
+      "actor"
+    ],
+    "cart_top_left_relative_to_actor_foot_anchor": [
+      0,
+      -82
+    ]
+  },
+  "engine_import": {
+    "character_sprite_position_if_centered": [
+      0,
+      -50
+    ],
+    "cart_sprite_position_if_centered": [
+      64,
+      -39
+    ],
+    "filter": "nearest",
+    "scale": 1
+  },
+  "note": "Static pose only; walking frames and Godot scene replacement not included. Independent sprite layers."
+}
