@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EvidenceEntry" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_review_discrepancy"
+title = "终章复核 · A01 与首次清点不符"
+description = "第一天的现场照片里，A01 箱口那册书脊下端有三针白线。现在箱里的册子封面有杯圈，书脊完整，内页标着 2019 年春季。\n\n何青划住签字位，暂停 A01 和 102 内教具的移交。"

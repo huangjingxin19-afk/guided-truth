@@ -672,6 +672,23 @@ func _play_saturday_return() -> void:
 	await _interact_at(Vector2(657, 379), "回看第三章结案")
 	_check(_log.entries().size() == records, "Reopening the chapter ending preserves unique evidence entries.")
 	_close()
+	await _interact_at(Vector2(657, 379), "回看第三章结案")
+	_tap_button(_hud.evidence_action_button)
+	await _room_ready("Room102")
+	_check(_chapter_three.final_review_started and _chapter_three.status().begins_with("周六 19:28"),
+		"The chapter ending starts the 19:28 handover review in the same room.")
+	_check(_room.get_node("Scenery/ArchiveBox/CupRing").visible
+		and not _room.get_node("Scenery/ArchiveBox/Ledger/WhiteStitches").visible,
+		"The moved A01 box now visibly contains the spring ledger.")
+	await _interact_at(Vector2(310, 449), "复核 A01 箱口的报修册")
+	_check(_hud.header.text == "A01 箱口 · 2019 年春季报修册"
+		and _hud.description.text.contains("书脊完整"), "The player can compare the current book with the first inventory photo.")
+	_tap_button(_hud.evidence_action_button)
+	_check(_chapter_three.handover_paused and _log.has_entry(_chapter_three.FINAL_REVIEW.id)
+		and _hud.header.text == "终章复核 · A01 与首次清点不符",
+		"The discrepancy pauses the handover and is retained in the notebook.")
+	_close()
+	await _reread("终章复核 · A01 与首次清点不符", "暂停 A01")
 	await _reread("19:25 · 离开 102 前", "三针白线")
 	await _reread("19:27 · 后院签收联", "韩素")
 

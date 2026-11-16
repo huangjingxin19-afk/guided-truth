@@ -66,6 +66,23 @@ func _run() -> void:
 				"The conclusion and the 19:25 record survive together.")
 			_check(_log.has_entry(_three.RECEIPT.id) and _log.has_entry(_three.RETURN_NOTICE.id),
 				"Evidence for the final chapter remains in the notebook.")
+		"final-review-start":
+			_check(current_scene.name == &"BackYard" and _three.can_start_final_review(),
+				"The completed Saturday case can enter the final review.")
+			_transition.start_final_review()
+			await _settle()
+			_check(current_scene.name == &"Room102" and _three.final_review_started,
+				"The final review starts in the 19:28 room state.")
+			_three.pause_handover()
+			await _settle()
+			_check(_three.handover_paused and _log.has_entry(_three.FINAL_REVIEW.id),
+				"Pausing the handover records the discrepancy.")
+		"final-review-resume":
+			_check(current_scene.name == &"Room102" and _three.final_review_started and _three.handover_paused,
+				"Continue resumes the 19:28 review after pausing the handover.")
+			_check(_log.has_entry(_three.FINAL_REVIEW.id)
+				and current_scene.get_node("Scenery/ArchiveBox/CupRing").visible,
+				"The discrepancy and spring ledger scene survive the restart.")
 		"resume":
 			_check_third_chapter("BackYard")
 			_damage_save("user://investigation.json")
@@ -92,7 +109,7 @@ func _run() -> void:
 			_check(JSON.parse_string(FileAccess.get_file_as_string("user://investigation.json")) is Dictionary,
 				"An explicit overwrite replaces the unreadable file with a playable save.")
 		_:
-			_check(false, "Expected first, second, third, resume, backup, reset, damaged, or an appointment phase.")
+			_check(false, "Expected a first/second/third, recovery, appointment, or final-review phase.")
 	print("Autosave failures: ", _failures)
 	quit(int(_failures > 0))
 

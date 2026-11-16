@@ -33,6 +33,11 @@ func start_saturday_appointment() -> void:
 		_request_room_change(ROOM_102, &"FromYard", ChapterThree.start_appointment)
 
 
+func start_final_review() -> void:
+	if ChapterThree.can_start_final_review():
+		_request_room_change(ROOM_102, &"FromFinalReview", ChapterThree.start_final_review)
+
+
 func restore_room(scene_path: String, entrance: StringName, restore_progress: Callable) -> bool:
 	if is_changing:
 		return false

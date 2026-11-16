@@ -452,6 +452,9 @@ position = Vector2(307, 439)
 [node name="FromYard" type="Marker2D" parent="Entrances"]
 position = Vector2(550, 280)
 
+[node name="FromFinalReview" type="Marker2D" parent="Entrances"]
+position = Vector2(307, 439)
+
 [node name="RoomNumber" type="Label" parent="."]
 offset_left = 96.0
 offset_top = 30.0

@@ -9,6 +9,8 @@ const WalkableFloor = preload("res://rooms/walkable_floor.gd")
 const Stage = preload("res://chapters/chapter_one.gd").ReenactmentStage
 const Case = preload("res://chapters/chapter_one.gd").CaseStage
 const LEDGER = preload("res://props/repair_ledger.tscn")
+const SPRING_LEDGER = preload("res://props/spring_repair_ledger.tscn")
+const FINAL_REVIEW = preload("res://investigation/final_review_discrepancy.tres")
 const DESK_SHIFT := Vector2(0, 28)
 
 @onready var _investigation: RoomInvestigation = $Investigation
@@ -59,6 +61,9 @@ func _refresh() -> void:
 
 
 func _refresh_saturday() -> void:
+	if ChapterThree.final_review_started:
+		_refresh_final_review()
+		return
 	var appointment := ChapterThree.appointment_started
 	var can_leave := not appointment or ChapterThree.has_departure_record()
 	$ChapterStatus.text = ChapterThree.status()
@@ -74,6 +79,44 @@ func _refresh_saturday() -> void:
 		$Scenery/HanSu.position = Vector2(419, 290)
 	$Investigation/YardExit.travel_allowed = can_leave
 	$Investigation/YardExit.interaction_label = "随韩素去雨棚" if appointment and can_leave else "返回后院"
+
+
+func _refresh_final_review() -> void:
+	$RoomNumber.text = "102"
+	$ChapterStatus.text = ChapterThree.status()
+	$Investigation/WheelTracksPoint.hide()
+	$Investigation/FootPadPoint.hide()
+	$Investigation/HanSuPoint.hide()
+	$Investigation/ReasoningPoint.hide()
+	$Investigation/DrawerPoint.hide()
+	$Investigation/SignOffPoint.hide()
+	$Investigation/DeskViewPoint.hide()
+	$Investigation/DeparturePoint.hide()
+	$Investigation/YardExit.hide()
+	$Investigation/ArchivePoint.show()
+	$Investigation/ArchivePoint.interaction_label = "复核 A01 箱口的报修册"
+	$Investigation/ArchivePoint.approach_hint = "走到正门内侧的 A01 资料箱旁"
+	$Scenery/ArchiveBox.show()
+	$Scenery/ArchiveBox.position = Vector2(310, 418)
+	$Investigation/ArchivePoint.offset_left = 278.0
+	$Investigation/ArchivePoint.offset_top = 395.0
+	$Investigation/ArchivePoint.offset_right = 342.0
+	$Investigation/ArchivePoint.offset_bottom = 439.0
+	$Investigation/ArchiveStand.position = Vector2(310, 449)
+	$Scenery/ArchiveBox/Ledger/WhiteStitches.hide()
+	$Scenery/ArchiveBox/CupRing.show()
+	$Scenery/OpenG03.show()
+	$Scenery/OpenG03.position = Vector2(697, 248)
+	$Scenery/HeQing.show()
+	$Scenery/HeQing.position = Vector2(723, 308)
+	$Scenery/HanSu.show()
+	$Scenery/HanSu.position = Vector2(665, 309)
+	$Scenery/ZhouWen.show()
+	$Scenery/ZhouWen.position = Vector2(414, 274)
+	var final_desk_position := _desk_start + Vector2(0, -28)
+	if _desk.position != final_desk_position:
+		_desk.position = final_desk_position
+		_floor.refresh_navigation()
 
 
 func _on_yard_exit_blocked() -> void:
@@ -137,6 +180,17 @@ func _pack_archive() -> void:
 func _on_archive_requested() -> void:
 	if _hud.is_open():
 		return
+	if ChapterThree.final_review_started:
+		if ChapterThree.handover_paused:
+			_hud.show_evidence(FINAL_REVIEW)
+		else:
+			var current_book := EvidenceEntry.new()
+			current_book.title = "A01 箱口 · 2019 年春季报修册"
+			current_book.description = "封面留着浅色杯圈。书脊完整，没有韩素补过的三针白线；翻开后，内页标着「2019 年春季」。\n\n打开笔记里的第一天现场照片，对一对箱口书脊下端的特征。"
+			current_book.preview = SPRING_LEDGER
+			current_book.preview_scale = 6.0
+			_hud.show_evidence(current_book, false, "比对照片并暂停移交", _pause_handover)
+		return
 	if ChapterTwo.active:
 		_investigation.inspect(ChapterTwo.ARCHIVE)
 		return
@@ -150,6 +204,11 @@ func _on_archive_requested() -> void:
 		_hud.show_evidence(box, false, "拍下清点照片", _photograph_archive)
 	else:
 		_hud.show_evidence(ChapterOne.ARCHIVE_PHOTO)
+
+
+func _pause_handover() -> void:
+	ChapterThree.pause_handover()
+	_hud.show_evidence(FINAL_REVIEW)
 
 
 func _photograph_archive() -> void:

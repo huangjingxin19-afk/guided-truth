@@ -82,7 +82,12 @@ func _on_returned_stand_requested() -> void:
 
 func _on_return_sign_off_requested() -> void:
 	if ChapterThree.is_complete():
-		_investigation.inspect(ChapterThree.CONCLUSION)
+		if ChapterThree.final_review_started:
+			_investigation.inspect(ChapterThree.CONCLUSION)
+		else:
+			_hud.show_evidence(
+				ChapterThree.CONCLUSION, false, "进入终章复核", RoomTransition.start_final_review
+			)
 	elif ChapterThree.can_submit_conclusion():
 		_investigation.clear_approach_hint()
 		_hud.show_presentation(_reasoning, "核对两晚的来访", true)
@@ -93,7 +98,9 @@ func _on_return_sign_off_requested() -> void:
 func _on_return_conclusion_submitted(visitor: int, item: int) -> void:
 	var feedback := ChapterThree.submit_conclusion(visitor, item)
 	if feedback.is_empty():
-		_hud.show_evidence(ChapterThree.CONCLUSION)
+		_hud.show_evidence(
+			ChapterThree.CONCLUSION, false, "进入终章复核", RoomTransition.start_final_review
+		)
 	else:
 		_reasoning.show_feedback("韩素：" + feedback)
 

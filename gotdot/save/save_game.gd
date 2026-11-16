@@ -141,6 +141,8 @@ func _snapshot() -> Dictionary:
 		"reenactment": ChapterOne.ReenactmentStage.keys()[ChapterOne.reenactment_stage],
 		"case": ChapterOne.CaseStage.keys()[ChapterOne.case_stage],
 		"appointment_started": ChapterThree.appointment_started,
+		"final_review_started": ChapterThree.final_review_started,
+		"handover_paused": ChapterThree.handover_paused,
 		"evidence": evidence,
 	}
 
@@ -184,6 +186,14 @@ func _read_save(path: String) -> Dictionary:
 	var appointment_started: Variant = state.get("appointment_started", false)
 	if not appointment_started is bool or (appointment_started and state.chapter != 3):
 		return {}
+	var final_review_started: Variant = state.get("final_review_started", false)
+	var handover_paused: Variant = state.get("handover_paused", false)
+	if not final_review_started is bool or not handover_paused is bool:
+		return {}
+	if (final_review_started or handover_paused) and state.chapter != 3:
+		return {}
+	if handover_paused and not final_review_started:
+		return {}
 
 	var entries: Array[EvidenceEntry] = []
 	var ids := {}
@@ -195,7 +205,11 @@ func _read_save(path: String) -> Dictionary:
 		entries.append(entry)
 	if state.chapter == 3 and not ids.has(ChapterTwo.NIGHT_MESSAGE.id):
 		return {}
+	if final_review_started and not ids.has(ChapterThree.CONCLUSION.id):
+		return {}
 	if appointment_started and not ids.has(ChapterThree.DUTY_BOARD.id):
+		return {}
+	if handover_paused and not ids.has(ChapterThree.FINAL_REVIEW.id):
 		return {}
 	return {"state": state, "entries": entries, "json": contents}
 
@@ -227,6 +241,8 @@ func _restore(loaded: Dictionary) -> bool:
 		if RoomTransition.restore_room(ROOMS[state.room], StringName(state.entrance), apply_progress):
 			return true
 	if state.chapter == 3:
+		if state.get("final_review_started", false):
+			return RoomTransition.restore_room(ROOMS.room_102, &"FromFinalReview", apply_progress)
 		if state.get("appointment_started", false):
 			# A damaged room marker must still leave the player in a recoverable room.
 			var left_102: bool = loaded.entries.any(func(entry: EvidenceEntry) -> bool: return entry.id == ChapterThree.DEPARTURE.id)
@@ -247,6 +263,8 @@ func _apply_progress(state: Dictionary, entries: Array[EvidenceEntry]) -> void:
 	ChapterTwo.active = state.chapter >= 2
 	ChapterThree.active = state.chapter == 3
 	ChapterThree.appointment_started = state.get("appointment_started", false)
+	ChapterThree.final_review_started = state.get("final_review_started", false)
+	ChapterThree.handover_paused = state.get("handover_paused", false)
 
 
 func _write_checkpoint(snapshot: String) -> Error:

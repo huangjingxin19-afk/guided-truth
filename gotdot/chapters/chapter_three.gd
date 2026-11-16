@@ -18,10 +18,12 @@ const DEPARTURE = preload("res://investigation/shelter_102_departure.tres")
 const RETURNED_STAND = preload("res://investigation/shelter_returned_stand.tres")
 const RECEIPT = preload("res://investigation/shelter_signed_receipt.tres")
 const CONCLUSION = preload("res://investigation/shelter_conclusion.tres")
+const FINAL_REVIEW = preload("res://investigation/final_review_discrepancy.tres")
 
 const CHAPTER_ENTRIES := [
 	COMMISSION, HIGH_WINDOW, SUPPLY_ACCESS, DESK_VIEW, LOCATION_FINDING, MESSAGE,
 	LOAN_CARD, RETURN_NOTICE, CALL, DUTY_BOARD, DEPARTURE, RETURNED_STAND, RECEIPT, CONCLUSION,
+	FINAL_REVIEW,
 ]
 
 enum Location { CLASSROOM, SHELTER }
@@ -38,6 +40,8 @@ const RETURN_CHOICES := ["归还 12 号电缆卷盘", "归还 21 号折叠谱架
 
 var active := false
 var appointment_started := false
+var final_review_started := false
+var handover_paused := false
 
 
 func _ready() -> void:
@@ -57,7 +61,26 @@ func start() -> void:
 func reset() -> void:
 	active = false
 	appointment_started = false
+	final_review_started = false
+	handover_paused = false
 	progress_changed.emit()
+
+
+func can_start_final_review() -> bool:
+	return is_complete() and not final_review_started
+
+
+func start_final_review() -> void:
+	if can_start_final_review():
+		final_review_started = true
+		progress_changed.emit()
+
+
+func pause_handover() -> void:
+	if final_review_started and not handover_paused:
+		InvestigationLog.record(FINAL_REVIEW)
+		handover_paused = true
+		progress_changed.emit()
 
 
 func can_observe_high_window() -> bool:
@@ -161,7 +184,9 @@ func is_complete() -> bool:
 
 func status() -> String:
 	var time := "17:50"
-	if InvestigationLog.has_entry(RECEIPT.id):
+	if final_review_started:
+		time = "19:28"
+	elif InvestigationLog.has_entry(RECEIPT.id):
 		time = "19:27"
 	elif appointment_started:
 		time = "19:25"
@@ -169,6 +194,10 @@ func status() -> String:
 
 
 func _objective() -> String:
+	if handover_paused:
+		return "异议已记入笔记，A01 移交暂停"
+	if final_review_started:
+		return "对照首次清点照片，检查 A01 里的报修册"
 	if is_complete():
 		return "第三章已结案，可回看三章笔记"
 	if can_submit_conclusion():
