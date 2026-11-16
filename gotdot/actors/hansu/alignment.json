@@ -1,74 +1,59 @@
 {
-  "game": "被引向的真相",
-  "assets": {
-    "gotdot/actors/hansu/idle/hansu_idle_front.png": {
-      "size": [
-        72,
-        108
-      ],
-      "mode": "RGBA",
-      "anchor": [
-        36,
-        104
-      ],
-      "feet_y": 104
-    },
-    "gotdot/actors/hansu/actions/hansu_pushcart_right.png": {
-      "size": [
-        72,
-        108
-      ],
-      "mode": "RGBA",
-      "anchor": [
-        36,
-        104
-      ],
-      "feet_y": 104
-    },
-    "gotdot/props/pushcart_loaded_right.png": {
-      "size": [
-        128,
-        86
-      ],
-      "mode": "RGBA",
-      "wheel_contact_bottom_y": 81
-    }
-  },
-  "alignment_preview": {
-    "canvas_size": [
-      212,
-      125
-    ],
-    "actor_top_left": [
-      10,
-      0
-    ],
-    "cart_top_left": [
-      46,
-      22
-    ],
-    "actor_foot_baseline_y": 104,
-    "cart_wheel_baseline_y": 104,
-    "render_order": [
-      "cart",
-      "actor"
-    ],
-    "cart_top_left_relative_to_actor_foot_anchor": [
-      0,
-      -82
-    ]
-  },
-  "engine_import": {
-    "character_sprite_position_if_centered": [
-      0,
-      -50
-    ],
-    "cart_sprite_position_if_centered": [
-      64,
-      -39
-    ],
-    "filter": "nearest",
-    "scale": 1
-  },
-  "note": "Static pose only; walking frames and Godot scene replacement not included. Independent sprite layers."
+  "coordinate_system": "Pixels, top-left origin for each PNG",
+  "actor_canvas": [
+    72,
+    108
+  ],
+  "cart_canvas": [
+    128,
+    86
+  ],
+  "scene_canvas": [
+    212,
+    125
+  ],
+  "actor_top_left": [
+    10,
+    0
+  ],
+  "cart_top_left": [
+    46,
+    22
+  ],
+  "relative_cart_top_left_from_actor": [
+    36,
+    22
+  ],
+  "approximate_hand_grip_scene_px": [
+    69,
+    42
+  ],
+  "approximate_hand_grip_actor_local_px": [
+    59,
+    42
+  ],
+  "approximate_handle_grip_cart_local_px": [
+    23,
+    20
+  ],
+  "feet_baseline_scene_y": 104,
+  "wheel_contact_scene_y": 104,
+  "draw_order": [
+    "cart",
+    "actor"
+  ],
+  "change": "Lowered cart handle upper region 11px while preserving wheels, bed, load and all four character sprites",
+  "skin_cart_overlap_pixels_before": [
+    3,
+    3,
+    3,
+    3
+  ],
+  "skin_cart_overlap_pixels_after": [
+    21,
+    22,
+    25,
+    22
+  ],
+  "animated": "4 frame cyclic preview, not a final Godot AnimationPlayer implementation"
 }
