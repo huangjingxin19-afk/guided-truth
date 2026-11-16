@@ -1,0 +1,194 @@
+{
+  "project": "被引向的真相",
+  "asset_group": "何青 C6 修正版 v2",
+  "character_canvas": [
+    72,
+    108
+  ],
+  "feet_anchor": [
+    36,
+    104
+  ],
+  "game_scale": 1,
+  "texture_filter": "Nearest",
+  "same_palette_across_poses": true,
+  "subject_source": [
+    {
+      "filename": "heqing_idle_front.png",
+      "concept_reference": "何青_像素风行政职员_sprite.png",
+      "source_subject_bbox": [
+        353,
+        249,
+        672,
+        1344
+      ],
+      "projected_sprite_box": [
+        21,
+        7,
+        50,
+        105
+      ]
+    },
+    {
+      "filename": "heqing_idle_left.png",
+      "concept_reference": "何青侧身像素角色精灵.png",
+      "source_subject_bbox": [
+        372,
+        206,
+        612,
+        1404
+      ],
+      "projected_sprite_box": [
+        26,
+        7,
+        46,
+        105
+      ]
+    },
+    {
+      "filename": "heqing_idle_right.png",
+      "concept_reference": "何青侧身行政风像素角色.png",
+      "source_subject_bbox": [
+        390,
+        204,
+        644,
+        1408
+      ],
+      "projected_sprite_box": [
+        25,
+        7,
+        46,
+        105
+      ]
+    },
+    {
+      "filename": "heqing_idle_back.png",
+      "concept_reference": "何晴背影像素角色_sprite.png",
+      "source_subject_bbox": [
+        329,
+        153,
+        695,
+        1431
+      ],
+      "projected_sprite_box": [
+        22,
+        6,
+        50,
+        105
+      ]
+    },
+    {
+      "filename": "heqing_hand_work_order.png",
+      "concept_reference": "递交临时工作单的何晴.png",
+      "source_subject_bbox": [
+        268,
+        37,
+        699,
+        1419
+      ],
+      "projected_sprite_box": [
+        20,
+        7,
+        51,
+        105
+      ]
+    }
+  ],
+  "front_action_face_unified_y_rows": "0–32 (pixel-identical to canonical front idle)",
+  "native_godot_runtime_verified": false,
+  "review": "image dimensional and consistency inspection; needs in-scene acceptance",
+  "files": {
+    "heqing_idle_front.png": {
+      "path": "gotdot/actors/heqing/idle/heqing_idle_front.png",
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bottom_y": 104,
+      "opaque_color_count": 29,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "e0e677658898cf557dd536726d03d898fe90e252e6dac19a5bcbe522cd22f932"
+    },
+    "heqing_idle_left.png": {
+      "path": "gotdot/actors/heqing/idle/heqing_idle_left.png",
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bottom_y": 104,
+      "opaque_color_count": 31,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "69cd324b8af57e945f4ac9f9406944753fd6082b69ee5e1141e6e4bbef8c9308"
+    },
+    "heqing_idle_right.png": {
+      "path": "gotdot/actors/heqing/idle/heqing_idle_right.png",
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bottom_y": 104,
+      "opaque_color_count": 31,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "2b7eb223015dedc08699b342fb65975af16e903e50573b5125e91f2916b71ba9"
+    },
+    "heqing_idle_back.png": {
+      "path": "gotdot/actors/heqing/idle/heqing_idle_back.png",
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 99,
+      "bottom_y": 104,
+      "opaque_color_count": 31,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "937e08f222a03342df04ecbfff1e95e0eaecbfbef8d3a6c09846e4108b37d242"
+    },
+    "heqing_hand_work_order.png": {
+      "path": "gotdot/actors/heqing/actions/heqing_hand_work_order.png",
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bottom_y": 104,
+      "opaque_color_count": 30,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "6152074a44b4384409a13e397488f157be82c9da7cc37fbb8d78229aace51b12"
+    },
+    "heqing_work_order.png": {
+      "path": "gotdot/props/heqing_work_order.png",
+      "size": [
+        88,
+        112
+      ],
+      "visible_height": 107,
+      "bottom_y": 109,
+      "opaque_color_count": 6,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "sha256": "b0aba8478d9a189fec413e3bee5ca36d1831f80d3b23618649eb324ec36c4910"
+    }
+  },
+  "concept_sources": "AI-assisted concept references generated during this conversation, repixelized with hard-edge palette normalization",
+  "shared_character_palette_count": 32
+}

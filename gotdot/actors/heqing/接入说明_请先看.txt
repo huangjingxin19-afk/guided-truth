@@ -1,0 +1,23 @@
+《被引向的真相》何青 C6 第一批 · 修正版 v2（Godot 游戏资源）
+
+游戏资产（6 张 PNG）：
+gotdot/actors/heqing/idle/heqing_idle_front.png
+gotdot/actors/heqing/idle/heqing_idle_left.png
+gotdot/actors/heqing/idle/heqing_idle_right.png
+gotdot/actors/heqing/idle/heqing_idle_back.png
+gotdot/actors/heqing/actions/heqing_hand_work_order.png
+gotdot/props/heqing_work_order.png
+
+人物帧：72×108，脚底落于像素 y=104，锚点 (36,104)。所有透明度只使用 0 / 255。
+采用 32 色以内的共用角色色板；不使用抖动。正面站姿与递单动作的头部上半区域逐像素统一。
+Godot 建议 Sprite2D 贴图最近邻过滤 / scale=(1,1)；按脚底对齐所有姿势。
+
+注意：递单动作帧中已画着手持纸张。独立 heqing_work_order.png 用于证物/交互页面，
+不得再次作为手持纸张叠到该动作帧，否则会出现两张纸。
+正式证物上的委托文字、日期等应由 Godot UI 排版，不应写死在背景纸面里。
+
+来源：对会话中 AI 辅助何青 v2 造型图进行逐帧像素规格化与限色处理；人物造型来自此会话。
+可编辑源文件：source/heqing_c6_editable.ora（OpenRaster 图层，可由 Krita/GIMP 打开修改）。
+检查结果：尺寸、透明通道、人物脚底、色板、正面头部一致性已自动检验。
+当前未实际接入 gotdot/actors/he_qing.tscn，也未运行 Godot / Android 真机。
+文件可以直接导入工程，但场景使用仍需修改场景引用并进行实机验收。
