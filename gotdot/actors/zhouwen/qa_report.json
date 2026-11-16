@@ -1,0 +1,126 @@
+{
+  "project": "被引向的真相",
+  "asset_set": "Zhou Wen revised consistent sprites v2",
+  "foot_bottom_center_anchor": [
+    36,
+    104
+  ],
+  "canvas": [
+    72,
+    108
+  ],
+  "game_filter": "Nearest",
+  "units": "pixels",
+  "sprites": {
+    "zhouwen_idle_front.png": {
+      "size": [
+        72,
+        108
+      ],
+      "bbox_exclusive": [
+        20,
+        8,
+        53,
+        105
+      ],
+      "opaque_pixel_count": 2123,
+      "opaque_palette_colors": 25,
+      "min_foot_pixel_y": 104,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "palette_subset_of_front": true,
+      "sha256": "9f19840126472ce6ef22a142e6741934fbe37c58b646efccd0bcddbea09ee54f"
+    },
+    "zhouwen_idle_right.png": {
+      "size": [
+        72,
+        108
+      ],
+      "bbox_exclusive": [
+        25,
+        7,
+        47,
+        105
+      ],
+      "opaque_pixel_count": 1411,
+      "opaque_palette_colors": 25,
+      "min_foot_pixel_y": 104,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "palette_subset_of_front": true,
+      "sha256": "396c925521eb518a4702035dda3835169ee446d97b6b6fe292fb53706807163e"
+    },
+    "zhouwen_idle_left.png": {
+      "size": [
+        72,
+        108
+      ],
+      "bbox_exclusive": [
+        24,
+        7,
+        48,
+        105
+      ],
+      "opaque_pixel_count": 1449,
+      "opaque_palette_colors": 23,
+      "min_foot_pixel_y": 104,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "palette_subset_of_front": true,
+      "sha256": "ec86ecf1e59fc6af123f6ce26558730c26123e69a7fa44f183484a0cb8603bf8"
+    },
+    "zhouwen_idle_back.png": {
+      "size": [
+        72,
+        108
+      ],
+      "bbox_exclusive": [
+        20,
+        7,
+        51,
+        105
+      ],
+      "opaque_pixel_count": 2104,
+      "opaque_palette_colors": 25,
+      "min_foot_pixel_y": 104,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "palette_subset_of_front": true,
+      "sha256": "78ec5cf768578654955601206f3e13d6cddba63b0c762d43127b7dfb5754b49b"
+    },
+    "zhouwen_sort_cards.png": {
+      "size": [
+        72,
+        108
+      ],
+      "bbox_exclusive": [
+        21,
+        8,
+        51,
+        105
+      ],
+      "opaque_pixel_count": 1945,
+      "opaque_palette_colors": 24,
+      "min_foot_pixel_y": 104,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "palette_subset_of_front": true,
+      "sha256": "1139a90291ad3e8f6eaf9b097a11cc61cc91058100a55fc9f24bd560bfe84fb8"
+    }
+  },
+  "palette_source": "original zhouwen_idle_front.png",
+  "alpha_policy": "binary RGBA transparent/opaque only",
+  "source": "Latest corrected Zhou Wen individual renderings; normalized to original front character's palette",
+  "godot_runtime_verified": false,
+  "passed": true
+}
