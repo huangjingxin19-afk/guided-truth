@@ -17,6 +17,7 @@ func _run() -> void:
 	var hud := room.get_node("InvestigationHud") as CanvasLayer
 	var reenactment := room.get_node("ThresholdReenactment") as ThresholdReenactment
 	var animation := reenactment.get_node("AnimationPlayer") as AnimationPlayer
+	var han_su_sprite := reenactment.get_node("CroppedView/Cart/Chassis/HanSuSprite") as Sprite2D
 	var wheel := reenactment.get_node("WheelImpact") as AudioStreamPlayer
 	var scrape := reenactment.get_node("StoolScrape") as AudioStreamPlayer
 	var stool := reenactment.get_node("CroppedView/Cart/Chassis/Stool") as Node2D
@@ -75,6 +76,7 @@ func _run() -> void:
 	_check(hud.evidence_action_button.visible, "Live pad inspection offers installation after the first pass.")
 	_tap_button(hud.evidence_action_button)
 	_check(animation.current_animation == "install" and foot_pad.visible, "Installation plays before removing the floor prop.")
+	_check(han_su_sprite.texture.resource_path.ends_with("hansu_pushcart_right.png"), "Han Su holds the static grip pose while installing the pad.")
 	await _advance(animation, 0.88)
 	_check(pad.is_visible_in_tree() and pad.position.is_equal_approx(Vector2(102, 0)), "The pad fits onto the leg.")
 	await _advance(animation, 1.45)
@@ -109,6 +111,16 @@ func _run() -> void:
 	reenactment.play_pass(false)
 	await _advance(animation, 2.4)
 	_check(not wheel.playing and not scrape.playing, "Empty streams allow the animation to finish.")
+
+	reenactment.play_pass(false)
+	animation.pause()
+	animation.seek(0.82, true)
+	_check(han_su_sprite.texture.resource_path.ends_with("hansu_pushcart_walk_right_02.png"),
+		"Han Su's walking frame follows the reenactment animation clock.")
+	animation.seek(1.13, true)
+	_check(han_su_sprite.texture.resource_path.ends_with("hansu_pushcart_walk_right_04.png"),
+		"Seeking the animation updates Han Su's walking frame.")
+	animation.stop()
 
 	# Let the audio mixer release the stopped test streams before exiting.
 	await create_timer(0.1).timeout

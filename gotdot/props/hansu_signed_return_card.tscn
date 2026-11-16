@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://props/hansu_return_card.png" id="1"]
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_sign_receipt.png" id="2_hansu_sign_receipt"]
+
+[node name="HansuSignedReturnCard" type="Node2D"]
+
+[node name="Card" type="Sprite2D" parent="."]
+position = Vector2(12, 0)
+texture = ExtResource("1")
+texture_filter = 1
+
+[node name="HansuSigning" type="Sprite2D" parent="."]
+position = Vector2(-16, 14)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_hansu_sign_receipt")
+texture_filter = 1
+centered = false
+offset = Vector2(-36, -104)

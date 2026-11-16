@@ -4,8 +4,10 @@ signal finished
 
 const PASS := &"pass"
 const INSTALL := &"install"
+const HANSU_GRIP_TEXTURE := preload("res://actors/hansu/actions/hansu_pushcart_right.png")
 
 @onready var _animation: AnimationPlayer = $AnimationPlayer
+@onready var _han_su_sprite: Sprite2D = $CroppedView/Cart/Chassis/HanSuSprite
 @onready var _pad: Node2D = $CroppedView/Cart/Chassis/Stool/Pad
 @onready var _stool: Node2D = $CroppedView/Cart/Chassis/Stool
 @onready var _scratch: Line2D = $CroppedView/Cart/Chassis/Scratch
@@ -45,6 +47,7 @@ func _play_from_start(clip: StringName) -> void:
 	_wheel_impact.stop()
 	_stool_scrape.stop()
 	_animation.stop()
+	_han_su_sprite.texture = HANSU_GRIP_TEXTURE
 	_animation.play(clip)
 	_animation.advance(0.0)
 
@@ -70,4 +73,5 @@ func _on_stool_scrape() -> void:
 func _on_animation_finished(_clip: StringName) -> void:
 	_wheel_impact.stop()
 	_stool_scrape.stop()
+	_han_su_sprite.texture = HANSU_GRIP_TEXTURE
 	finished.emit()

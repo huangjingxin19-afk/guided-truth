@@ -1,5 +1,7 @@
 extends Node2D
 
+const HanSuActor = preload("res://actors/han_su.gd")
+
 @onready var _investigation = $Investigation
 @onready var _hud = $InvestigationHud
 @onready var _reasoning = $ReturnReasoning
@@ -59,6 +61,7 @@ func _refresh_saturday() -> void:
 	if returning:
 		$Scenery/Bench.position = Vector2(597, 321)
 		$WalkableFloor/DepthSort/HanSu.position = Vector2(657, 343)
+		$WalkableFloor/DepthSort/HanSu.pose = HanSuActor.Pose.FRONT
 	var action := "请韩素签收"
 	if ChapterThree.is_complete():
 		action = "回看第三章结案"

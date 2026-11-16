@@ -1,6 +1,7 @@
 extends Node2D
 
 const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
+const HanSuActor = preload("res://actors/han_su.gd")
 const InvestigationHud = preload("res://ui/investigation_hud.gd")
 const RoomInvestigation = preload("res://investigation/room_investigation.gd")
 const ThresholdReenactment = preload("res://rooms/room_102_threshold_reenactment.gd")
@@ -77,6 +78,7 @@ func _refresh_saturday() -> void:
 	if appointment:
 		$Scenery/ZhouWen.position = Vector2(354, 287)
 		$Scenery/HanSu.position = Vector2(419, 290)
+		$Scenery/HanSu.pose = HanSuActor.Pose.BACK
 	$Investigation/YardExit.travel_allowed = can_leave
 	$Investigation/YardExit.interaction_label = "随韩素去雨棚" if appointment and can_leave else "返回后院"
 
@@ -111,6 +113,7 @@ func _refresh_final_review() -> void:
 	$Scenery/HeQing.position = Vector2(723, 308)
 	$Scenery/HanSu.show()
 	$Scenery/HanSu.position = Vector2(665, 309)
+	$Scenery/HanSu.pose = HanSuActor.Pose.LEFT
 	$Scenery/ZhouWen.show()
 	$Scenery/ZhouWen.position = Vector2(414, 274)
 	var final_desk_position := _desk_start + Vector2(0, -28)

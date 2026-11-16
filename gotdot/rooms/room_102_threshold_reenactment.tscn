@@ -2,6 +2,11 @@
 
 [ext_resource type="Script" path="res://rooms/room_102_threshold_reenactment.gd" id="1_reenactment"]
 [ext_resource type="PackedScene" path="res://props/foot_pad.tscn" id="2_pad"]
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_pushcart_right.png" id="3_hansu_grip"]
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_pushcart_walk_right_01.png" id="4_hansu_walk_01"]
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_pushcart_walk_right_02.png" id="5_hansu_walk_02"]
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_pushcart_walk_right_03.png" id="6_hansu_walk_03"]
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_pushcart_walk_right_04.png" id="7_hansu_walk_04"]
 
 [sub_resource type="Animation" id="Animation_pass"]
 resource_name = "pass"
@@ -109,6 +114,18 @@ tracks/7/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector2(1.35, 1.35)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("CroppedView/Cart/Chassis/HanSuSprite:texture")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.35, 1.5, 1.65, 1.8, 1.95, 2.1, 2.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("4_hansu_walk_01"), ExtResource("5_hansu_walk_02"), ExtResource("6_hansu_walk_03"), ExtResource("7_hansu_walk_04"), ExtResource("4_hansu_walk_01"), ExtResource("5_hansu_walk_02"), ExtResource("6_hansu_walk_03"), ExtResource("7_hansu_walk_04"), ExtResource("4_hansu_walk_01"), ExtResource("5_hansu_walk_02"), ExtResource("6_hansu_walk_03"), ExtResource("7_hansu_walk_04"), ExtResource("4_hansu_walk_01"), ExtResource("5_hansu_walk_02"), ExtResource("6_hansu_walk_03"), ExtResource("7_hansu_walk_04")]
 }
 
 [sub_resource type="Animation" id="Animation_install"]
@@ -283,34 +300,16 @@ polygon = PackedVector2Array(-5, -2, -2, -5, 2, -5, 5, -2, 5, 2, 2, 5, -2, 5, -5
 
 [node name="Chassis" type="Node2D" parent="CroppedView/Cart"]
 
-[node name="HanSuLegs" type="Polygon2D" parent="CroppedView/Cart/Chassis"]
-color = Color(0.16, 0.19, 0.2, 1)
-polygon = PackedVector2Array(-109, -23, -82, -23, -73, 4, -69, 19, -58, 26, -58, 32, -79, 32, -88, 8, -117, 31, -135, 31, -135, 26, -122, 20)
-
-[node name="HanSuCoat" type="Polygon2D" parent="CroppedView/Cart/Chassis"]
-color = Color(0.49, 0.32, 0.23, 1)
-polygon = PackedVector2Array(-105, -60, -93, -67, -77, -64, -68, -52, -78, -23, -114, -25)
-
-[node name="HanSuFace" type="Polygon2D" parent="CroppedView/Cart/Chassis"]
-color = Color(0.82, 0.61, 0.45, 1)
-polygon = PackedVector2Array(-96, -85, -80, -88, -72, -78, -70, -72, -76, -65, -91, -65, -98, -75)
-
-[node name="HanSuHair" type="Polygon2D" parent="CroppedView/Cart/Chassis"]
-color = Color(0.24, 0.22, 0.2, 1)
-polygon = PackedVector2Array(-101, -80, -100, -90, -91, -97, -77, -96, -72, -86, -84, -85, -93, -78, -96, -70)
-
-[node name="Sleeve" type="Polygon2D" parent="CroppedView/Cart/Chassis"]
-color = Color(0.53, 0.35, 0.25, 1)
-polygon = PackedVector2Array(-80, -58, -66, -61, -51, -46, -29, -37, -31, -27, -61, -35)
-
-[node name="Hand" type="Polygon2D" parent="CroppedView/Cart/Chassis"]
-color = Color(0.82, 0.61, 0.45, 1)
-polygon = PackedVector2Array(-32, -38, -22, -37, -17, -33, -22, -25, -32, -27)
-
 [node name="Handle" type="Line2D" parent="CroppedView/Cart/Chassis"]
 points = PackedVector2Array(-24, -32, -11, -31, 12, 9)
 width = 5.0
 default_color = Color(0.65, 0.70, 0.67, 1)
+
+[node name="HanSuSprite" type="Sprite2D" parent="CroppedView/Cart/Chassis"]
+position = Vector2(-82, -74)
+texture = ExtResource("3_hansu_grip")
+centered = false
+texture_filter = 1
 
 [node name="Bed" type="Polygon2D" parent="CroppedView/Cart/Chassis"]
 color = Color(0.37, 0.44, 0.44, 1)

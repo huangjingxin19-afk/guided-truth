@@ -1,4 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_block_glare_right.png" id="1_hansu_block_glare"]
 
 [node name="NightPatrolWindow" type="Node2D"]
 
@@ -32,6 +34,9 @@ default_color = Color(0.22, 0.26, 0.26, 1)
 polygon = PackedVector2Array(-116, -1, 26, -1, 26, 11, 67, 11, 67, 55, -116, 55)
 color = Color(0.23, 0.28, 0.28, 1)
 
-[node name="HandOnGlass" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-155, 60, -143, 26, -125, 12, -116, -15, -109, -13, -109, 9, -97, -17, -90, -15, -96, 14, -85, -6, -79, -2, -90, 23, -117, 42, -125, 62)
-color = Color(0.43, 0.39, 0.37, 1)
+[node name="HansuBlockingGlare" type="Sprite2D" parent="."]
+position = Vector2(-145, 60)
+texture_filter = 1
+texture = ExtResource("1_hansu_block_glare")
+centered = false
+offset = Vector2(-36, -104)

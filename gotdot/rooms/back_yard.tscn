@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://props/shelter_folding_stand.tscn" id="9_stand"]
 [ext_resource type="Script" path="res://ui/reasoning_form.gd" id="10_reasoning"]
 [ext_resource type="AudioStream" path="res://props/shelter_wood_scrape.wav" id="11_scrape"]
+[ext_resource type="Texture2D" path="res://props/pushcart_loaded_right.png" id="12_cart"]
 
 [node name="BackYard" instance=ExtResource("1")]
 script = ExtResource("2")
@@ -125,38 +126,26 @@ color = Color(0.91, 0.83, 0.65, 1)
 
 [node name="HanSu" parent="WalkableFloor/DepthSort" index="1" instance=ExtResource("5")]
 position = Vector2(390, 329)
+pose = 4
 
 [node name="Label" type="Label" parent="WalkableFloor/DepthSort/HanSu"]
 offset_left = -17.0
-offset_top = -107.0
+offset_top = -114.0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 17
 text = "韩素"
 
 [node name="Cart" type="Node2D" parent="WalkableFloor/DepthSort" index="2"]
-position = Vector2(528, 336)
+position = Vector2(454, 328)
 
-[node name="Wheels" type="Line2D" parent="WalkableFloor/DepthSort/Cart"]
-points = PackedVector2Array(-45, -7, -45, 1, -31, 1, -31, -8, 29, -8, 29, 1, 43, 1, 43, -8)
-width = 5.0
-default_color = Color(0.09, 0.13, 0.13, 1)
-
-[node name="Chassis" type="Polygon2D" parent="WalkableFloor/DepthSort/Cart"]
-polygon = PackedVector2Array(-53, -20, 50, -20, 50, -9, -53, -9)
-color = Color(0.2, 0.25, 0.25, 1)
-
-[node name="Handle" type="Line2D" parent="WalkableFloor/DepthSort/Cart"]
-points = PackedVector2Array(46, -15, 58, -59, 70, -59)
-width = 4.0
-default_color = Color(0.63, 0.64, 0.57, 1)
-
-[node name="FoldedStools" type="Line2D" parent="WalkableFloor/DepthSort/Cart"]
-points = PackedVector2Array(-40, -21, -25, -60, -20, -60, -34, -21, -28, -21, -13, -60, -8, -60, -22, -21, -16, -21, -1, -60, 4, -60, -10, -21, -4, -21, 11, -60, 16, -60, 2, -21, 8, -21, 23, -60, 28, -60, 14, -21, 20, -21, 35, -60, 40, -60, 26, -21)
-width = 3.0
-default_color = Color(0.68, 0.64, 0.51, 1)
+[node name="Sprite" type="Sprite2D" parent="WalkableFloor/DepthSort/Cart"]
+texture_filter = 1
+texture = ExtResource("12_cart")
+centered = false
+offset = Vector2(-64, -81)
 
 [node name="CheckoutPaper" type="Polygon2D" parent="WalkableFloor/DepthSort/Cart"]
-polygon = PackedVector2Array(24, -22, 44, -26, 48, -16, 28, -12)
+polygon = PackedVector2Array(31, -29, 44, -31, 46, -23, 33, -21)
 color = Color(0.9, 0.82, 0.61, 1)
 
 [node name="XuNan" type="Node2D" parent="WalkableFloor/DepthSort" index="3"]
@@ -229,13 +218,13 @@ approach_hint = "靠近推车旁的韩素，查看后门授权"
 visible = false
 
 [node name="CartPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") index="3" instance=ExtResource("3")]
-offset_left = 473.0
-offset_top = 266.0
-offset_right = 600.0
-offset_bottom = 343.0
+offset_left = 396.0
+offset_top = 263.0
+offset_right = 515.0
+offset_bottom = 333.0
 investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
 target = NodePath("../../WalkableFloor/DepthSort/Cart")
-target_outline = PackedVector2Array(-50, -15, 50, -15, 50, 4, -50, 4)
+target_outline = PackedVector2Array(-50, -10, 55, -10, 55, 4, -50, 4)
 inspection_distance = 52.0
 touch_padding = 62.0
 evidence = ExtResource("7")
