@@ -83,6 +83,21 @@ func _run() -> void:
 			_check(_log.has_entry(_three.FINAL_REVIEW.id)
 				and current_scene.get_node("Scenery/ArchiveBox/CupRing").visible,
 				"The discrepancy and spring ledger scene survive the restart.")
+			_check(not _log.has_entry(_three.G03_CARD.id) and not _log.has_entry(_three.AUTUMN_LEDGER.id),
+				"The legacy paused-handover save loads without inventing final evidence.")
+			for entry in _three.FINAL_BOX_ENTRIES:
+				_three.record_final_evidence(entry)
+			for entry in _three.FINAL_WITNESSES:
+				_three.record_final_evidence(entry)
+			await _settle()
+		"final-evidence-resume":
+			_check(current_scene.name == &"Room102" and _three.handover_paused,
+				"Continue restores the paused handover after final evidence was saved.")
+			for entry in _three.FINAL_BOX_ENTRIES:
+				_check(_log.has_entry(entry.id), "Restored final evidence: " + entry.title)
+			for entry in _three.FINAL_WITNESSES:
+				_check(_log.has_entry(entry.id), "Restored optional testimony: " + entry.title)
+			_check(_three.status().contains("秋册已找回"), "The restored objective reflects the recovered autumn ledger.")
 		"resume":
 			_check_third_chapter("BackYard")
 			_damage_save("user://investigation.json")

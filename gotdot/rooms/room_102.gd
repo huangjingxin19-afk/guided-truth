@@ -94,11 +94,14 @@ func _refresh_final_review() -> void:
 	$Investigation/SignOffPoint.hide()
 	$Investigation/DeskViewPoint.hide()
 	$Investigation/DeparturePoint.hide()
-	$Investigation/YardExit.hide()
+	$Investigation/YardExit.visible = ChapterThree.handover_paused
+	$Investigation/YardExit.travel_allowed = ChapterThree.handover_paused
+	$Investigation/YardExit.interaction_label = "返回后院"
 	$Investigation/ArchivePoint.show()
 	$Investigation/ArchivePoint.interaction_label = "复核 A01 箱口的报修册"
 	$Investigation/ArchivePoint.approach_hint = "走到正门内侧的 A01 资料箱旁"
 	$Scenery/ArchiveBox.show()
+	$Scenery/FinalDeskScrape.show()
 	$Scenery/ArchiveBox.position = Vector2(310, 418)
 	$Investigation/ArchivePoint.offset_left = 278.0
 	$Investigation/ArchivePoint.offset_top = 395.0
@@ -107,19 +110,103 @@ func _refresh_final_review() -> void:
 	$Investigation/ArchiveStand.position = Vector2(310, 449)
 	$Scenery/ArchiveBox/Ledger/WhiteStitches.hide()
 	$Scenery/ArchiveBox/CupRing.show()
-	$Scenery/OpenG03.hide()
-	$Scenery/ClosedG03.show()
+	$Investigation/G03Point.visible = ChapterThree.handover_paused
+	$Investigation/FinalHeQingPoint.visible = ChapterThree.handover_paused
+	$Investigation/FinalHanSuPoint.visible = ChapterThree.handover_paused
 	$Scenery/HeQing.show()
-	$Scenery/HeQing.position = Vector2(723, 308)
+	$Scenery/HeQing.position = Vector2(795, 306)
 	$Scenery/HanSu.show()
-	$Scenery/HanSu.position = Vector2(665, 309)
+	$Scenery/HanSu.position = Vector2(750, 307)
 	$Scenery/HanSu.pose = HanSuActor.Pose.LEFT
+	$Scenery/ClosedG03.visible = not _has_final_entry(ChapterThree.G03_OPEN)
+	$Scenery/OpenG03.visible = ChapterThree.handover_paused and _has_final_entry(ChapterThree.AUTUMN_LEDGER)
+	$Scenery/FinalOpenG03.visible = ChapterThree.handover_paused and _has_final_entry(ChapterThree.G03_OPEN) and not _has_final_entry(ChapterThree.AUTUMN_LEDGER)
+	$Scenery/OpenG03.position = Vector2(697, 248)
+	$Scenery/FinalOpenG03.position = Vector2(697, 248)
+	$Investigation/G03Point.interaction_label = "检查 G03"
+	$Investigation/FinalHeQingPoint.interaction_label = "请打开 G03"
+	$Investigation/FinalHanSuPoint.interaction_label = "向韩素核对离场情况"
 	$Scenery/ZhouWen.show()
 	$Scenery/ZhouWen.position = Vector2(414, 274)
 	var final_desk_position := _desk_start + Vector2(0, -28)
 	if _desk.position != final_desk_position:
 		_desk.position = final_desk_position
 		_floor.refresh_navigation()
+
+
+func _has_final_entry(entry: EvidenceEntry) -> bool:
+	return InvestigationLog.has_entry(entry.id)
+
+
+func _on_g03_requested() -> void:
+	if _hud.is_open() or not ChapterThree.handover_paused:
+		return
+	_investigation.clear_approach_hint()
+	if _has_final_entry(ChapterThree.AUTUMN_LEDGER):
+		_hud.show_evidence(ChapterThree.AUTUMN_LEDGER)
+	elif _has_final_entry(ChapterThree.G03_OPEN):
+		_hud.show_evidence(
+			ChapterThree.G03_OPEN, false, "移开谱架，取出秋册", _take_autumn_ledger
+		)
+	elif _has_final_entry(ChapterThree.G03_PERMISSION):
+		_hud.show_evidence(ChapterThree.G03_PHOTO, false, "打开 G03", _open_g03)
+	elif _has_final_entry(ChapterThree.G03_PHOTO):
+		_hud.show_evidence(ChapterThree.G03_PHOTO)
+	elif _has_final_entry(ChapterThree.G03_TRACE):
+		_hud.show_evidence(
+			ChapterThree.G03_TRACE, false, "拍下箱缝和装载卡", _photograph_g03
+		)
+	else:
+		ChapterThree.record_final_evidence(ChapterThree.G03_CARD)
+		_hud.show_evidence(
+			ChapterThree.G03_CARD, false, "检查箱缝", _inspect_g03_trace
+		)
+
+
+func _inspect_g03_trace() -> void:
+	ChapterThree.record_final_evidence(ChapterThree.G03_TRACE)
+	_hud.show_evidence(
+		ChapterThree.G03_TRACE, false, "拍下箱缝和装载卡", _photograph_g03
+	)
+
+
+func _photograph_g03() -> void:
+	ChapterThree.record_final_evidence(ChapterThree.G03_PHOTO)
+	_hud.show_evidence(ChapterThree.G03_PHOTO)
+
+
+func _on_final_he_qing_requested() -> void:
+	if _hud.is_open() or not ChapterThree.handover_paused:
+		return
+	_investigation.clear_approach_hint()
+	if _has_final_entry(ChapterThree.G03_PHOTO):
+		ChapterThree.record_final_evidence(ChapterThree.G03_PERMISSION)
+		_hud.show_evidence(ChapterThree.G03_PERMISSION)
+	else:
+		var response := EvidenceEntry.new()
+		response.title = "何青"
+		response.description = "先拍下箱缝和装载卡。照片留好，我在场，你再开箱。"
+		_hud.show_evidence(response)
+
+
+func _open_g03() -> void:
+	ChapterThree.record_final_evidence(ChapterThree.G03_OPEN)
+	_hud.show_evidence(
+		ChapterThree.G03_OPEN, false, "移开谱架，取出秋册", _take_autumn_ledger
+	)
+
+
+func _take_autumn_ledger() -> void:
+	ChapterThree.record_final_evidence(ChapterThree.AUTUMN_LEDGER)
+	_hud.show_evidence(ChapterThree.AUTUMN_LEDGER)
+
+
+func _on_final_han_su_requested() -> void:
+	if _hud.is_open() or not ChapterThree.handover_paused:
+		return
+	_investigation.clear_approach_hint()
+	ChapterThree.record_final_evidence(ChapterThree.HAN_SU_TESTIMONY)
+	_hud.show_evidence(ChapterThree.HAN_SU_TESTIMONY)
 
 
 func _on_yard_exit_blocked() -> void:
@@ -139,7 +226,9 @@ func _refresh_case() -> void:
 	$Scenery/ZhouWen.visible = stage == Case.SIGN_OFF
 	$Investigation/SignOffPoint.visible = stage == Case.SIGN_OFF
 
-	var desk_position := _desk_start + DESK_SHIFT if stage >= Case.PACK_ARCHIVE else _desk_start
+	var desk_position := _desk_start
+	if stage >= Case.PACK_ARCHIVE:
+		desk_position = _desk_start + Vector2(0, -28) if ChapterThree.final_review_started else _desk_start + DESK_SHIFT
 	if _desk.position != desk_position:
 		_desk.position = desk_position
 		_floor.refresh_navigation()

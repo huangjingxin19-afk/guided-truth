@@ -24,7 +24,7 @@ $checks = @(
         Phases = @(
             'first', 'second', 'third', 'appointment-plan', 'appointment-start',
             'appointment-return', 'appointment-finish', 'appointment-complete',
-            'final-review-start', 'final-review-resume'
+            'final-review-start', 'final-review-resume', 'final-evidence-resume'
         )
     }
 )

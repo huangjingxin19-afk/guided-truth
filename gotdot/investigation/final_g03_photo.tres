@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_closed_g03.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_g03_photo"
+title = "G03 开箱前照片"
+description = "合盖的 G03 仍贴墙放着。照片把箱缝里夹着的白线、蓝布毛边和装载卡一起拍了下来。\n\n请何青看过照片、在场见证，再开箱。"
+preview = ExtResource("2")
+preview_scale = 3.3

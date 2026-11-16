@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/final_open_g03.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_g03_open"
+title = "G03 开箱记录"
+description = "何青在场。箱盖抬起来后，露出两副折叠谱架。谱架底下压着一本深蓝布面的册子。"
+preview = ExtResource("2")
+preview_scale = 3.3

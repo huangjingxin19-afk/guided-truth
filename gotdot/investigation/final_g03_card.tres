@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/shelter_closed_g03.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_g03_card"
+title = "G03 装载卡"
+description = "G03，旧谱架一箱，中心仓库，周闻。\n\n19:25 离开 102 时，G03 还敞着口。现在它合了盖，贴墙放在长桌后面。"
+preview = ExtResource("2")
+preview_scale = 3.3

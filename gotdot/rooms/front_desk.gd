@@ -67,7 +67,8 @@ func _refresh() -> void:
 
 
 func _refresh_saturday() -> void:
-	var before_appointment := not ChapterThree.appointment_started
+	var final_review := ChapterThree.final_review_started
+	var before_appointment := not ChapterThree.appointment_started and not final_review
 	var loan_confirmed := InvestigationLog.has_entry(ChapterThree.LOAN_CARD.id)
 	var notice_read := InvestigationLog.has_entry(ChapterThree.RETURN_NOTICE.id)
 	var call_made := InvestigationLog.has_entry(ChapterThree.CALL.id)
@@ -97,6 +98,14 @@ func _refresh_saturday() -> void:
 	$Scenery/HandoverBoard/AppointmentSlip.visible = InvestigationLog.has_entry(ChapterThree.DUTY_BOARD.id)
 	$Investigation/DutyBoardPoint.visible = before_appointment and call_made
 	$Investigation/DutyBoardPoint.interaction_label = "查看赴约安排" if ChapterThree.can_confirm_appointment() else "登记赴约安排"
+	if final_review:
+		$RoomTitle.text = "终章 · 前台"
+		$Scenery/HeQing.hide()
+		$Investigation/CorridorExit.disabled = false
+		$Scenery/ShaoNing.visible = ChapterThree.handover_paused
+		$Investigation/ShaoNingPoint.visible = ChapterThree.handover_paused
+		$Investigation/ShaoNingPoint.interaction_label = "向邵宁核对春册去向"
+		$Investigation/ShaoNingPoint.accessibility_name = $Investigation/ShaoNingPoint.interaction_label
 
 
 func _on_loan_cards_requested() -> void:
@@ -178,8 +187,16 @@ func _shao_ning_action() -> String:
 
 
 func _on_shao_ning_interacted() -> void:
+	if _hud.is_open():
+		return
 	_investigation.clear_approach_hint()
-	if ChapterTwo.has_withdrawn_photo():
+	if ChapterThree.final_review_started:
+		if ChapterThree.handover_paused:
+			var testimony := ChapterThree.SHAO_NING_TESTIMONY
+			ChapterThree.record_final_evidence(testimony)
+			if InvestigationLog.has_entry(testimony.id):
+				_hud.show_evidence(testimony)
+	elif ChapterTwo.has_withdrawn_photo():
 		_hud.show_evidence(ChapterTwo.PHOTO_EXCERPT)
 	elif ChapterTwo.has_finding():
 		var confirmation := EvidenceEntry.new()

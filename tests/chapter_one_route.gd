@@ -682,6 +682,11 @@ func _play_saturday_return() -> void:
 		"The moved A01 box now visibly contains the spring ledger.")
 	_check(_room.get_node("Scenery/ClosedG03/Thread").is_visible_in_tree()
 		and not _room.get_node("Scenery/OpenG03").visible, "The G03 lid is closed, with a visible thread.")
+	_check(not _room.get_node("Investigation/G03Point").visible
+		and not _room.get_node("Investigation/FinalHeQingPoint").visible
+		and not _room.get_node("Investigation/FinalHanSuPoint").visible
+		and not _room.get_node("Investigation/YardExit").visible,
+		"G03 and the final witnesses stay unavailable before the handover is paused.")
 	await _interact_at(Vector2(310, 449), "复核 A01 箱口的报修册")
 	_check(_hud.header.text == "2019 年春季报修册" and _hud.description.text.contains("书脊完整"),
 		"The spring ledger shows its identifying details.")
@@ -709,9 +714,89 @@ func _play_saturday_return() -> void:
 		and _hud.header.text == "终章复核 · A01 与首次清点不符",
 		"The discrepancy pauses the handover and is retained in the notebook.")
 	_close()
+	await _play_final_ledger()
 	await _reread("终章复核 · A01 与首次清点不符", "暂停 A01")
 	await _reread("19:25 · 离开 102 前", "三针白线")
 	await _reread("19:27 · 后院签收联", "韩素")
+
+
+func _play_final_ledger() -> void:
+	_check(_room.get_node("Investigation/G03Point").visible
+		and _room.get_node("Investigation/FinalHeQingPoint").visible
+		and _room.get_node("Investigation/FinalHanSuPoint").visible,
+		"Pausing the handover exposes G03 and both witness points.")
+	await _walk_to(Vector2(620, 378))
+	_tap(Vector2(697, 248))
+	await _settle()
+	_check(not _hud.is_open() and not _log.has_entry(_chapter_three.G03_CARD.id),
+		"G03 cannot be inspected from the front of the long desk.")
+	await _interact_at(Vector2(697, 286), "检查 G03")
+	_check(_hud.header.text.contains("G03"), "G03 can be inspected from its rear side after the pause.")
+	_check(_hud.evidence_action_button.text == "检查箱缝", "The closed G03 box first offers the seam check.")
+	_close()
+	await _interact_at(Vector2(697, 286), "检查 G03")
+	_check(_hud.evidence_action_button.text == "检查箱缝", "Reopening the card page preserves the seam check action.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.evidence_action_button.text == "拍下箱缝和装载卡", "The seam check leads to a photo action.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_log.has_entry(_chapter_three.G03_PHOTO.id), "The G03 seam and loading card are photographed.")
+	_close()
+	await _interact_at(Vector2(795, 335), "请打开 G03")
+	_check(_log.has_entry(_chapter_three.G03_PERMISSION.id), "He Qing grants permission to open G03.")
+	_close()
+	await _interact_at(Vector2(697, 286), "检查 G03")
+	_check(_hud.evidence_action_button.text == "打开 G03", "Permission exposes the G03 opening action.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.evidence_action_button.text == "移开谱架，取出秋册", "The open box offers retrieval of the autumn ledger.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_log.has_entry(_chapter_three.AUTUMN_LEDGER.id), "Retrieving G03 records the autumn ledger.")
+	_close()
+	await _reread(_chapter_three.AUTUMN_LEDGER.title, "G03")
+	await _interact_at(Vector2(750, 335), "向韩素核对离场情况")
+	_check(_log.has_entry(_chapter_three.HAN_SU_TESTIMONY.id), "Han Su's departure testimony is recorded.")
+	_close()
+
+	await _interact_at(Vector2(483, 257), "返回后院")
+	await _room_ready("BackYard")
+	await _interact_at(Vector2(158, 346), "经外廊回走廊")
+	await _room_ready("Corridor")
+	await _interact_at(Vector2(161, 344), "返回前台")
+	await _room_ready("FrontDesk")
+	await _interact_at(Vector2(570, 360), "向邵宁核对春册去向")
+	_check(_log.has_entry(_chapter_three.SHAO_NING_TESTIMONY.id), "Shao Ning's spring ledger testimony is recorded.")
+	_close()
+	await _interact_at(Vector2(793, 344), "前往走廊")
+	await _room_ready("Corridor")
+	await _interact_at(Vector2(783, 344), "经外廊去后院")
+	await _room_ready("BackYard")
+	await _interact_at(Vector2(730, 346), "从器材门回 102")
+	await _room_ready("Room102")
+	await _reread(_chapter_three.G03_PHOTO.title, "G03")
+	await _reread(_chapter_three.HAN_SU_TESTIMONY.title, "韩素")
+	await _reread(_chapter_three.SHAO_NING_TESTIMONY.title, "邵宁")
+	await _resume_after_final_ledger()
+
+
+func _resume_after_final_ledger() -> void:
+	_tap_button(_hud.get_node("PauseButton"))
+	await _settle()
+	_check(paused, "Pause the recovered-ledger investigation before returning to the menu.")
+	_tap_button(_hud.get_node("PauseMenu/%ReturnButton"))
+	await scene_changed
+	await _settle()
+	_check(current_scene.name == "MainMenu" and not paused, "Return to the main menu after recovering the ledger.")
+	_tap_button(current_scene.get_node("%ContinueButton"))
+	await _room_ready("Room102")
+	_check(_chapter_three.handover_paused and _log.has_entry(_chapter_three.AUTUMN_LEDGER.id)
+		and _log.has_entry(_chapter_three.HAN_SU_TESTIMONY.id)
+		and _log.has_entry(_chapter_three.SHAO_NING_TESTIMONY.id),
+		"Continue restores the recovered ledger and both testimonies.")
+	_check(_room.get_node("Scenery/OpenG03").visible and not _room.get_node("Scenery/ClosedG03").visible,
+		"The G03 lid remains open after restarting the investigation.")
 
 
 func _return_to_front_desk() -> void:

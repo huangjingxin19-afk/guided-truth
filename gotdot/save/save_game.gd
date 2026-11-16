@@ -209,8 +209,18 @@ func _read_save(path: String) -> Dictionary:
 		return {}
 	if appointment_started and not ids.has(ChapterThree.DUTY_BOARD.id):
 		return {}
-	if handover_paused and not ids.has(ChapterThree.FINAL_REVIEW.id):
+	if handover_paused != ids.has(ChapterThree.FINAL_REVIEW.id):
 		return {}
+	var previous_step_recorded: bool = handover_paused
+	for entry in ChapterThree.FINAL_BOX_ENTRIES:
+		var step_recorded := ids.has(entry.id)
+		if step_recorded and not previous_step_recorded:
+			return {}
+		previous_step_recorded = step_recorded
+	if not handover_paused:
+		for entry in ChapterThree.FINAL_WITNESSES:
+			if ids.has(entry.id):
+				return {}
 	return {"state": state, "entries": entries, "json": contents}
 
 

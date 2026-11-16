@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/repair_ledger.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_autumn_ledger"
+title = "2019 年秋季报修册"
+description = "林禾移开两副谱架，从 G03 箱底取出蓝布册。书脊下端仍有三针白线，最下面一针已被拉松。翻开内页，写着「2019 年秋季」。\n\n何青记下秋册的取出位置和书脊状态，将原册留在 102。"
+preview = ExtResource("2")
+preview_scale = 6.0

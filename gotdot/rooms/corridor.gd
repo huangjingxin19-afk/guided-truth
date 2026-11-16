@@ -11,7 +11,8 @@ func _ready() -> void:
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
 	ChapterThree.progress_changed.connect(_refresh)
-	ChapterOne.visit_corridor()
+	if not ChapterThree.final_review_started:
+		ChapterOne.visit_corridor()
 	_refresh()
 
 
@@ -62,6 +63,17 @@ func _refresh_saturday() -> void:
 	$Investigation/NightPatrolPoint.hide()
 	$Investigation/AccidentPoint.interaction_label = "回看旧事故说明"
 	$ArrivalHint.text = "正门仍锁着。右侧经外廊通往后院。"
+	if ChapterThree.final_review_started:
+		$RoomTitle.text = "终章 · 走廊"
+		$ArrivalHint.text = "左侧返回前台，右侧经外廊回后院。"
+		$Investigation/YardExit.disabled = false
+		$Investigation/EndingPoint.hide()
+		$Investigation/AccidentPoint.hide()
+		$Investigation/SaturdaySealPoint.hide()
+		$Investigation/HighWindowPoint.hide()
+		$Investigation/SaturdayHanSuPoint.hide()
+		$WalkableFloor/DepthSort/SaturdayHanSu.hide()
+		return
 	var han_su_point = $Investigation/SaturdayHanSuPoint
 	if ChapterThree.has_location_finding():
 		han_su_point.interaction_label = "回看人影位置"

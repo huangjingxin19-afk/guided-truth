@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_han_su_testimony"
+title = "韩素的离场证词"
+description = "韩素：「出门前我还看了一眼，白线在箱口。你跟我一块儿守着后门，谁要从雨棚进去，我们都看得到。」"

@@ -35,6 +35,9 @@ func _refresh() -> void:
 
 
 func _refresh_saturday() -> void:
+	if ChapterThree.final_review_started:
+		_refresh_final_review()
+		return
 	var door_open := ChapterThree.can_enter_supply_door()
 	var appointment := ChapterThree.appointment_started
 	var returning := appointment and ChapterThree.has_departure_record()
@@ -68,6 +71,23 @@ func _refresh_saturday() -> void:
 	elif ChapterThree.can_submit_conclusion():
 		action = "向韩素提交归还结论"
 	$Investigation/ReturnSignOffPoint.interaction_label = action
+
+
+func _refresh_final_review() -> void:
+	$RoomTitle.text = "终章 · 后院雨棚"
+	$ChapterStatus.text = ChapterThree.status()
+	$Investigation/HanSuPoint.hide()
+	$Investigation/CartPoint.hide()
+	$Investigation/ReturnMessagePoint.hide()
+	$Investigation/ReturnedStandPoint.hide()
+	$Investigation/ReturnSignOffPoint.hide()
+	$WalkableFloor/DepthSort/HanSu.hide()
+	$WalkableFloor/DepthSort/XuNan.hide()
+	$WalkableFloor/DepthSort/ReturnedStand.hide()
+	$Scenery/ReturnMailbox.visible = ChapterThree.has_location_finding()
+	$Scenery/Bench.position = Vector2(597, 321)
+	$Investigation/SupplyDoorExit.travel_allowed = true
+	$Investigation/SupplyDoorExit.interaction_label = "从器材门回 102"
 
 
 func _on_han_su_requested() -> void:

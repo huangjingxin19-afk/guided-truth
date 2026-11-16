@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_shao_ning_testimony"
+title = "邵宁的春册证词"
+description = "林禾问起前台回收筐里那本带杯圈的蓝册。\n\n邵宁：「昨天周闻从筐里拿的。我记得杯圈朝外。他手上还夹着几块没写字的挂牌。」"

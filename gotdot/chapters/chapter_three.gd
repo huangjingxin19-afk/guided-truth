@@ -19,6 +19,18 @@ const RETURNED_STAND = preload("res://investigation/shelter_returned_stand.tres"
 const RECEIPT = preload("res://investigation/shelter_signed_receipt.tres")
 const CONCLUSION = preload("res://investigation/shelter_conclusion.tres")
 const FINAL_REVIEW = preload("res://investigation/final_review_discrepancy.tres")
+const G03_CARD = preload("res://investigation/final_g03_card.tres")
+const G03_TRACE = preload("res://investigation/final_g03_trace.tres")
+const G03_PHOTO = preload("res://investigation/final_g03_photo.tres")
+const G03_PERMISSION = preload("res://investigation/final_g03_permission.tres")
+const G03_OPEN = preload("res://investigation/final_g03_open.tres")
+const AUTUMN_LEDGER = preload("res://investigation/final_autumn_ledger.tres")
+const HAN_SU_TESTIMONY = preload("res://investigation/final_han_su_testimony.tres")
+const SHAO_NING_TESTIMONY = preload("res://investigation/final_shao_ning_testimony.tres")
+const FINAL_BOX_ENTRIES: Array[EvidenceEntry] = [
+	G03_CARD, G03_TRACE, G03_PHOTO, G03_PERMISSION, G03_OPEN, AUTUMN_LEDGER,
+]
+const FINAL_WITNESSES: Array[EvidenceEntry] = [HAN_SU_TESTIMONY, SHAO_NING_TESTIMONY]
 
 const CHAPTER_ENTRIES := [
 	COMMISSION, HIGH_WINDOW, SUPPLY_ACCESS, DESK_VIEW, LOCATION_FINDING, MESSAGE,
@@ -78,9 +90,19 @@ func start_final_review() -> void:
 
 func pause_handover() -> void:
 	if final_review_started and not handover_paused:
-		InvestigationLog.record(FINAL_REVIEW)
 		handover_paused = true
-		progress_changed.emit()
+		InvestigationLog.record(FINAL_REVIEW)
+
+
+func record_final_evidence(entry: EvidenceEntry) -> void:
+	if not handover_paused:
+		return
+	var step := FINAL_BOX_ENTRIES.find(entry)
+	if step == -1 and not FINAL_WITNESSES.has(entry):
+		return
+	if step > 0 and not InvestigationLog.has_entry(FINAL_BOX_ENTRIES[step - 1].id):
+		return
+	InvestigationLog.record(entry)
 
 
 func can_observe_high_window() -> bool:
@@ -195,7 +217,15 @@ func status() -> String:
 
 func _objective() -> String:
 	if handover_paused:
-		return "异议已记入笔记，A01 移交暂停"
+		if InvestigationLog.has_entry(AUTUMN_LEDGER.id):
+			return "秋册已找回，可回看笔记或补问证人"
+		if InvestigationLog.has_entry(G03_OPEN.id):
+			return "移开 G03 里的谱架，取出秋册"
+		if InvestigationLog.has_entry(G03_PERMISSION.id):
+			return "回到 G03，在何青见证下开箱"
+		if InvestigationLog.has_entry(G03_PHOTO.id):
+			return "带着开箱前照片，请何青见证开箱"
+		return "绕过长桌右端，检查桌后的 G03"
 	if final_review_started:
 		return "对照首次清点照片，检查 A01 里的报修册"
 	if is_complete():
@@ -232,5 +262,5 @@ func _objective() -> String:
 
 
 func _on_entry_recorded(entry: EvidenceEntry) -> void:
-	if active and entry in CHAPTER_ENTRIES:
+	if active and (entry in CHAPTER_ENTRIES or entry in FINAL_BOX_ENTRIES or entry in FINAL_WITNESSES):
 		progress_changed.emit()

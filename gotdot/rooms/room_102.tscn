@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" path="res://props/shelter_open_g03.tscn" id="20_g03"]
 [ext_resource type="PackedScene" path="res://props/shelter_closed_g03.tscn" id="21_g03_closed"]
 [ext_resource type="Resource" path="res://investigation/shelter_102_departure.tres" id="21_departure"]
+[ext_resource type="PackedScene" path="res://props/final_open_g03.tscn" id="22_final_open_g03"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_floor"]
 resource_local_to_scene = true
@@ -154,6 +155,13 @@ points = PackedVector2Array(119, 314, 132, 314, 132, 317, 119, 317, 119, 314)
 width = 1.5
 default_color = Color(0.28, 0.24, 0.20, 0.83)
 
+[node name="FinalDeskScrape" type="Line2D" parent="Scenery"]
+visible = false
+position = Vector2(111, 300)
+points = PackedVector2Array(0, 0, -3, -4, -7, -10, -12, -17)
+width = 2.0
+default_color = Color(0.79, 0.69, 0.52, 0.9)
+
 [node name="RightFootprint" type="Line2D" parent="Scenery/OldDeskFootprints"]
 position = Vector2(482, 0)
 points = PackedVector2Array(119, 314, 132, 314, 132, 317, 119, 317, 119, 314)
@@ -170,6 +178,13 @@ position = Vector2(407, 249)
 
 [node name="ClosedG03" parent="Scenery" instance=ExtResource("21_g03_closed")]
 visible = false
+position = Vector2(697, 248)
+
+[node name="FinalOpenG03" parent="Scenery" instance=ExtResource("22_final_open_g03")]
+visible = false
+position = Vector2(697, 248)
+
+[node name="FinalG03Target" type="Marker2D" parent="Scenery"]
 position = Vector2(697, 248)
 
 [node name="FootPad" parent="Scenery" instance=ExtResource("3_foot_pad")]
@@ -371,6 +386,48 @@ approach_hint = "到长桌后靠近 A01，记下离开前的现场"
 [node name="Marker" parent="Investigation/DeparturePoint" index="0"]
 visible = false
 
+[node name="G03Point" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") instance=ExtResource("6_point")]
+visible = false
+offset_left = 664.0
+offset_top = 226.0
+offset_right = 730.0
+offset_bottom = 270.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/FinalG03Target")
+target_outline = PackedVector2Array(-38, -9, 38, -9, 38, 16, -38, 16)
+inspection_distance = 52.0
+touch_padding = 18.0
+hint_stands = [NodePath("../G03Stand")]
+approach_hint = "绕过长桌右端，靠近 G03 调查"
+
+[node name="FinalHeQingPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") instance=ExtResource("6_point")]
+visible = false
+offset_left = 766.0
+offset_top = 280.0
+offset_right = 826.0
+offset_bottom = 327.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/HeQing")
+target_outline = PackedVector2Array(-14, -4, 14, -4, 14, 4, -14, 4)
+inspection_distance = 58.0
+touch_padding = 26.0
+hint_stands = [NodePath("../FinalHeQingStand")]
+approach_hint = "走到何青身边，请她打开 G03"
+
+[node name="FinalHanSuPoint" parent="Investigation" node_paths=PackedStringArray("investigator", "target", "hint_stands") instance=ExtResource("6_point")]
+visible = false
+offset_left = 722.0
+offset_top = 282.0
+offset_right = 777.0
+offset_bottom = 328.0
+investigator = NodePath("../../WalkableFloor/DepthSort/LinHe")
+target = NodePath("../../Scenery/HanSu")
+target_outline = PackedVector2Array(-14, -4, 14, -4, 14, 4, -14, 4)
+inspection_distance = 58.0
+touch_padding = 26.0
+hint_stands = [NodePath("../FinalHanSuStand")]
+approach_hint = "走到韩素身边，核对她离场时的情况"
+
 [node name="DeskViewStand" type="Marker2D" parent="Investigation"]
 position = Vector2(655, 265)
 
@@ -382,6 +439,15 @@ position = Vector2(179, 267)
 
 [node name="ArchiveStand" type="Marker2D" parent="Investigation"]
 position = Vector2(279, 283)
+
+[node name="G03Stand" type="Marker2D" parent="Investigation"]
+position = Vector2(697, 286)
+
+[node name="FinalHeQingStand" type="Marker2D" parent="Investigation"]
+position = Vector2(795, 335)
+
+[node name="FinalHanSuStand" type="Marker2D" parent="Investigation"]
+position = Vector2(750, 335)
 
 [node name="SignOffStand" type="Marker2D" parent="Investigation"]
 position = Vector2(371, 301)
@@ -514,6 +580,12 @@ second_question = "拖响是怎么来的？"
 [connection signal="interaction_requested" from="Investigation/DrawerPoint" to="." method="_on_drawer_requested"]
 [connection signal="approach_requested" from="Investigation/ArchivePoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/ArchivePoint" to="." method="_on_archive_requested"]
+[connection signal="approach_requested" from="Investigation/G03Point" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/G03Point" to="." method="_on_g03_requested"]
+[connection signal="approach_requested" from="Investigation/FinalHeQingPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/FinalHeQingPoint" to="." method="_on_final_he_qing_requested"]
+[connection signal="approach_requested" from="Investigation/FinalHanSuPoint" to="Investigation" method="show_approach_hint"]
+[connection signal="interaction_requested" from="Investigation/FinalHanSuPoint" to="." method="_on_final_han_su_requested"]
 [connection signal="approach_requested" from="Investigation/SignOffPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="interaction_requested" from="Investigation/SignOffPoint" to="." method="_on_sign_off_requested"]
 [connection signal="approach_requested" from="Investigation/DeskViewPoint" to="Investigation" method="show_approach_hint"]
