@@ -754,8 +754,12 @@ func _play_final_ledger() -> void:
 	_tap_button(_hud.evidence_action_button)
 	await _settle()
 	_check(_log.has_entry(_chapter_three.AUTUMN_LEDGER.id), "Retrieving G03 records the autumn ledger.")
+	_check(_hud.header.text == _chapter_three.AUTUMN_LEDGER.title
+		and _hud.evidence_action_button.text == "翻看目录",
+		"The autumn ledger card offers its directory immediately after retrieval.")
 	_close()
 	await _reread(_chapter_three.AUTUMN_LEDGER.title, "G03")
+	await _play_a047()
 	await _interact_at(Vector2(750, 335), "向韩素核对离场情况")
 	_check(_log.has_entry(_chapter_three.HAN_SU_TESTIMONY.id), "Han Su's departure testimony is recorded.")
 	_close()
@@ -797,6 +801,118 @@ func _resume_after_final_ledger() -> void:
 		"Continue restores the recovered ledger and both testimonies.")
 	_check(_room.get_node("Scenery/OpenG03").visible and not _room.get_node("Scenery/ClosedG03").visible,
 		"The G03 lid remains open after restarting the investigation.")
+	_check(_room.get_node("Investigation/G03Point").interaction_label == "检查 G03",
+		"The recovered-ledger interaction stays labeled 检查 G03 after reading A-047.")
+	_check(_log.has_entry(_chapter_three.A047_REPORT.id)
+		and _log.has_entry(_chapter_three.A047_FINDING.id),
+		"Continue restores the A-047 report and final comparison conclusion.")
+	await _reread(_chapter_three.A047_REPORT.title, "17:52")
+	await _reread(_chapter_three.A047_FINDING.title, "故障报告在事故发生前已收到")
+	await _interact_at(Vector2(697, 286), "检查 G03")
+	_check(_hud.evidence_action_button.text == "翻看目录",
+		"Reopening the autumn ledger still offers its directory.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "2019 年秋季报修册目录"
+		and _hud.evidence_action_button.text == "打开 A-047",
+		"The directory can still open A-047 after restart.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == _chapter_three.A047_REPORT.title,
+		"Reopening A-047 shows its saved report.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "核对旧事故说明"
+		and _choice(_hud.presentation_slot, "指出有误的一句") == null,
+		"The saved comparison is view-only after the finding.")
+	_close()
+	await _settle()
+	_close()
+	await _settle()
+	_check(_chapter_three.status().contains("旧事故说明已核对"),
+		"The final objective reports that the old incident statement was checked.")
+
+
+func _play_a047() -> void:
+	_check(_room.get_node("Investigation/G03Point").interaction_label == "检查 G03",
+		"G03 keeps its familiar interaction label while holding the autumn ledger.")
+	await _interact_at(Vector2(697, 286), "检查 G03")
+	_check(_hud.header.text == _chapter_three.AUTUMN_LEDGER.title
+		and _hud.evidence_action_button.text == "翻看目录",
+		"The autumn ledger card opens its directory.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "2019 年秋季报修册目录"
+		and _hud.evidence_action_button.text == "打开 A-047",
+		"The directory offers the A-047 report.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "A-047 西梯应急灯报修存根"
+		and _log.has_entry(&"final_a047_report")
+		and _log.has_entry(_chapter_three.A047_REPORT.id),
+		"Opening A-047 logs the report evidence.")
+	_check(_hud.evidence_action_button.text == "对照旧事故说明"
+		and _hud.get_node("%EvidenceSecondaryAction").text == "翻到次日维修记录",
+		"The report offers comparison and the optional next-day repair stub.")
+	_tap_button(_hud.get_node("%EvidenceSecondaryAction"))
+	await _settle()
+	_check(_hud.header.text == _chapter_three.A047_REPAIR.title
+		and _log.has_entry(_chapter_three.A047_REPAIR.id)
+		and _hud.evidence_action_button.text == "返回 A-047",
+		"The optional repair stub is recorded and can return to A-047.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == _chapter_three.A047_REPORT.title,
+		"The repair stub returns to the A-047 report.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "核对旧事故说明" and not _chapter_three.needs_accident_photo(),
+		"The report opens its comparison and enables the decision.")
+	for view in [_chapter_three.A047_REPORT, _chapter_two.ACCIDENT_NOTICE]:
+		var enlarge := _choice(_hud.presentation_slot, "放大" + view.title)
+		_check(enlarge != null, "The comparison can enlarge " + view.title)
+		if enlarge == null:
+			continue
+		_tap_button(enlarge)
+		await _settle()
+		_check(_hud.header.text == view.title and _hud.close_button.text == "返回对照",
+			"The comparison enlargement returns to the old-statement comparison.")
+		_close()
+		await _settle()
+		_check(_hud.header.text == "核对旧事故说明", "The comparison remains open after enlargement.")
+	_tap_button(_choice(_hud.presentation_slot, "指出有误的一句"))
+	await _settle()
+	var form := _hud.presentation_slot.get_node("FinalAccidentReasoning") as Control
+	_check(form != null and _hud.header.text == "核对旧事故说明",
+		"The comparison opens the final accident reasoning form.")
+	if form == null:
+		return
+	var submit := form.get_node("Submit") as Button
+	_check(submit.disabled, "The reasoning form requires an answer selection.")
+	_tap_button(_choice(form, "约 20:17 楼内停电"))
+	_tap_button(submit)
+	await _settle()
+	var feedback: String = form.find_children("*", "Label", false, false)[0].text
+	_check(not _log.has_entry(_chapter_three.A047_FINDING.id)
+		and feedback.contains("17:52") and feedback.contains("20:17"),
+		"A wrong sentence points to the conflicting times without recording a conclusion.")
+	_close()
+	await _settle()
+	_check(_hud.header.text == "核对旧事故说明", "Closing wrong feedback returns to the comparison.")
+	_tap_button(_choice(_hud.presentation_slot, "指出有误的一句"))
+	await _settle()
+	form = _hud.presentation_slot.get_node("FinalAccidentReasoning") as Control
+	submit = form.get_node("Submit") as Button
+	_tap_button(_choice(form, "事发前未收到西梯应急照明故障报告"))
+	_tap_button(submit)
+	await _settle()
+	_check(_log.has_entry(&"final_a047_finding")
+		and _log.has_entry(_chapter_three.A047_FINDING.id)
+		and _hud.header.text == _chapter_three.A047_FINDING.title,
+		"The correct sentence records the A-047 finding.")
+	_close()
+	await _settle()
+	_check(not _hud.is_open(), "Closing the recorded conclusion returns to the room.")
 
 
 func _return_to_front_desk() -> void:

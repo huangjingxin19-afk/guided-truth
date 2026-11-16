@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_a047_finding"
+title = "核对结论：事发前已签收报修"
+description = "旧事故说明写着「事发前未收到西梯应急照明故障报告」。\n\nA-047 记载周闻在 11 月 8 日 17:52 签收，并决定当晚照常使用西梯。旧说明记载的事故时间约为 20:17。故障报告在事故发生前已收到。"

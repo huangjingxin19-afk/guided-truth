@@ -98,6 +98,74 @@ func _run() -> void:
 			for entry in _three.FINAL_WITNESSES:
 				_check(_log.has_entry(entry.id), "Restored optional testimony: " + entry.title)
 			_check(_three.status().contains("秋册已找回"), "The restored objective reflects the recovered autumn ledger.")
+		"a047-legacy-photo-fixture":
+			_check(current_scene.name == &"Room102" and _three.handover_paused
+				and _log.has_entry(_three.A047_REPORT.id),
+				"Prepare a reported A-047 checkpoint for the missing-photo fallback.")
+			var legacy_entries: Array = _log.entries()
+			legacy_entries.erase(_two.ACCIDENT_NOTICE)
+			_log.restore_entries(legacy_entries)
+			_check(not _log.has_entry(_two.ACCIDENT_NOTICE.id), "The isolated fixture omits the old photo.")
+			_check(root.get_node("SaveGame").save_now() == OK,
+				"Save the isolated checkpoint without the old photo.")
+		"a047-photo-fallback":
+			_check(current_scene.name == &"Room102" and _three.handover_paused
+				and _log.has_entry(_three.A047_REPORT.id),
+				"Resume the isolated checkpoint with the report present.")
+			_check(not _log.has_entry(_two.ACCIDENT_NOTICE.id) and _three.needs_accident_photo()
+				and _three.submit_accident_comparison(1).contains("西梯口"),
+				"The comparison waits for the missing old photo.")
+			await _interact_at(Vector2(483, 257), "返回后院")
+			_check(current_scene.name == &"BackYard", "Reach the yard from 102 before taking the corridor route.")
+			await _interact_at(Vector2(158, 346), "经外廊回走廊")
+			await _settle()
+			_check(current_scene.name == &"Corridor"
+				and current_scene.get_node("Investigation/AccidentPoint").visible
+				and current_scene.get_node("Investigation/AccidentPoint").interaction_label == "拍下旧事故说明",
+				"The compatibility fallback exposes the west-stair photo spot.")
+			var hud := current_scene.get_node("InvestigationHud")
+			await _interact_at(
+				current_scene.get_node("Investigation/WestStairStand").global_position,
+				"拍下旧事故说明"
+			)
+			_check(hud.header.text == _two.ACCIDENT_NOTICE.title,
+				"Photographing the west-stair board records the old accident statement.")
+			_check(_log.has_entry(_two.ACCIDENT_NOTICE.id)
+				and not _three.needs_accident_photo(), "The fallback evidence enables the A-047 comparison.")
+			_tap(hud.close_button)
+			await _settle()
+			await _interact_at(Vector2(783, 344), "经外廊去后院")
+			await _interact_at(Vector2(730, 346), "从器材门回 102")
+			await _settle()
+		"a047-report-save":
+			_check(current_scene.name == &"Room102" and _three.handover_paused,
+				"Resume the paused handover before opening the A-047 directory.")
+			_check(_log.has_entry(_three.AUTUMN_LEDGER.id), "The autumn ledger survives before opening A-047.")
+			_check(not _log.has_entry(_three.A047_REPORT.id), "The report has not been recorded in the preceding checkpoint.")
+			_three.record_a047_report()
+			_check(_log.has_entry(&"final_a047_report") and _log.has_entry(_three.A047_REPORT.id),
+				"Opening A-047 records its report for autosave.")
+			_check(_three.status().contains("对照旧事故说明"), "The report advances the saved objective.")
+			await _settle()
+		"a047-conclusion-save":
+			_check(current_scene.name == &"Room102" and _three.handover_paused,
+				"Resume the paused handover with A-047 recorded.")
+			_check(_log.has_entry(_three.A047_REPORT.id)
+				and _three.status().contains("对照旧事故说明"), "The A-047 report and objective survive restart.")
+			_check(_three.submit_accident_comparison(1).is_empty(),
+				"Submit the correct old-incident sentence after restarting.")
+			_check(_log.has_entry(&"final_a047_finding") and _log.has_entry(_three.A047_FINDING.id),
+				"The comparison conclusion is recorded for autosave.")
+			_check(_three.status().contains("旧事故说明已核对"), "The finding advances the saved objective.")
+			await _settle()
+		"a047-final-resume":
+			_check(current_scene.name == &"Room102" and _three.handover_paused,
+				"Resume the paused handover after the A-047 conclusion.")
+			_check(_log.has_entry(_three.A047_REPORT.id) and _log.has_entry(_three.A047_FINDING.id),
+				"The report and comparison conclusion survive process restart.")
+			_check(_three.A047_FINDING.title == "核对结论：事发前已签收报修",
+				"The restored conclusion keeps its notebook title.")
+			_check(_three.status().contains("旧事故说明已核对"), "The final A-047 objective survives restart.")
 		"resume":
 			_check_third_chapter("BackYard")
 			_damage_save("user://investigation.json")
@@ -124,7 +192,7 @@ func _run() -> void:
 			_check(JSON.parse_string(FileAccess.get_file_as_string("user://investigation.json")) is Dictionary,
 				"An explicit overwrite replaces the unreadable file with a playable save.")
 		_:
-			_check(false, "Expected a first/second/third, recovery, appointment, or final-review phase.")
+			_check(false, "Expected a first/second/third, recovery, appointment, final-review, or A-047 phase.")
 	print("Autosave failures: ", _failures)
 	quit(int(_failures > 0))
 
@@ -288,6 +356,40 @@ func _tap(button: Button) -> void:
 		touch.position = position
 		touch.pressed = pressed
 		root.push_input(touch, true)
+
+
+func _interact_at(destination: Vector2, label: String) -> void:
+	await _walk_to(destination)
+	var hud := current_scene.get_node("InvestigationHud")
+	var interaction := hud.get_node("InteractionButton") as Button
+	if not interaction.visible or not interaction.text.ends_with(label):
+		_check(false, "Expected interaction: " + label)
+		return
+	_tap(interaction)
+	for frame in range(120):
+		await process_frame
+		if not _transition.is_changing:
+			break
+	await _settle()
+
+
+func _walk_to(destination: Vector2) -> void:
+	var player := current_scene.get_node("WalkableFloor/DepthSort/LinHe") as CharacterBody2D
+	var click := InputEventScreenTouch.new()
+	click.position = destination
+	click.pressed = true
+	root.push_input(click, true)
+	click = InputEventScreenTouch.new()
+	click.position = destination
+	click.pressed = false
+	root.push_input(click, true)
+	for frame in range(480):
+		await physics_frame
+		if player.global_position.distance_to(destination) < 3.0:
+			break
+	_check(player.global_position.distance_to(destination) < 3.0,
+		"Walkable route reaches %s (actual %s)." % [destination, player.global_position])
+	await _settle()
 
 
 func _settle() -> void:

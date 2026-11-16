@@ -24,12 +24,15 @@ signal overlay_changed(open: bool)
 @onready var preview_anchor: Node2D = %PreviewAnchor
 @onready var description: Label = %Description
 @onready var evidence_action_button: Button = %EvidenceAction
+@onready var _evidence_secondary_action_button: Button = %EvidenceSecondaryAction
+@onready var _evidence_actions: HBoxContainer = %EvidenceActions
 @onready var presentation_slot: CenterContainer = %Presentation
 
 var _preview: Node2D
 var _comparison: EvidenceComparison
 var _return_action := Callable()
 var _evidence_action := Callable()
+var _evidence_secondary_action := Callable()
 
 
 func _ready() -> void:
@@ -86,7 +89,8 @@ func _on_interaction_pressed() -> void:
 
 
 func show_evidence(
-	entry: EvidenceEntry, from_notebook := false, action_label := "", action := Callable()
+	entry: EvidenceEntry, from_notebook := false, action_label := "", action := Callable(),
+	secondary_action_label: String = "", secondary_action: Callable = Callable()
 ) -> void:
 	_return_action = _show_notebook_page if from_notebook else Callable()
 	header.text = entry.title
@@ -94,8 +98,12 @@ func show_evidence(
 	close_button.text = "返回笔记" if from_notebook else "关闭"
 	close_button.show()
 	_evidence_action = action if not from_notebook else Callable()
+	_evidence_secondary_action = secondary_action if not from_notebook else Callable()
 	evidence_action_button.text = action_label
 	evidence_action_button.visible = _evidence_action.is_valid()
+	_evidence_secondary_action_button.text = secondary_action_label
+	_evidence_secondary_action_button.visible = _evidence_secondary_action.is_valid()
+	_evidence_actions.visible = evidence_action_button.visible or _evidence_secondary_action_button.visible
 	if is_instance_valid(_preview):
 		preview_anchor.remove_child(_preview)
 		_preview.queue_free()
@@ -112,13 +120,15 @@ func show_evidence(
 	close_button.grab_focus()
 
 
-func show_presentation(view: Control, title: String, closable := false) -> void:
+func show_presentation(
+	view: Control, title: String, closable := false, on_close := Callable(), close_label := "关闭"
+) -> void:
 	if view.get_parent() != presentation_slot:
 		view.reparent(presentation_slot, false)
 	_evidence_action = Callable()
 	header.text = title
-	_return_action = Callable()
-	close_button.text = "关闭"
+	_return_action = on_close
+	close_button.text = close_label
 	close_button.visible = closable
 	evidence.hide()
 	notebook.hide()
@@ -168,13 +178,15 @@ func show_notebook(entries: Array[EvidenceEntry], comparison_entries: Array[Evid
 
 func show_comparison(
 	entries: Array[EvidenceEntry], title: String, on_close: Callable, close_label: String,
-	action_label := "", action := Callable()
+	action_label := "", action := Callable(), excerpts: Array[String] = []
 ) -> void:
 	if is_instance_valid(_comparison):
 		presentation_slot.remove_child(_comparison)
 		_comparison.queue_free()
 	_comparison = EvidenceComparison.new()
-	_comparison.setup(entries, preview_container.get_theme_stylebox("panel"), action_label, action)
+	_comparison.setup(
+		entries, preview_container.get_theme_stylebox("panel"), action_label, action, excerpts
+	)
 	var return_to_comparison := _show_comparison.bind(title, on_close, close_label)
 	_comparison.entry_selected.connect(_enlarge_comparison_entry.bind(return_to_comparison))
 	presentation_slot.add_child(_comparison)
@@ -182,9 +194,7 @@ func show_comparison(
 
 
 func _show_comparison(title: String, on_close: Callable, close_label: String) -> void:
-	show_presentation(_comparison, title, true)
-	_return_action = on_close
-	close_button.text = close_label
+	show_presentation(_comparison, title, true, on_close, close_label)
 
 
 func _enlarge_comparison_entry(entry: EvidenceEntry, return_to_comparison: Callable) -> void:
@@ -222,3 +232,8 @@ func _on_close_pressed() -> void:
 func _on_evidence_action_pressed() -> void:
 	if _evidence_action.is_valid():
 		_evidence_action.call()
+
+
+func _on_evidence_secondary_action_pressed() -> void:
+	if _evidence_secondary_action.is_valid():
+		_evidence_secondary_action.call()

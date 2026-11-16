@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[node name="A047Report" type="Node2D"]
+
+[node name="LedgerBinding" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-166, -58, 166, -58, 166, 58, -166, 58)
+color = Color(0.17, 0.24, 0.36, 1)
+
+[node name="Page" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-147, -52, 157, -52, 157, 51, -147, 51)
+color = Color(0.91, 0.84, 0.69, 1)
+
+[node name="Number" type="Label" parent="."]
+offset_left = -124.0
+offset_top = -40.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.23, 0.27, 0.33, 1)
+theme_override_font_sizes/font_size = 21
+text = "A-047  西梯二层应急灯"
+
+[node name="Rules" type="Line2D" parent="."]
+points = PackedVector2Array(-124, -4, 132, -4)
+width = 1.0
+default_color = Color(0.60, 0.51, 0.40, 1)
+
+[node name="Signature" type="Label" parent="."]
+offset_left = -124.0
+offset_top = 8.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.28, 0.23, 0.25, 1)
+theme_override_font_sizes/font_size = 19
+text = "17:52 签收  周闻"

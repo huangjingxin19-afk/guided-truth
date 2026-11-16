@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"final_a047_repair"
+title = "A-047 次日更换灯组存根"
+description = "2019 年 11 月 9 日 09:10\n位置：西梯二层应急灯\n处理：更换灯组\n引用报修编号：A-047"

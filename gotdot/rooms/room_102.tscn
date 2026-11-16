@@ -566,6 +566,11 @@ script = ExtResource("14_reasoning")
 first_question = "谁从哪扇门运了什么？"
 second_question = "拖响是怎么来的？"
 
+[node name="FinalAccidentReasoning" type="VBoxContainer" parent="."]
+visible = false
+script = ExtResource("14_reasoning")
+first_question = "旧说明里哪一句有误？"
+
 [connection signal="approach_requested" from="Investigation/FootPadPoint" to="Investigation" method="show_approach_hint"]
 [connection signal="inspection_requested" from="Investigation/FootPadPoint" to="." method="_on_foot_pad_inspected"]
 [connection signal="approach_requested" from="Investigation/WheelTracksPoint" to="Investigation" method="show_approach_hint"]
@@ -597,6 +602,7 @@ second_question = "拖响是怎么来的？"
 [connection signal="overlay_changed" from="InvestigationHud" to="WalkableFloor" method="set_overlay_open"]
 [connection signal="finished" from="ThresholdReenactment" to="." method="_on_reenactment_finished"]
 [connection signal="submitted" from="Reasoning" to="." method="_on_reasoning_submitted"]
+[connection signal="submitted" from="FinalAccidentReasoning" to="." method="_on_accident_reasoning_submitted"]
 
 [editable path="Investigation/HanSuPoint"]
 [editable path="Investigation/YardExit"]

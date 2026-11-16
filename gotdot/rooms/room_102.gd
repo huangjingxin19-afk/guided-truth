@@ -13,6 +13,10 @@ const LEDGER = preload("res://props/repair_ledger.tscn")
 const SPRING_LEDGER = preload("res://props/spring_repair_ledger.tscn")
 const FINAL_REVIEW = preload("res://investigation/final_review_discrepancy.tres")
 const DESK_SHIFT := Vector2(0, 28)
+const ACCIDENT_EXCERPTS: Array[String] = [
+	"11 月 8 日 17:40 报修\n17:52 周闻签收\n「今晚西梯照常走，明早再修。」",
+	"11 月 8 日约 20:17 楼内停电\n「事发前未收到西梯应急照明故障报告。」",
+]
 
 @onready var _investigation: RoomInvestigation = $Investigation
 @onready var _hud: InvestigationHud = $InvestigationHud
@@ -22,6 +26,7 @@ const DESK_SHIFT := Vector2(0, 28)
 @onready var _han_su_point: Button = $Investigation/HanSuPoint
 @onready var _foot_pad_stand: Marker2D = $Investigation/FootPadStand
 @onready var _reasoning: Reasoning = $Reasoning
+@onready var _accident_reasoning: Reasoning = $FinalAccidentReasoning
 @onready var _floor: WalkableFloor = $WalkableFloor
 @onready var _desk: StaticBody2D = $WalkableFloor/DepthSort/LongDesk
 @onready var _desk_start := _desk.position
@@ -29,6 +34,7 @@ const DESK_SHIFT := Vector2(0, 28)
 
 func _ready() -> void:
 	_reasoning.setup(ChapterOne.ROUTE_CHOICES, ChapterOne.SOUND_CHOICES)
+	_accident_reasoning.setup(ChapterThree.ACCIDENT_CLAIMS)
 	ChapterOne.progress_changed.connect(_refresh)
 	ChapterTwo.progress_changed.connect(_refresh)
 	ChapterThree.progress_changed.connect(_refresh)
@@ -143,7 +149,7 @@ func _on_g03_requested() -> void:
 		return
 	_investigation.clear_approach_hint()
 	if _has_final_entry(ChapterThree.AUTUMN_LEDGER):
-		_hud.show_evidence(ChapterThree.AUTUMN_LEDGER)
+		_show_autumn_ledger()
 	elif _has_final_entry(ChapterThree.G03_OPEN):
 		_hud.show_evidence(
 			ChapterThree.G03_OPEN, false, "移开谱架，取出秋册", _take_autumn_ledger
@@ -198,7 +204,63 @@ func _open_g03() -> void:
 
 func _take_autumn_ledger() -> void:
 	ChapterThree.record_final_evidence(ChapterThree.AUTUMN_LEDGER)
-	_hud.show_evidence(ChapterThree.AUTUMN_LEDGER)
+	_show_autumn_ledger()
+
+
+func _show_autumn_ledger() -> void:
+	_hud.show_evidence(ChapterThree.AUTUMN_LEDGER, false, "翻看目录", _show_autumn_directory)
+
+
+func _show_autumn_directory() -> void:
+	var directory := EvidenceEntry.new()
+	directory.title = "2019 年秋季报修册目录"
+	directory.description = "按报修地点查找\n\n一楼  ·  大厅及前台\n二楼  ·  西梯二层应急灯    A-047\n三楼  ·  排练室"
+	_hud.show_evidence(directory, false, "打开 A-047", _show_a047_report)
+
+
+func _show_a047_report() -> void:
+	ChapterThree.record_a047_report()
+	_hud.show_evidence(
+		ChapterThree.A047_REPORT, false, "对照旧事故说明", _compare_accident_records,
+		"翻到次日维修记录", _show_a047_repair
+	)
+
+
+func _show_a047_repair() -> void:
+	ChapterThree.record_a047_repair()
+	_hud.show_evidence(ChapterThree.A047_REPAIR, false, "返回 A-047", _show_a047_report)
+
+
+func _compare_accident_records() -> void:
+	if ChapterThree.needs_accident_photo():
+		var reminder := EvidenceEntry.new()
+		reminder.title = "补拍旧事故说明"
+		reminder.description = "笔记里还没有旧事故说明的照片。从器材门经后院回走廊，到西梯口的公告板补拍。"
+		_hud.show_evidence(reminder, false, "返回 A-047", _show_a047_report)
+		return
+	var entries: Array[EvidenceEntry] = [ChapterThree.A047_REPORT, ChapterTwo.ACCIDENT_NOTICE]
+	var submit := Callable()
+	if not _has_final_entry(ChapterThree.A047_FINDING):
+		submit = _show_accident_reasoning
+	_hud.show_comparison(
+		entries, "核对旧事故说明", _show_a047_report, "返回 A-047",
+		"指出有误的一句", submit, ACCIDENT_EXCERPTS
+	)
+
+
+func _show_accident_reasoning() -> void:
+	_accident_reasoning.clear_feedback()
+	_hud.show_presentation(
+		_accident_reasoning, "核对旧事故说明", true, _compare_accident_records, "返回对照"
+	)
+
+
+func _on_accident_reasoning_submitted(answer: int, _unused: int) -> void:
+	var feedback := ChapterThree.submit_accident_comparison(answer)
+	if feedback.is_empty():
+		_hud.show_evidence(ChapterThree.A047_FINDING)
+	else:
+		_accident_reasoning.show_feedback(feedback)
 
 
 func _on_final_han_su_requested() -> void:

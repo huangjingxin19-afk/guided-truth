@@ -6,14 +6,17 @@ signal entry_selected(entry: EvidenceEntry)
 
 
 func setup(
-	entries: Array[EvidenceEntry], preview_style: StyleBox, action_label: String, action: Callable
+	entries: Array[EvidenceEntry], preview_style: StyleBox, action_label: String, action: Callable,
+	excerpts: Array[String] = []
 ) -> void:
 	var views := HBoxContainer.new()
 	views.add_theme_constant_override("separation", 16)
 	add_child(views)
-	for entry in entries:
+	for index in entries.size():
+		var entry := entries[index]
 		var column := VBoxContainer.new()
 		column.add_theme_constant_override("separation", 10)
+		column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		views.add_child(column)
 
 		var panel := Panel.new()
@@ -29,6 +32,15 @@ func setup(
 		var preview := entry.preview.instantiate() as Node2D
 		preview.scale = Vector2.ONE * entry.preview_scale * 0.62
 		center.add_child(preview)
+
+		if index < excerpts.size() and not excerpts[index].is_empty():
+			var excerpt := Label.new()
+			excerpt.text = excerpts[index]
+			excerpt.custom_minimum_size = Vector2(252, 64)
+			excerpt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			excerpt.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+			excerpt.add_theme_font_size_override("font_size", 16)
+			column.add_child(excerpt)
 
 		var enlarge := Button.new()
 		enlarge.text = "放大" + entry.title

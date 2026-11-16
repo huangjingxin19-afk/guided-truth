@@ -217,6 +217,14 @@ func _read_save(path: String) -> Dictionary:
 		if step_recorded and not previous_step_recorded:
 			return {}
 		previous_step_recorded = step_recorded
+	if ids.has(ChapterThree.A047_REPORT.id) and not ids.has(ChapterThree.AUTUMN_LEDGER.id):
+		return {}
+	if ids.has(ChapterThree.A047_REPAIR.id) and not ids.has(ChapterThree.A047_REPORT.id):
+		return {}
+	if ids.has(ChapterThree.A047_FINDING.id) and (
+		not ids.has(ChapterThree.A047_REPORT.id) or not ids.has(ChapterTwo.ACCIDENT_NOTICE.id)
+	):
+		return {}
 	if not handover_paused:
 		for entry in ChapterThree.FINAL_WITNESSES:
 			if ids.has(entry.id):

@@ -68,7 +68,8 @@ func _refresh_saturday() -> void:
 		$ArrivalHint.text = "左侧返回前台，右侧经外廊回后院。"
 		$Investigation/YardExit.disabled = false
 		$Investigation/EndingPoint.hide()
-		$Investigation/AccidentPoint.hide()
+		$Investigation/AccidentPoint.visible = ChapterThree.needs_accident_photo()
+		$Investigation/AccidentPoint.interaction_label = "拍下旧事故说明"
 		$Investigation/SaturdaySealPoint.hide()
 		$Investigation/HighWindowPoint.hide()
 		$Investigation/SaturdayHanSuPoint.hide()
@@ -122,7 +123,7 @@ func _on_ending_requested() -> void:
 
 
 func _on_accident_requested() -> void:
-	if ChapterTwo.can_document_accident():
+	if ChapterTwo.can_document_accident() or ChapterThree.needs_accident_photo():
 		$Investigation.inspect(ChapterTwo.ACCIDENT_NOTICE)
 
 

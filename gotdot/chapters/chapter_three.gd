@@ -25,6 +25,9 @@ const G03_PHOTO = preload("res://investigation/final_g03_photo.tres")
 const G03_PERMISSION = preload("res://investigation/final_g03_permission.tres")
 const G03_OPEN = preload("res://investigation/final_g03_open.tres")
 const AUTUMN_LEDGER = preload("res://investigation/final_autumn_ledger.tres")
+const A047_REPORT = preload("res://investigation/final_a047_report.tres")
+const A047_REPAIR = preload("res://investigation/final_a047_repair.tres")
+const A047_FINDING = preload("res://investigation/final_a047_finding.tres")
 const HAN_SU_TESTIMONY = preload("res://investigation/final_han_su_testimony.tres")
 const SHAO_NING_TESTIMONY = preload("res://investigation/final_shao_ning_testimony.tres")
 const FINAL_BOX_ENTRIES: Array[EvidenceEntry] = [
@@ -36,11 +39,13 @@ const CHAPTER_ENTRIES := [
 	COMMISSION, HIGH_WINDOW, SUPPLY_ACCESS, DESK_VIEW, LOCATION_FINDING, MESSAGE,
 	LOAN_CARD, RETURN_NOTICE, CALL, DUTY_BOARD, DEPARTURE, RETURNED_STAND, RECEIPT, CONCLUSION,
 	FINAL_REVIEW,
+	A047_REPORT, A047_REPAIR, A047_FINDING,
 ]
 
 enum Location { CLASSROOM, SHELTER }
 enum Loan { REEL, BLACK_STAND, WHITE_STAND }
 enum Visitor { ZHOU_WEN, XU_NAN }
+enum AccidentClaim { OUTAGE_TIME, NO_PRIOR_REPORT, FALL_ACCOUNT }
 const LOCATION_CHOICES := ["在 102 教室里", "在玻璃外的后院雨棚"]
 const LOAN_CHOICES := [
 	"12 号电缆卷盘 · 黄色外壳 · 已还",
@@ -49,6 +54,11 @@ const LOAN_CHOICES := [
 ]
 const VISITOR_CHOICES := ["周闻在 102 教室内", "许南在玻璃外的雨棚"]
 const RETURN_CHOICES := ["归还 12 号电缆卷盘", "归还 21 号折叠谱架", "归还 12 号白脚谱架"]
+const ACCIDENT_CLAIMS := [
+	"约 20:17 楼内停电",
+	"事发前未收到西梯应急照明故障报告",
+	"一名学员离队后于西梯跌落",
+]
 
 var active := false
 var appointment_started := false
@@ -103,6 +113,32 @@ func record_final_evidence(entry: EvidenceEntry) -> void:
 	if step > 0 and not InvestigationLog.has_entry(FINAL_BOX_ENTRIES[step - 1].id):
 		return
 	InvestigationLog.record(entry)
+
+
+func record_a047_report() -> void:
+	if handover_paused and InvestigationLog.has_entry(AUTUMN_LEDGER.id):
+		InvestigationLog.record(A047_REPORT)
+
+
+func record_a047_repair() -> void:
+	if handover_paused and InvestigationLog.has_entry(A047_REPORT.id):
+		InvestigationLog.record(A047_REPAIR)
+
+
+func needs_accident_photo() -> bool:
+	return handover_paused and InvestigationLog.has_entry(A047_REPORT.id) \
+		and not InvestigationLog.has_entry(ChapterTwo.ACCIDENT_NOTICE.id)
+
+
+func submit_accident_comparison(answer: int) -> String:
+	if not handover_paused or not InvestigationLog.has_entry(A047_REPORT.id):
+		return "先翻看秋册，找到 A-047 报修存根。"
+	if needs_accident_photo():
+		return "先到走廊西梯口补拍旧事故说明。"
+	if answer != AccidentClaim.NO_PRIOR_REPORT:
+		return "再比一下 17:52 的签收和 20:17 的事故时间，看看旧说明的哪句话与之冲突。"
+	InvestigationLog.record(A047_FINDING)
+	return ""
 
 
 func can_observe_high_window() -> bool:
@@ -217,8 +253,14 @@ func status() -> String:
 
 func _objective() -> String:
 	if handover_paused:
+		if InvestigationLog.has_entry(A047_FINDING.id):
+			return "旧事故说明已核对，可在笔记回看结论"
+		if needs_accident_photo():
+			return "去走廊西梯口补拍旧事故说明"
+		if InvestigationLog.has_entry(A047_REPORT.id):
+			return "回到 102 翻看秋册，对照旧事故说明"
 		if InvestigationLog.has_entry(AUTUMN_LEDGER.id):
-			return "秋册已找回，可回看笔记或补问证人"
+			return "秋册已找回，翻看目录里的西梯应急灯报修"
 		if InvestigationLog.has_entry(G03_OPEN.id):
 			return "移开 G03 里的谱架，取出秋册"
 		if InvestigationLog.has_entry(G03_PERMISSION.id):
