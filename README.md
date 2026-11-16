@@ -46,7 +46,7 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 6. 到雨棚器材门左侧看门铃旁的留言，回前台在柜台左端核对三张借用卡。选错可重选，也可以退出补查留言。
 7. 看柜台右端的《借用物交回通知》，找旁边的韩素确认来访者何时能到。到前台右侧的值班板登记。选「确认赴约」进入 19:25 的 102，确认之前可离开前台补查。
 8. 从长桌右端绕到 A01，记录白线、桌脚和敞开的 G03，再从器材门随韩素去雨棚。到长凳旁核对许南带来的谱架，找韩素留存 19:27 签收联。
-9. 根据现场、借用卡和签收联向韩素提交归还结论。出现「第三章完」后，在结案卡选择「进入终章复核」。回到 102 后检查正门内侧的 A01，查看箱里报修册并对照第一天的清点照片；在证据页选择「比对照片并暂停移交」，异议会记入笔记。
+9. 根据现场、借用卡和签收联向韩素提交归还结论。出现「第三章完」后，在结案卡选择「进入终章复核」。回到 102 后检查正门内侧的 A01，选择「对照首次清点照片」。两件证物都能放大查看。确认册子不符后，选择「提出异议并暂停移交」，异议会记入笔记。
 
 两个观察近景共用一套占位人物和道具。新增的谱架、G03、纸张和木脚摩擦声用于当前可玩版本。[第三章开发计划](./第三章-开发计划.md)
 
@@ -61,6 +61,16 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 安卓测试包直接覆盖安装即可保留存档，包名和签名须相同，版本号须递增。卸载或清除应用数据会删除本地存档。自动存档从 1.0.14 开始记录。
 
 ## 开发与验证
+
+在项目根目录用 PowerShell 运行一键回归：
+
+```powershell
+.\scripts\check-game.ps1
+```
+
+如果 Godot 未加入 PATH，用 `-Godot 'C:\path\to\Godot_v4.7.2-stable_win64_console.exe'` 指定命令行程序。新检出需先用 Godot 编辑器打开一次项目，完成资源导入。
+
+脚本执行 102 调查与复走、两条完整调查路线和两组自动存档回归，覆盖终章复核与暂停移交后重启续档。每组使用独立测试存档，日志留在 `.test-runtime/check-game-*`。任一组失败时退出码为 1。安卓导出和真机试玩按需单独执行。
 
 将 Godot 4.7.2 的命令行程序放入 PATH 后，在项目根目录运行：
 
@@ -88,7 +98,7 @@ foreach ($phase in 'first','second','third','resume','backup','reset','damaged')
 }
 
 $env:APPDATA = (New-Item -ItemType Directory -Force ".test-runtime/appointment-$([guid]::NewGuid())").FullName
-foreach ($phase in 'first','second','third','appointment-plan','appointment-start','appointment-return','appointment-finish','appointment-complete') {
+foreach ($phase in 'first','second','third','appointment-plan','appointment-start','appointment-return','appointment-finish','appointment-complete','final-review-start','final-review-resume') {
     godot --headless --path gotdot --script ../tests/autosave.gd -- $phase
     if ($LASTEXITCODE -ne 0) { break }
 }

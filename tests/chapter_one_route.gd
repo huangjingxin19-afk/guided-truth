@@ -680,10 +680,31 @@ func _play_saturday_return() -> void:
 	_check(_room.get_node("Scenery/ArchiveBox/CupRing").visible
 		and not _room.get_node("Scenery/ArchiveBox/Ledger/WhiteStitches").visible,
 		"The moved A01 box now visibly contains the spring ledger.")
+	_check(_room.get_node("Scenery/ClosedG03/Thread").is_visible_in_tree()
+		and not _room.get_node("Scenery/OpenG03").visible, "The G03 lid is closed, with a visible thread.")
 	await _interact_at(Vector2(310, 449), "复核 A01 箱口的报修册")
-	_check(_hud.header.text == "A01 箱口 · 2019 年春季报修册"
-		and _hud.description.text.contains("书脊完整"), "The player can compare the current book with the first inventory photo.")
+	_check(_hud.header.text == "2019 年春季报修册" and _hud.description.text.contains("书脊完整"),
+		"The spring ledger shows its identifying details.")
 	_tap_button(_hud.evidence_action_button)
+	await _check_card("A01 comparison")
+	_check(_hud.header.text == "复核 A01" and not _chapter_three.handover_paused,
+		"Opening the comparison leaves the handover pending.")
+	_close()
+	await _settle()
+	_check(_hud.header.text == "2019 年春季报修册" and not _chapter_three.handover_paused,
+		"The player can leave the comparison without objecting.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	for view in ["A01 清点照片", "2019 年春季报修册"]:
+		_tap_button(_choice(_hud.presentation_slot, "放大" + view))
+		await _check_card(view)
+		var detail := "三针白色补线" if view == "A01 清点照片" else "书脊完整"
+		_check(_hud.header.text == view and _hud.description.text.contains(detail),
+			"Each item can be enlarged to check its spine.")
+		_close()
+		await _settle()
+		_check(_hud.header.text == "复核 A01", "The enlarged item returns to the comparison.")
+	_tap_button(_choice(_hud.presentation_slot, "提出异议并暂停移交"))
 	_check(_chapter_three.handover_paused and _log.has_entry(_chapter_three.FINAL_REVIEW.id)
 		and _hud.header.text == "终章复核 · A01 与首次清点不符",
 		"The discrepancy pauses the handover and is retained in the notebook.")

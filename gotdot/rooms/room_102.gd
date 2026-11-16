@@ -105,8 +105,8 @@ func _refresh_final_review() -> void:
 	$Investigation/ArchiveStand.position = Vector2(310, 449)
 	$Scenery/ArchiveBox/Ledger/WhiteStitches.hide()
 	$Scenery/ArchiveBox/CupRing.show()
-	$Scenery/OpenG03.show()
-	$Scenery/OpenG03.position = Vector2(697, 248)
+	$Scenery/OpenG03.hide()
+	$Scenery/ClosedG03.show()
 	$Scenery/HeQing.show()
 	$Scenery/HeQing.position = Vector2(723, 308)
 	$Scenery/HanSu.show()
@@ -184,12 +184,7 @@ func _on_archive_requested() -> void:
 		if ChapterThree.handover_paused:
 			_hud.show_evidence(FINAL_REVIEW)
 		else:
-			var current_book := EvidenceEntry.new()
-			current_book.title = "A01 箱口 · 2019 年春季报修册"
-			current_book.description = "封面留着浅色杯圈。书脊完整，没有韩素补过的三针白线；翻开后，内页标着「2019 年春季」。\n\n打开笔记里的第一天现场照片，对一对箱口书脊下端的特征。"
-			current_book.preview = SPRING_LEDGER
-			current_book.preview_scale = 6.0
-			_hud.show_evidence(current_book, false, "比对照片并暂停移交", _pause_handover)
+			_show_spring_ledger()
 		return
 	if ChapterTwo.active:
 		_investigation.inspect(ChapterTwo.ARCHIVE)
@@ -204,6 +199,22 @@ func _on_archive_requested() -> void:
 		_hud.show_evidence(box, false, "拍下清点照片", _photograph_archive)
 	else:
 		_hud.show_evidence(ChapterOne.ARCHIVE_PHOTO)
+
+
+func _show_spring_ledger() -> void:
+	var current_book := EvidenceEntry.new()
+	current_book.title = "2019 年春季报修册"
+	current_book.description = "A01 箱口的蓝布册。封面留着浅色杯圈，书脊完整。翻开后，内页标着「2019 年春季」。"
+	current_book.preview = SPRING_LEDGER
+	current_book.preview_scale = 6.0
+	_hud.show_evidence(current_book, false, "对照首次清点照片", _compare_final_review.bind(current_book))
+
+
+func _compare_final_review(current_book: EvidenceEntry) -> void:
+	var entries: Array[EvidenceEntry] = [ChapterOne.ARCHIVE_PHOTO, current_book]
+	_hud.show_comparison(
+		entries, "复核 A01", _show_spring_ledger, "返回春册", "提出异议并暂停移交", _pause_handover
+	)
 
 
 func _pause_handover() -> void:

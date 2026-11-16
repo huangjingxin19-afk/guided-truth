@@ -150,7 +150,9 @@ func show_notebook(entries: Array[EvidenceEntry], comparison_entries: Array[Evid
 		compare.text = "对照高窗与桌后"
 		compare.custom_minimum_size.y = 52.0
 		compare.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		compare.pressed.connect(_open_comparison.bind(comparison_entries))
+		compare.pressed.connect(show_comparison.bind(
+			comparison_entries, compare.text, _show_notebook_page, "返回笔记"
+		))
 		notebook_list.add_child(compare)
 
 	for entry in entries:
@@ -164,26 +166,30 @@ func show_notebook(entries: Array[EvidenceEntry], comparison_entries: Array[Evid
 	_show_notebook_page()
 
 
-func _open_comparison(entries: Array[EvidenceEntry]) -> void:
+func show_comparison(
+	entries: Array[EvidenceEntry], title: String, on_close: Callable, close_label: String,
+	action_label := "", action := Callable()
+) -> void:
 	if is_instance_valid(_comparison):
 		presentation_slot.remove_child(_comparison)
 		_comparison.queue_free()
 	_comparison = EvidenceComparison.new()
-	_comparison.setup(entries, preview_container.get_theme_stylebox("panel"))
-	_comparison.entry_selected.connect(_enlarge_comparison_entry)
+	_comparison.setup(entries, preview_container.get_theme_stylebox("panel"), action_label, action)
+	var return_to_comparison := _show_comparison.bind(title, on_close, close_label)
+	_comparison.entry_selected.connect(_enlarge_comparison_entry.bind(return_to_comparison))
 	presentation_slot.add_child(_comparison)
-	_show_comparison()
+	return_to_comparison.call()
 
 
-func _show_comparison() -> void:
-	show_presentation(_comparison, "对照高窗与桌后", true)
-	_return_action = _show_notebook_page
-	close_button.text = "返回笔记"
+func _show_comparison(title: String, on_close: Callable, close_label: String) -> void:
+	show_presentation(_comparison, title, true)
+	_return_action = on_close
+	close_button.text = close_label
 
 
-func _enlarge_comparison_entry(entry: EvidenceEntry) -> void:
+func _enlarge_comparison_entry(entry: EvidenceEntry, return_to_comparison: Callable) -> void:
 	show_evidence(entry)
-	_return_action = _show_comparison
+	_return_action = return_to_comparison
 	close_button.text = "返回对照"
 
 

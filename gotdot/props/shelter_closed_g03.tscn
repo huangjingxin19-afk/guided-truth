@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[node name="ClosedG03" type="Node2D"]
+
+[node name="Box" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-37, 1, 37, 1, 33, 15, -32, 15)
+color = Color(0.63, 0.54, 0.43, 1)
+
+[node name="Lid" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-38, 1, -32, -9, 32, -9, 38, 1, 38, 4, -38, 4)
+color = Color(0.52, 0.44, 0.35, 1)
+
+[node name="Thread" type="Line2D" parent="."]
+points = PackedVector2Array(-12, 4, -14, 6, -16, 6)
+width = 1.0
+default_color = Color(0.92, 0.91, 0.84, 1)
+
+[node name="Tag" type="Label" parent="."]
+offset_left = 11.0
+offset_top = 4.0
+scale = Vector2(0.4, 0.4)
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.9, 0.76, 1)
+theme_override_font_sizes/font_size = 18
+text = "G03"

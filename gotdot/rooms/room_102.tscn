@@ -20,6 +20,7 @@
 [ext_resource type="PackedScene" path="res://props/a01_archive_box.tscn" id="18_archive"]
 [ext_resource type="Resource" path="res://investigation/shelter_desk_view.tres" id="19_desk_view"]
 [ext_resource type="PackedScene" path="res://props/shelter_open_g03.tscn" id="20_g03"]
+[ext_resource type="PackedScene" path="res://props/shelter_closed_g03.tscn" id="21_g03_closed"]
 [ext_resource type="Resource" path="res://investigation/shelter_102_departure.tres" id="21_departure"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_floor"]
@@ -166,6 +167,10 @@ position = Vector2(279, 247)
 [node name="OpenG03" parent="Scenery" instance=ExtResource("20_g03")]
 visible = false
 position = Vector2(407, 249)
+
+[node name="ClosedG03" parent="Scenery" instance=ExtResource("21_g03_closed")]
+visible = false
+position = Vector2(697, 248)
 
 [node name="FootPad" parent="Scenery" instance=ExtResource("3_foot_pad")]
 position = Vector2(551, 251)
