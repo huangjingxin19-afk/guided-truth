@@ -1,0 +1,40 @@
+{
+  "version": "v1.2",
+  "actor_canvas": [
+    72,
+    108
+  ],
+  "basket_canvas": [
+    28,
+    32
+  ],
+  "actor_foot_anchor_local": [
+    36,
+    104
+  ],
+  "basket_top_left_relative_to_actor_png": [
+    35,
+    57
+  ],
+  "old_incorrect_offset": [
+    44,
+    56
+  ],
+  "draw_order": [
+    "basket",
+    "actor"
+  ],
+  "godot_example_actor_sprite_position_relative_to_foot_origin": [
+    -36,
+    -104
+  ],
+  "godot_example_basket_sprite_position_relative_to_foot_origin": [
+    -1,
+    -47
+  ],
+  "both_sprite_centered": false,
+  "texture_filter": "Nearest",
+  "scale": 1,
+  "hand_handle_skin_overlap_pixels": 12,
+  "godot_verified": false
+}
