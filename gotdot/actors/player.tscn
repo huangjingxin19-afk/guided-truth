@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://actors/player.gd" id="1_player"]
+[ext_resource type="SpriteFrames" path="res://actors/linhe/linhe_animations.tres" id="2_linhe"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_feet"]
 radius = 7.0
@@ -17,31 +18,14 @@ shape = SubResource("CircleShape2D_feet")
 path_desired_distance = 2.0
 target_desired_distance = 2.0
 
-[node name="Facing" type="Node2D" parent="."]
-
-[node name="Visual" type="Node2D" parent="Facing"]
+[node name="Shadow" type="Polygon2D" parent="."]
 scale = Vector2(1.7, 1.7)
-
-[node name="Shadow" type="Polygon2D" parent="Facing/Visual"]
 color = Color(0.12, 0.1, 0.09, 0.3)
 polygon = PackedVector2Array(-15, 0, -10, -4, 10, -4, 15, 0, 10, 4, -10, 4)
 
-[node name="Legs" type="Polygon2D" parent="Facing/Visual"]
-color = Color(0.16, 0.19, 0.22, 1)
-polygon = PackedVector2Array(-7, -15, 7, -15, 9, 0, 2, 0, 0, -9, -2, 0, -9, 0)
-
-[node name="Coat" type="Polygon2D" parent="Facing/Visual"]
-color = Color(0.23, 0.62, 0.63, 1)
-polygon = PackedVector2Array(-7, -32, 7, -32, 11, -27, 10, -15, -10, -15, -11, -27)
-
-[node name="Head" type="Polygon2D" parent="Facing/Visual"]
-color = Color(0.87, 0.67, 0.52, 1)
-polygon = PackedVector2Array(-8, -45, 6, -45, 9, -42, 9, -35, 5, -31, -6, -31, -9, -35, -9, -42)
-
-[node name="Hair" type="Polygon2D" parent="Facing/Visual"]
-color = Color(0.14, 0.14, 0.15, 1)
-polygon = PackedVector2Array(-11, -42, -7, -48, 6, -48, 10, -44, 10, -40, 1, -40, -3, -37, -6, -37, -6, -33, -11, -34)
-
-[node name="Bag" type="Polygon2D" parent="Facing/Visual"]
-color = Color(0.6, 0.37, 0.22, 1)
-polygon = PackedVector2Array(3, -29, 8, -29, 11, -19, 5, -18)
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = ExtResource("2_linhe")
+animation = &"idle_front"
+centered = false
+offset = Vector2(-36, -104)

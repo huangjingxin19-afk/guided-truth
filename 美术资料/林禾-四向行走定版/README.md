@@ -16,7 +16,7 @@
 - 站立：停止移动时按当前朝向切换到 `game_96px/idle/` 对应单帧，与行走共用脚底基准，切换不跳位。
 - 各帧固定画布和脚底基准，游戏版脚底约 Y=104；可用脚底落点作 AnimatedSprite2D 的 offset。
 - Godot 使用 CanvasItem.TEXTURE_FILTER_NEAREST（或纹理导入设最近邻）；尽量使用一致的画面缩放倍率。
-- 面向左/右时，原画是独立朝向而非简单双向镜像；角色发型保持参考稿外观。（注：当前 player.gd 用 facing.scale.x 翻转朝向，只用一侧也能跑，两侧都留着按需取用。）
+- Godot 共用玩家场景按实际位移选择四向原画，并按移动速度调整帧率。游戏资源和动画配置位于 [gotdot/actors/linhe](../../gotdot/actors/linhe/)。
 
 ## 已知限制
 

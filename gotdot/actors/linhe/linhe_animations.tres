@@ -1,0 +1,162 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://actors/linhe/idle/linhe_idle_front.png" id="idle_front_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/front/front_walk_01.png" id="walk_front_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/front/front_walk_02.png" id="walk_front_2"]
+[ext_resource type="Texture2D" path="res://actors/linhe/front/front_walk_03.png" id="walk_front_3"]
+[ext_resource type="Texture2D" path="res://actors/linhe/front/front_walk_04.png" id="walk_front_4"]
+[ext_resource type="Texture2D" path="res://actors/linhe/idle/linhe_idle_back.png" id="idle_back_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/back/back_walk_01.png" id="walk_back_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/back/back_walk_02.png" id="walk_back_2"]
+[ext_resource type="Texture2D" path="res://actors/linhe/back/back_walk_03.png" id="walk_back_3"]
+[ext_resource type="Texture2D" path="res://actors/linhe/back/back_walk_04.png" id="walk_back_4"]
+[ext_resource type="Texture2D" path="res://actors/linhe/idle/linhe_idle_left.png" id="idle_left_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/left/left_walk_01.png" id="walk_left_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/left/left_walk_02.png" id="walk_left_2"]
+[ext_resource type="Texture2D" path="res://actors/linhe/left/left_walk_03.png" id="walk_left_3"]
+[ext_resource type="Texture2D" path="res://actors/linhe/left/left_walk_04.png" id="walk_left_4"]
+[ext_resource type="Texture2D" path="res://actors/linhe/idle/linhe_idle_right.png" id="idle_right_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/right/right_walk_01.png" id="walk_right_1"]
+[ext_resource type="Texture2D" path="res://actors/linhe/right/right_walk_02.png" id="walk_right_2"]
+[ext_resource type="Texture2D" path="res://actors/linhe/right/right_walk_03.png" id="walk_right_3"]
+[ext_resource type="Texture2D" path="res://actors/linhe/right/right_walk_04.png" id="walk_right_4"]
+
+[resource]
+animations = [
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("idle_front_1")
+	}
+],
+"loop": false,
+"name": &"idle_front",
+"speed": 1.0
+},
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_front_1")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_front_2")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_front_3")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_front_4")
+	}
+],
+"loop": true,
+"name": &"walk_front",
+"speed": 6.666666666666667
+},
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("idle_back_1")
+	}
+],
+"loop": false,
+"name": &"idle_back",
+"speed": 1.0
+},
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_back_1")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_back_2")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_back_3")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_back_4")
+	}
+],
+"loop": true,
+"name": &"walk_back",
+"speed": 6.666666666666667
+},
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("idle_left_1")
+	}
+],
+"loop": false,
+"name": &"idle_left",
+"speed": 1.0
+},
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_left_1")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_left_2")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_left_3")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_left_4")
+	}
+],
+"loop": true,
+"name": &"walk_left",
+"speed": 6.666666666666667
+},
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("idle_right_1")
+	}
+],
+"loop": false,
+"name": &"idle_right",
+"speed": 1.0
+},
+{
+"frames": [
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_right_1")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_right_2")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_right_3")
+	},
+	{
+		"duration": 1.0,
+		"texture": ExtResource("walk_right_4")
+	}
+],
+"loop": true,
+"name": &"walk_right",
+"speed": 6.666666666666667
+}
+]

@@ -22,6 +22,7 @@ func _run() -> void:
 	var floor_region := room.get_node("WalkableFloor") as NavigationRegion2D
 	await _wait_for_inspection()
 
+	await _expect_player_animation()
 	await _expect_surrounding_stands(floor_region, "橡胶凳脚垫", FOOT_PAD_TOUCH, [
 		Vector2(495, 251), Vector2(551, 244), Vector2(605, 251), Vector2(551, 320),
 		Vector2(507, 244), Vector2(595, 244), Vector2(520, 317), Vector2(580, 317),
@@ -67,6 +68,37 @@ func _run() -> void:
 
 	print("Inspection geometry failures: ", _failures)
 	quit(int(_failures > 0))
+
+
+func _expect_player_animation() -> void:
+	var sprite := _player.get_node("Sprite") as AnimatedSprite2D
+	var directions := {
+		"front": Vector2.DOWN,
+		"back": Vector2.UP,
+		"left": Vector2.LEFT,
+		"right": Vector2.RIGHT,
+	}
+	_check(sprite.animation == &"idle_front", "Lin He starts in the front idle pose.")
+
+	_player.global_position = Vector2(720, 422)
+	for direction in directions:
+		_player.set_move_direction(directions[direction])
+		await _wait_for_inspection()
+		_check(sprite.animation == "walk_" + direction and sprite.is_playing(), "Lin He walks %s." % direction)
+		_player.set_move_direction(Vector2.ZERO)
+		_check(sprite.animation == "idle_" + direction and not sprite.is_playing(), "Lin He stops facing %s." % direction)
+
+	_player.set_move_direction(Vector2(0.68, -0.73))
+	await _wait_for_inspection()
+	_check(sprite.animation == &"walk_right", "A near-diagonal input keeps the previous movement axis.")
+	_player.stop_walking()
+
+	_player.global_position = Vector2(839, 426)
+	_player.set_move_direction(Vector2.RIGHT)
+	for frame in range(8):
+		await physics_frame
+	_check(sprite.animation == &"idle_right", "Holding movement against the wall shows the idle pose.")
+	_player.stop_walking()
 
 
 func _expect_contextual_interaction() -> void:

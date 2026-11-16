@@ -6,7 +6,7 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 
 ## 当前试玩路线
 
-安卓导出目标为 `chapter3-complete-1.0.17.apk`（版本号 18，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
+安卓导出目标为 `linhe-animation-1.0.18.apk`（版本号 19，Android 7.0 及以上，arm64，调试签名）。APK 保存在项目根目录，由 Git 忽略。
 
 ### 第一章《上锁的教室》
 
@@ -22,7 +22,7 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 9. 推理通过后，从长桌右端绕到下层抽屉前，查看报修册和散页，再装入 A01。走到箱边拍清点照片，找桌后的周闻签字。笔记可回看白色补线和签过「已阅」的清点单。
 10. 从器材门经后院回走廊，靠近正门选择「回看 102 正门」，看到「第一章完」。
 
-雨棚、角色、推车和报修册采用占位图形。复走及章节收尾用画面和文字呈现。
+林禾的定版四向行走与站姿已接入共用玩家场景。雨棚、其他角色、推车和报修册使用占位图形。复走及章节收尾用画面和文字呈现。
 
 ### 第二章《少掉的一页》
 
@@ -64,7 +64,7 @@ Godot 4.7.2 项目位于 `gotdot/`。游戏从第一章前台开始，可连续�
 godot --editor --path gotdot
 godot --headless --path gotdot --script ../tests/room_102_inspection.gd
 godot --headless --path gotdot --script ../tests/room_102_reenactment.gd
-godot --headless --path gotdot --export-debug Android ../chapter3-complete-1.0.17.apk
+godot --headless --path gotdot --export-debug Android ../linhe-animation-1.0.18.apk
 ```
 
 导出使用编辑器中已配置的 JDK、Android SDK、同版本安卓模板和调试签名。不要提交签名文件或密码。
@@ -93,7 +93,7 @@ foreach ($phase in 'first','second','third','appointment-plan','appointment-star
 102 的共用交互与复走也可通过直接运行 `gotdot/rooms/room_102.tscn` 单独验证。
 
 1.0.8 的后院路线、1.0.9 的摇杆版和 1.0.11 的第二章首段已通过手机试玩。1.0.12 的完整第二章路线已于 2026-11-15 通过手机试玩。
-1.0.16 已通过手机试玩，第三章可玩到站位判断。1.0.17 待手机验收。可覆盖安装后从「继续调查」续玩；第三章最短验收路线是从「人影在雨棚」旧档继续，查留言、选卡、登记赴约、记录离场现场，再签收并提交结论。
+1.0.16 已通过手机试玩，第三章可玩到站位判断。1.0.18 待手机验收。可覆盖安装后从「继续调查」续玩。第三章最短验收路线是从「人影在雨棚」旧档继续，查留言、选卡、登记赴约、记录离场现场，再签收并提交结论。
 
 ## 本次结构
 
