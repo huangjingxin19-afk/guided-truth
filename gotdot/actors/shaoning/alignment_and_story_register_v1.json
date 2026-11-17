@@ -1,0 +1,59 @@
+{
+  "project": "被引向的真相",
+  "batch": "C4 邵宁展示登记页纸角 + D2 登记夹线索",
+  "version": "1.0",
+  "character": {
+    "size": [
+      72,
+      108
+    ],
+    "anchor_image_px": [
+      36,
+      104
+    ],
+    "height_px": 98,
+    "actor_png_contains_small_page_and_folder": true,
+    "draw_order": [
+      "base",
+      "new sleeves",
+      "mini folder",
+      "hands"
+    ],
+    "no_double_layer_rule": "Do not overlay visitor_register_folder_world.png on the actor pose"
+  },
+  "world_folder": {
+    "size": [
+      30,
+      36
+    ]
+  },
+  "evidence": {
+    "detail_size": [
+      240,
+      280
+    ],
+    "candidate_page_size": [
+      144,
+      168
+    ],
+    "storage_rule_size": [
+      328,
+      184
+    ],
+    "weekday_labels": [
+      "周三",
+      "周四",
+      "周五"
+    ],
+    "coffee_stain_only": "visitor_page_thursday.png",
+    "coffee_stain_origin_in_thursday_page": [
+      103,
+      20
+    ],
+    "coffee_stain_source": "source/canonical_thursday_coffee_stain.png",
+    "info_policy": "Candidates display only weekday/date corner. All other contents are covered; no visitor PII",
+    "privacy_coverage": "Only weekday label and top corner exposed; main content masked"
+  },
+  "story_rule_exact": "含联系方式的原页用完请收入前台内袋，日常查阅只看来访日期与事项",
+  "status": "Static PNGs and Godot resource-path checks done; runtime not tested; GitHub not modified"
+}

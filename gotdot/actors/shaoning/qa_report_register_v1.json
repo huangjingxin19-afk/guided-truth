@@ -1,0 +1,197 @@
+{
+  "summary": {
+    "file_count": 13,
+    "sprite_alpha_binary": true,
+    "feet_baseline_y": 104,
+    "orig_head_and_lower_legs_byte_identical": true,
+    "runtime_tested": false,
+    "zip_verified": true,
+    "godot_scene_png_paths_resolve": true,
+    "exact_story_rule_match": true,
+    "formal_game_png_count": 7,
+    "openraster_integrity_verified": true,
+    "binary_alpha_all_png_verified": true
+  },
+  "assets": {
+    "gotdot/actors/shaoning/actions/shaoning_show_page_front.png": {
+      "size": [
+        72,
+        108
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        23,
+        7,
+        58,
+        104
+      ],
+      "opaque_colors": 40,
+      "sha256": "709b135dead740115ee91ab159f33e25716a8af5357664f0807d7136f7fb947b"
+    },
+    "gotdot/props/visitor_page_friday.png": {
+      "size": [
+        144,
+        168
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        3,
+        6,
+        134,
+        162
+      ],
+      "opaque_colors": 10,
+      "sha256": "c044d07915f699bcc86eba688c420408b5dde710ed9c0cb23d01d145a8f07a5c"
+    },
+    "gotdot/props/visitor_page_thursday.png": {
+      "size": [
+        144,
+        168
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        3,
+        6,
+        134,
+        162
+      ],
+      "opaque_colors": 14,
+      "sha256": "46b65deffb92a2d1360475b89bf7e7d07515bd754c80109d714eb3a698a42324"
+    },
+    "gotdot/props/visitor_page_wednesday.png": {
+      "size": [
+        144,
+        168
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        3,
+        6,
+        134,
+        162
+      ],
+      "opaque_colors": 10,
+      "sha256": "09d479152ab6dae1563045fe599e3aca3ff95095859ca92c7357461d349dfe10"
+    },
+    "gotdot/props/visitor_register_folder_detail.png": {
+      "size": [
+        240,
+        280
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        7,
+        5,
+        232,
+        274
+      ],
+      "opaque_colors": 16,
+      "sha256": "daf13092281b0a3883c4666accc535f463abbff7b1cdfe0f42b7bc31bdfe135d"
+    },
+    "gotdot/props/visitor_register_folder_world.png": {
+      "size": [
+        30,
+        36
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        1,
+        2,
+        28,
+        34
+      ],
+      "opaque_colors": 8,
+      "sha256": "7f3cd204d2bbfa15239cd9a1b5082397f14031ece905d8f09157d5304588bdb9"
+    },
+    "gotdot/props/visitor_register_storage_rule.png": {
+      "size": [
+        328,
+        184
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        4,
+        4,
+        322,
+        178
+      ],
+      "opaque_colors": 5,
+      "sha256": "dd501fe59ffcaa334f5fc1ee0f23d073649bdc6fd9fe017285cc4b015fe6070c"
+    },
+    "source/actor_base_arm_removed.png": {
+      "size": [
+        72,
+        108
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        24,
+        7,
+        47,
+        104
+      ],
+      "opaque_colors": 33,
+      "sha256": "ae3492c386e2fcf205b0a40a23cd74a706ee35e60a1e00fbe1c0f57f51f7b78f"
+    },
+    "source/actor_bent_sleeves.png": {
+      "size": [
+        72,
+        108
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        23,
+        38,
+        52,
+        59
+      ],
+      "opaque_colors": 5,
+      "sha256": "24bcc3c55e041a2f3bc1ca39300e486c98769d984393e57a8037540e29e7ed1b"
+    },
+    "source/actor_folder_mini.png": {
+      "size": [
+        72,
+        108
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        37,
+        43,
+        58,
+        62
+      ],
+      "opaque_colors": 9,
+      "sha256": "d97c66b7dbe841b9651a5228ccdb7d4babac89391c7f39b8013838374f1e52ba"
+    },
+    "source/actor_gripping_hands.png": {
+      "size": [
+        72,
+        108
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        34,
+        45,
+        55,
+        64
+      ],
+      "opaque_colors": 3,
+      "sha256": "bd1998c8485df44b20eb661a06586af790fb75d4a88ca2bd1389f7a8a9a39143"
+    },
+    "source/canonical_thursday_coffee_stain.png": {
+      "size": [
+        26,
+        24
+      ],
+      "rgba_binary_alpha": true,
+      "opaque_bbox": [
+        3,
+        4,
+        20,
+        23
+      ],
+      "opaque_colors": 4,
+      "sha256": "ffe739b0092fc47262904b80288580cd3e0bcad2e4e18d94eeff56db071a3d12"
+    }
+  }
+}
