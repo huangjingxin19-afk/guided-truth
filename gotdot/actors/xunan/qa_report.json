@@ -1,0 +1,226 @@
+{
+  "character_canvas": [
+    72,
+    108
+  ],
+  "footline_y": 104,
+  "foot_anchor": [
+    36,
+    104
+  ],
+  "source_palette_colors": 36,
+  "bag_offset_in_character_frame": [
+    45,
+    58
+  ],
+  "hand_handle_skin_overlap_pixels": 10,
+  "hand_handle_overlap_coords": [
+    [
+      49,
+      60
+    ],
+    [
+      50,
+      60
+    ],
+    [
+      48,
+      61
+    ],
+    [
+      50,
+      61
+    ],
+    [
+      51,
+      61
+    ],
+    [
+      48,
+      62
+    ],
+    [
+      49,
+      62
+    ],
+    [
+      48,
+      63
+    ],
+    [
+      49,
+      63
+    ],
+    [
+      49,
+      64
+    ]
+  ],
+  "files": {
+    "gotdot/actors/xunan/idle/xunan_idle_left.png": {
+      "dimensions": [
+        72,
+        108
+      ],
+      "bbox": [
+        26,
+        7,
+        47,
+        105
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 35,
+      "enclosed_transparent_components": 0,
+      "sha256": "8a546383e2f46460467fe33c1cc5a38e6cfb0da475c40aa55dbfd288d711ba8b",
+      "intentional_leg_gaps": [],
+      "unintended_holes": []
+    },
+    "gotdot/actors/xunan/idle/xunan_idle_right.png": {
+      "dimensions": [
+        72,
+        108
+      ],
+      "bbox": [
+        26,
+        7,
+        46,
+        105
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 35,
+      "enclosed_transparent_components": 0,
+      "sha256": "fd909210edd5b6138b46779c097d25bb6da6e6571bac9c6a61a4784e29c3e7f4",
+      "intentional_leg_gaps": [],
+      "unintended_holes": []
+    },
+    "gotdot/actors/xunan/idle/xunan_idle_front.png": {
+      "dimensions": [
+        72,
+        108
+      ],
+      "bbox": [
+        22,
+        7,
+        50,
+        105
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 34,
+      "enclosed_transparent_components": 2,
+      "sha256": "9005a4569e92be0e38dfe0688f2dd35285a25e9784f19784141c41bc6261bced",
+      "intentional_leg_gaps": [
+        {
+          "x": 35,
+          "y": 80,
+          "width": 1,
+          "height": 11,
+          "size": 11
+        },
+        {
+          "x": 35,
+          "y": 100,
+          "width": 2,
+          "height": 1,
+          "size": 2
+        }
+      ],
+      "unintended_holes": []
+    },
+    "gotdot/actors/xunan/idle/xunan_idle_back.png": {
+      "dimensions": [
+        72,
+        108
+      ],
+      "bbox": [
+        23,
+        7,
+        49,
+        105
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 34,
+      "enclosed_transparent_components": 1,
+      "sha256": "692a7530e10e8b90d4cf6cfac02a5130d1f27e4a8eedb6ea6fc7474714cd0a85",
+      "intentional_leg_gaps": [
+        {
+          "x": 35,
+          "y": 81,
+          "width": 2,
+          "height": 8,
+          "size": 12
+        }
+      ],
+      "unintended_holes": []
+    },
+    "gotdot/actors/xunan/actions/xunan_carry_narrow_bag_front.png": {
+      "dimensions": [
+        72,
+        108
+      ],
+      "bbox": [
+        22,
+        7,
+        53,
+        105
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 34,
+      "enclosed_transparent_components": 2,
+      "sha256": "de79de4d59cf6eb6ee041ae1e51ff6c1a657c5c09328069e1c6d242e99c76b7f",
+      "intentional_leg_gaps": [
+        {
+          "x": 35,
+          "y": 80,
+          "width": 1,
+          "height": 11,
+          "size": 11
+        },
+        {
+          "x": 35,
+          "y": 100,
+          "width": 2,
+          "height": 1,
+          "size": 2
+        }
+      ],
+      "unintended_holes": []
+    },
+    "gotdot/props/xunan_narrow_music_stand_bag.png": {
+      "dimensions": [
+        12,
+        41
+      ],
+      "bbox": [
+        1,
+        2,
+        11,
+        40
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_colors": 5,
+      "enclosed_transparent_components": 0,
+      "sha256": "6dc1405f2eab1a42feb36ff2f8d0cd10fddb8cb5e34c79a5ca33b16ad7479169"
+    }
+  },
+  "runtime_tested": false,
+  "note": "static checks only; actual Godot room still needs test",
+  "interpretation": "All alpha values are 0/255; enclosed transparent components between legs are intentional separation, not holes. No other enclosed alpha holes."
+}
