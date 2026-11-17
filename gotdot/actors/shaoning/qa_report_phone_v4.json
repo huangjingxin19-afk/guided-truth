@@ -1,0 +1,57 @@
+{
+  "project": "被引向的真相",
+  "batch": "邵宁 C4 看手机 v4 - 单手持机简化轮廓",
+  "reference_source": "shaoning C4 first batch approved 72x108 front idle, included in source",
+  "actor_feet_anchor": [
+    36,
+    104
+  ],
+  "actor_palm_touch_approx": [
+    44,
+    51
+  ],
+  "source_palette_subset": true,
+  "reuse_phone_prop_only_for_closeups": true,
+  "not_godot_runtime_tested": true,
+  "not_uploaded_to_github": true,
+  "checks": {
+    "actor": {
+      "size": [
+        72,
+        108
+      ],
+      "bbox_exclusive": [
+        23,
+        7,
+        51,
+        105
+      ],
+      "palette_nontransparent": 32,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "internal_transparent_holes": 0,
+      "sha256": "03ee63c3d0cc298a3e71805acea75b3ae20ab4b699d2dde0e6fcf30c8787b55c"
+    },
+    "phone": {
+      "size": [
+        12,
+        18
+      ],
+      "bbox_exclusive": [
+        1,
+        0,
+        11,
+        18
+      ],
+      "palette_nontransparent": 4,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "internal_transparent_holes": 0,
+      "sha256": "0476add177e89c86085e01a9d388658387055339024dfa076fd01b354f4fe1b9"
+    }
+  }
+}

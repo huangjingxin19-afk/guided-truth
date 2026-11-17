@@ -1,0 +1,122 @@
+{
+  "project": "被引向的真相",
+  "asset_set": "Shao Ning C4 idle four directions v1",
+  "engine_target": "Godot 4",
+  "canvas": [
+    72,
+    108
+  ],
+  "foot_reference": [
+    36,
+    104
+  ],
+  "unique_palette_colors_across_4_frames": 32,
+  "sprites": {
+    "front": {
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bbox_exclusive": [
+        23,
+        7,
+        49,
+        105
+      ],
+      "opaque_pixels": 1762,
+      "opaque_palette_colors": 32,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "foot_baseline_y": 104,
+      "connected_components_8_neighborhood": 1,
+      "enclosed_transparent_holes": 0,
+      "sha256": "91c6e905a3f373961fead12bf1b794c37e2bae48a46e8c5d1ee73eb3911bc9ef"
+    },
+    "right": {
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bbox_exclusive": [
+        26,
+        7,
+        46,
+        105
+      ],
+      "opaque_pixels": 1129,
+      "opaque_palette_colors": 32,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "foot_baseline_y": 104,
+      "connected_components_8_neighborhood": 1,
+      "enclosed_transparent_holes": 0,
+      "sha256": "db3721a004eb9a336686945419dd69999813911af9f286c602c86633c8d785fc"
+    },
+    "left": {
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bbox_exclusive": [
+        25,
+        7,
+        46,
+        105
+      ],
+      "opaque_pixels": 1131,
+      "opaque_palette_colors": 32,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "foot_baseline_y": 104,
+      "connected_components_8_neighborhood": 1,
+      "enclosed_transparent_holes": 0,
+      "sha256": "749f36508112ec2c2ebbaa0c691fe79c40a666a759b10e38864deb9d11803a74"
+    },
+    "back": {
+      "size": [
+        72,
+        108
+      ],
+      "visible_height": 98,
+      "bbox_exclusive": [
+        23,
+        7,
+        49,
+        105
+      ],
+      "opaque_pixels": 1752,
+      "opaque_palette_colors": 32,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "foot_baseline_y": 104,
+      "connected_components_8_neighborhood": 1,
+      "enclosed_transparent_holes": 0,
+      "sha256": "57e60f9366492e0fe0eb67d482f7e8d89c07aea6d5d3a4d1e746eb622aa63d01"
+    }
+  },
+  "ora_editable_layers": 4,
+  "static_validation": {
+    "png_decode": true,
+    "binary_alpha": true,
+    "each_one_connected_component": true,
+    "no_enclosed_holes": true,
+    "shared_palette_limited_to_32": true,
+    "tscn_resource_path_exists": true,
+    "scene_offset_correct": true
+  },
+  "godot_editor_runtime_verified": false,
+  "android_runtime_verified": false,
+  "status": "Static/import-format QA passed; scene integration and runtime verification pending",
+  "github_modified": false
+}
