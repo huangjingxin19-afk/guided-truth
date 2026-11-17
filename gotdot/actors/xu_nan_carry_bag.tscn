@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://props/xunan_narrow_music_stand_bag.png" id="1_bag"]
+[ext_resource type="Texture2D" path="res://actors/xunan/actions/xunan_carry_narrow_bag_front.png" id="2_pose"]
+
+[node name="XuNanCarryBag" type="Node2D"]
+
+[node name="NarrowBag" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(9, -46)
+centered = false
+texture = ExtResource("1_bag")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-36, -104)
+centered = false
+texture = ExtResource("2_pose")
