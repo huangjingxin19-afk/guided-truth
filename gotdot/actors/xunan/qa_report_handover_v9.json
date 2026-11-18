@@ -1,0 +1,70 @@
+{
+  "status": "static checks passed; not run in Godot",
+  "original_right_idle_sha256": "fd909210edd5b6138b46779c097d25bb6da6e6571bac9c6a61a4784e29c3e7f4",
+  "original_right_idle_included": false,
+  "character_size": [
+    72,
+    108
+  ],
+  "feet_bottom_pixel_row": 104,
+  "alpha_values": [
+    0,
+    255
+  ],
+  "original_palette_color_count": 35,
+  "action_palette_color_count": 35,
+  "new_colors_outside_original_palette": 0,
+  "changed_pixels_from_original_idle": 178,
+  "edit_region_xyxy_exclusive": [
+    32,
+    44,
+    55,
+    64
+  ],
+  "old_hanging_hand_skin_pixels_remaining": 0,
+  "stand_position_in_actor_frame": [
+    41,
+    47
+  ],
+  "hand_stand_skin_overlap_count": 8,
+  "hand_stand_skin_overlap_coords": [
+    [
+      49,
+      52
+    ],
+    [
+      47,
+      53
+    ],
+    [
+      48,
+      53
+    ],
+    [
+      49,
+      53
+    ],
+    [
+      50,
+      53
+    ],
+    [
+      51,
+      53
+    ],
+    [
+      52,
+      53
+    ],
+    [
+      49,
+      54
+    ]
+  ],
+  "scene_texture_refs": [
+    "res://props/xunan_music_stand_12_handover.png",
+    "res://actors/xunan/actions/xunan_hand_over_stand_right.png"
+  ],
+  "openraster_composite_matches_png": true,
+  "runtime_tested": false
+}

@@ -1,0 +1,41 @@
+{
+  "version": "v9",
+  "canvas": [
+    72,
+    108
+  ],
+  "foot_anchor": [
+    36,
+    104
+  ],
+  "original_idle_sha256": "fd909210edd5b6138b46779c097d25bb6da6e6571bac9c6a61a4784e29c3e7f4",
+  "original_idle_status": "not included, not modified",
+  "handover": {
+    "actor_path": "res://actors/xunan/actions/xunan_hand_over_stand_right.png",
+    "stand_path": "res://props/xunan_music_stand_12_handover.png",
+    "stand_position_in_actor_frame": [
+      41,
+      47
+    ],
+    "stand_node_position": [
+      5,
+      -57
+    ],
+    "actor_node_position": [
+      -36,
+      -104
+    ],
+    "draw_order": [
+      "stand",
+      "actor"
+    ],
+    "hand_bbox": [
+      47,
+      52,
+      53,
+      56
+    ],
+    "visible_hands": 1,
+    "explanation": "保留原版侧面身体，只将垂下的右手臂改为近身弯肘单手托举。独立谱架需先绘制；不重复叠放。"
+  }
+}
