@@ -12,7 +12,7 @@
 [ext_resource type="Script" path="res://ui/reasoning_form.gd" id="10_reasoning"]
 [ext_resource type="AudioStream" path="res://props/shelter_wood_scrape.wav" id="11_scrape"]
 [ext_resource type="Texture2D" path="res://props/pushcart_loaded_right.png" id="12_cart"]
-[ext_resource type="Texture2D" path="res://actors/xunan/idle/xunan_idle_front.png" id="13_xunan_idle"]
+[ext_resource type="PackedScene" path="res://actors/xu_nan.tscn" id="13_xunan_idle"]
 [ext_resource type="PackedScene" path="res://actors/xu_nan_carry_bag.tscn" id="14_xunan_carry"]
 
 [node name="BackYard" instance=ExtResource("1")]
@@ -154,11 +154,8 @@ color = Color(0.9, 0.82, 0.61, 1)
 visible = false
 position = Vector2(548, 339)
 
-[node name="IdlePose" type="Sprite2D" parent="WalkableFloor/DepthSort/XuNan"]
-texture_filter = 1
-position = Vector2(-36, -104)
-centered = false
-texture = ExtResource("13_xunan_idle")
+[node name="IdlePose" parent="WalkableFloor/DepthSort/XuNan" node_paths=PackedStringArray("face_target") instance=ExtResource("13_xunan_idle")]
+face_target = NodePath("../../LinHe")
 
 [node name="CarryPose" parent="WalkableFloor/DepthSort/XuNan" instance=ExtResource("14_xunan_carry")]
 visible = false

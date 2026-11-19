@@ -199,13 +199,15 @@ scale = Vector2(1.8, 1.8)
 [node name="HanSu" parent="Scenery" instance=ExtResource("13_han_su")]
 position = Vector2(722, 249)
 
-[node name="HeQing" parent="Scenery" instance=ExtResource("15_he_qing")]
+[node name="HeQing" parent="Scenery" node_paths=PackedStringArray("face_target") instance=ExtResource("15_he_qing")]
 visible = false
 position = Vector2(789, 315)
+face_target = NodePath("../../WalkableFloor/DepthSort/LinHe")
 
-[node name="ZhouWen" parent="Scenery" instance=ExtResource("16_zhou_wen")]
+[node name="ZhouWen" parent="Scenery" node_paths=PackedStringArray("face_target") instance=ExtResource("16_zhou_wen")]
 visible = false
 position = Vector2(371, 264)
+face_target = NodePath("../../WalkableFloor/DepthSort/LinHe")
 
 [node name="FinalZhouWen" type="Sprite2D" parent="Scenery"]
 visible = false

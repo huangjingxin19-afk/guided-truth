@@ -31,6 +31,12 @@ func _run() -> void:
 	await _settle()
 	_tap_button(current_scene.get_node("%NewGameButton"))
 	await _room_ready("FrontDesk")
+	await _check_directional_actor(
+		_room.get_node("Scenery/HeQing"), "heqing", "front desk He Qing"
+	)
+	await _check_directional_actor(
+		_room.get_node("Scenery/ZhouWen"), "zhouwen", "front desk Zhou Wen"
+	)
 	_check(_log.entries().is_empty() and not _chapter.commission_accepted, "New game starts with an empty log and no commission.")
 	_check(_room.get_node("Investigation/CorridorExit").disabled, "Receive the commission before leaving the front desk.")
 	_check(not _room.get_node("Investigation/PhotoPoint").visible and not _chapter_two.can_start(), "Friday clues stay hidden before the chapter handoff.")
@@ -322,6 +328,9 @@ func _play_chapter_two() -> void:
 	_check(_hud.evidence_action_button.text == "开始第二章", "The ending offers the next chapter.")
 	_tap_button(_hud.evidence_action_button)
 	await _room_ready("FrontDesk")
+	await _check_directional_actor(
+		_room.get_node("Scenery/ShaoNing"), "shaoning", "front desk Shao Ning"
+	)
 	_check(_chapter_two.active and _room.get_node("ChapterStatus").text.begins_with("周五 17:20"), "The handoff starts Friday's investigation.")
 	_check(_chapter.case_stage == _chapter.CaseStage.COMPLETE and _log.has_entry(_chapter.SIGNED_INVENTORY.id), "The handoff retains the entire Thursday investigation.")
 	await _capture("14-chapter-two-front-desk")
@@ -666,6 +675,9 @@ func _play_saturday_return() -> void:
 	await _check_card("returned stand")
 	await _capture("32-chapter-three-returned-stand")
 	_close()
+	await _check_directional_actor(
+		_room.get_node("WalkableFloor/DepthSort/XuNan/IdlePose"), "xunan", "back yard Xu Nan"
+	)
 	await _interact_at(Vector2(657, 379), "请韩素签收")
 	_check(_hud.header.text == "19:27 · 后院签收联" and _chapter_three.can_submit_conclusion(),
 		"The signed receipt sets the final time and unlocks the conclusion.")
@@ -1242,6 +1254,33 @@ func _walk_to(destination: Vector2) -> void:
 		if _player.global_position.distance_to(destination) < 3.0:
 			break
 	_check(_player.global_position.distance_to(destination) < 3.0, "Walkable route reaches %s (actual %s)." % [destination, _player.global_position])
+	await _settle()
+
+
+func _check_directional_actor(actor_node: Node, asset_folder: String, context: String) -> void:
+	var actor := actor_node as Node2D
+	var sprite := actor.get_node("Sprite") as Sprite2D
+	var original_player_position := _player.global_position
+	_player.stop_walking()
+	_check(actor.get("face_target") == _player, context + " faces the room's player.")
+	var cases := [
+		[Vector2(0, 60), "front"],
+		[Vector2(-60, 0), "left"],
+		[Vector2(60, 0), "right"],
+		[Vector2(0, -60), "back"],
+	]
+	for item in cases:
+		_player.global_position = actor.global_position + item[0]
+		await process_frame
+		await process_frame
+		var expected_path := "res://actors/%s/idle/%s_idle_%s.png" % [
+			asset_folder, asset_folder, item[1]
+		]
+		_check(sprite.texture != null and sprite.texture.resource_path == expected_path,
+			"%s selects its %s idle when the player stands %s." %
+			[context, item[1], item[1]])
+	_player.global_position = original_player_position
+	_player.stop_walking()
 	await _settle()
 
 

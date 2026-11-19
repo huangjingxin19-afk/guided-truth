@@ -1,8 +1,16 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Texture2D" path="res://actors/shaoning/idle/shaoning_idle_front.png" id="1_idle_front"]
+[ext_resource type="Script" path="res://actors/directional_idle.gd" id="2_idle"]
+[ext_resource type="Texture2D" path="res://actors/shaoning/idle/shaoning_idle_left.png" id="3_left"]
+[ext_resource type="Texture2D" path="res://actors/shaoning/idle/shaoning_idle_right.png" id="4_right"]
+[ext_resource type="Texture2D" path="res://actors/shaoning/idle/shaoning_idle_back.png" id="5_back"]
 
 [node name="ShaoNing" type="Node2D"]
+script = ExtResource("2_idle")
+left_frame = ExtResource("3_left")
+right_frame = ExtResource("4_right")
+back_frame = ExtResource("5_back")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 texture_filter = 1

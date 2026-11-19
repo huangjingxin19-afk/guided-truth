@@ -28,11 +28,13 @@ size = Vector2(330, 38)
 [node name="FrontDesk" instance=ExtResource("1")]
 script = ExtResource("2")
 
-[node name="HeQing" parent="Scenery" index="4" instance=ExtResource("5_he_qing")]
+[node name="HeQing" parent="Scenery" index="4" node_paths=PackedStringArray("face_target") instance=ExtResource("5_he_qing")]
 position = Vector2(350, 316)
+face_target = NodePath("../../WalkableFloor/DepthSort/LinHe")
 
-[node name="ZhouWen" parent="Scenery" index="5" instance=ExtResource("6_zhou_wen")]
+[node name="ZhouWen" parent="Scenery" index="5" node_paths=PackedStringArray("face_target") instance=ExtResource("6_zhou_wen")]
 position = Vector2(540, 268)
+face_target = NodePath("../../WalkableFloor/DepthSort/LinHe")
 
 [node name="CorridorDoor" type="Node2D" parent="Scenery" index="6"]
 position = Vector2(793, 303)
@@ -49,9 +51,10 @@ theme_override_font_sizes/font_size = 20
 text = "走廊 →
 102 正门"
 
-[node name="ShaoNing" parent="Scenery" index="7" instance=ExtResource("17_shao_ning")]
+[node name="ShaoNing" parent="Scenery" index="7" node_paths=PackedStringArray("face_target") instance=ExtResource("17_shao_ning")]
 position = Vector2(570, 317)
 visible = false
+face_target = NodePath("../../WalkableFloor/DepthSort/LinHe")
 
 [node name="HandoverBoard" type="Node2D" parent="Scenery" index="8"]
 position = Vector2(655, 303)
