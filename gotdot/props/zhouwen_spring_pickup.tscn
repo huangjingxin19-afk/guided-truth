@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://actors/zhouwen/actions/zhouwen_carry_basket_front.png" id="1_pose"]
+[ext_resource type="Texture2D" path="res://props/zhouwen_old_teaching_basket.png" id="2_basket"]
+[ext_resource type="Texture2D" path="res://props/blank_equipment_tags.png" id="3_tags"]
+[ext_resource type="PackedScene" path="res://props/spring_repair_ledger.tscn" id="4_ledger"]
+
+[node name="ZhouWenSpringPickup" type="Node2D"]
+texture_filter = 1
+
+[node name="Basket" type="Sprite2D" parent="."]
+position = Vector2(-1, 3)
+centered = false
+texture = ExtResource("2_basket")
+
+[node name="Ledger" parent="." instance=ExtResource("4_ledger")]
+position = Vector2(15, 13)
+rotation = -0.13
+scale = Vector2(0.56, 0.56)
+
+[node name="Tags" type="Sprite2D" parent="."]
+position = Vector2(18, 17)
+scale = Vector2(0.64, 0.64)
+texture = ExtResource("3_tags")
+
+[node name="ZhouWen" type="Sprite2D" parent="."]
+texture = ExtResource("1_pose")

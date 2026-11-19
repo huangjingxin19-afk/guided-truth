@@ -1,6 +1,7 @@
-[gd_resource type="Resource" load_steps=2 format=3]
+[gd_resource type="Resource" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/heqing_commission.tscn" id="2_preview"]
 
 [resource]
 script = ExtResource("1")
@@ -11,3 +12,5 @@ description = "委托人：何青
 
 何青亲手锁了正门，编号纸条跨贴门扇和门框。白天检查仍完好，傍晚却连续亮灯、传来拖声。
 器材门曾用于临时领用。先查看正门封条，查清借还路线，免得误封。周闻递来的器材便笺也已记入笔记。"
+preview = ExtResource("2_preview")
+preview_scale = 1.0

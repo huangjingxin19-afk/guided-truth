@@ -9,3 +9,10 @@ texture_filter = 1
 position = Vector2(-36, -104)
 centered = false
 texture = ExtResource("1_idle_front")
+
+[node name="Name" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -130.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+text = "邵宁"

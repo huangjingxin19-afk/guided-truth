@@ -1,0 +1,11 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/visitor_register_storage_rule.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+title = "登记夹背面 · 原页收存规则"
+description = "含联系方式的原页用完请收入前台内袋，日常查阅只看来访日期与事项。"
+preview = ExtResource("2")
+preview_scale = 0.73

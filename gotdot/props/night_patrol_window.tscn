@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_block_glare_right.png" id="1_hansu_block_glare"]
+[ext_resource type="PackedScene" path="res://actors/xu_nan_carry_bag.tscn" id="1_xunan_carry"]
+[ext_resource type="Texture2D" path="res://actors/hansu/actions/hansu_block_glare_right.png" id="2_hansu_block_glare"]
 
 [node name="NightPatrolWindow" type="Node2D"]
 
@@ -12,18 +13,10 @@ color = Color(0.12, 0.16, 0.17, 1)
 polygon = PackedVector2Array(-121, -56, 118, -56, 118, 56, -121, 56)
 color = Color(0.3, 0.37, 0.38, 1)
 
-[node name="Figure" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(11, 43, 15, -10, 34, -23, 31, -45, 44, -49, 59, -39, 58, -23, 71, -11, 77, 44)
-color = Color(0.13, 0.18, 0.21, 1)
-
-[node name="RaisedHand" type="Line2D" parent="."]
-points = PackedVector2Array(65, -3, 86, 7, 98, -20)
-width = 7.0
-default_color = Color(0.13, 0.18, 0.21, 1)
-
-[node name="NarrowBag" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(81, -1, 89, -4, 108, 43, 98, 48)
-color = Color(0.16, 0.22, 0.25, 1)
+[node name="XuNanSilhouette" parent="." instance=ExtResource("1_xunan_carry")]
+position = Vector2(62, 50)
+scale = Vector2(0.9, 0.9)
+modulate = Color(0.13, 0.18, 0.21, 1)
 
 [node name="Rack" type="Line2D" parent="."]
 points = PackedVector2Array(-116, 51, -116, -44, 23, -44, 23, 51)
@@ -37,6 +30,6 @@ color = Color(0.23, 0.28, 0.28, 1)
 [node name="HansuBlockingGlare" type="Sprite2D" parent="."]
 position = Vector2(-145, 60)
 texture_filter = 1
-texture = ExtResource("1_hansu_block_glare")
+texture = ExtResource("2_hansu_block_glare")
 centered = false
 offset = Vector2(-36, -104)

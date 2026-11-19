@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://props/visitor_register_storage_rule.png" id="1_rule"]
+
+[node name="VisitorRegisterStorageRule" type="Node2D"]
+
+[node name="Rule" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_rule")

@@ -124,7 +124,8 @@ foreach ($phase in 'first','second','third','appointment-plan','appointment-star
 - `save/save_game.gd` 在同一次操作结束后统一保存章节、证物和房间入口。选择继续调查时先恢复进度，由原房间逻辑还原可交互内容。存档采用本地 JSON 文件和上一份备份。[Godot 官方存读档示例](https://github.com/godotengine/godot-demo-projects/blob/master/loading/serialization/save_load_json.gd)
 - `ui/main_menu.tscn` 预留 `BackgroundArt` 和 `TitleArt`。主菜单、暂停和调查 HUD 共用 `ui/investigation_theme.tres`，可在场景和主题中接入正式素材。[Godot 官方暂停菜单示例](https://github.com/godotengine/godot-demo-projects/blob/master/2d/platformer/gui/pause_menu.gd)
 - `rooms/investigation_room.tscn` 提供共用移动、调查与 HUD。前台、走廊和雨棚继承后配置本地场景和交互。
-- `investigation/*.tres` 保存证物文本和预览。韩素的站姿由各场景共用，推车复走、夜巡和签收使用对应动作素材。
+- `investigation/*.tres` 保存证物文本和预览。证物正文和预览可滚动，关闭和调查操作按钮始终留在卡片上。
+- 前台、102 和后院的人物使用正式像素站姿。第一章委托与清点、第二章前台登记夹与春册、第三章谱架归还使用相应的动作和道具素材。
 
 前台委托与证物登记参考了任务状态集中维护的做法。[Quest System 的任务管理实现](https://github.com/shomykohai/quest-system/blob/d1d933c7b1822aceb637e3d6fe3a4814f973c3ee/addons/quest_system/quest_manager.gd)
 

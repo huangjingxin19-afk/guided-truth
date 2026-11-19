@@ -1,0 +1,9 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://props/evening_shift_manual_draft.png" id="1_manual"]
+
+[node name="ZhouWenManualPreview" type="Node2D"]
+
+[node name="Manual" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_manual")

@@ -12,6 +12,8 @@
 [ext_resource type="Script" path="res://ui/reasoning_form.gd" id="10_reasoning"]
 [ext_resource type="AudioStream" path="res://props/shelter_wood_scrape.wav" id="11_scrape"]
 [ext_resource type="Texture2D" path="res://props/pushcart_loaded_right.png" id="12_cart"]
+[ext_resource type="Texture2D" path="res://actors/xunan/idle/xunan_idle_front.png" id="13_xunan_idle"]
+[ext_resource type="PackedScene" path="res://actors/xu_nan_carry_bag.tscn" id="14_xunan_carry"]
 
 [node name="BackYard" instance=ExtResource("1")]
 script = ExtResource("2")
@@ -152,17 +154,14 @@ color = Color(0.9, 0.82, 0.61, 1)
 visible = false
 position = Vector2(548, 339)
 
-[node name="Coat" type="Polygon2D" parent="WalkableFloor/DepthSort/XuNan"]
-polygon = PackedVector2Array(-17, -49, -8, -54, 10, -54, 19, -44, 13, -5, 6, -5, 4, -20, -4, -20, -8, -5, -14, -5)
-color = Color(0.27, 0.35, 0.49, 1)
+[node name="IdlePose" type="Sprite2D" parent="WalkableFloor/DepthSort/XuNan"]
+texture_filter = 1
+position = Vector2(-36, -104)
+centered = false
+texture = ExtResource("13_xunan_idle")
 
-[node name="Head" type="Polygon2D" parent="WalkableFloor/DepthSort/XuNan"]
-polygon = PackedVector2Array(-11, -70, -3, -76, 8, -73, 12, -64, 7, -53, -7, -54)
-color = Color(0.73, 0.58, 0.44, 1)
-
-[node name="Hair" type="Polygon2D" parent="WalkableFloor/DepthSort/XuNan"]
-polygon = PackedVector2Array(-12, -72, -2, -78, 9, -74, 12, -65, 2, -69, -9, -65)
-color = Color(0.19, 0.16, 0.16, 1)
+[node name="CarryPose" parent="WalkableFloor/DepthSort/XuNan" instance=ExtResource("14_xunan_carry")]
+visible = false
 
 [node name="Name" type="Label" parent="WalkableFloor/DepthSort/XuNan"]
 offset_left = -17.0

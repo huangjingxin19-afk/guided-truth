@@ -20,6 +20,7 @@ signal overlay_changed(open: bool)
 @onready var notebook: ScrollContainer = %Notebook
 @onready var notebook_list: VBoxContainer = %NotebookList
 @onready var evidence: VBoxContainer = %Evidence
+@onready var _evidence_scroll: ScrollContainer = %EvidenceScroll
 @onready var preview_container: Panel = %Preview
 @onready var preview_anchor: Node2D = %PreviewAnchor
 @onready var description: Label = %Description
@@ -110,6 +111,7 @@ func show_evidence(
 		_preview.queue_free()
 		_preview = null
 	preview_container.visible = entry.preview != null
+	_evidence_scroll.custom_minimum_size.y = 292.0 if entry.preview != null else 0.0
 	if entry.preview != null:
 		preview_anchor.scale = Vector2.ONE * entry.preview_scale
 		_preview = entry.preview.instantiate()
@@ -118,6 +120,7 @@ func show_evidence(
 	presentation_slot.hide()
 	evidence.show()
 	overlay.show()
+	_evidence_scroll.scroll_vertical = 0
 	close_button.grab_focus()
 
 

@@ -1,19 +1,22 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://props/visitor_page_preview.gd" id="1"]
+[ext_resource type="Texture2D" path="res://props/visitor_page_thursday.png" id="1_thursday"]
 
 [node name="VisitorPhotoDetail" type="Node2D"]
 
-[node name="VisitorPage" type="Node2D" parent="."]
+[node name="VisitorPage" type="Sprite2D" parent="."]
+texture_filter = 1
 position = Vector2(-42, -34)
-scale = Vector2(0.88, 0.88)
-script = ExtResource("1")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_thursday")
+centered = false
 
 [node name="WhiteCup" type="Polygon2D" parent="."]
+position = Vector2(0, 30)
 polygon = PackedVector2Array(6, -41, 29, -43, 45, -37, 45, -18, 39, -8, 24, -5, 11, -9, 5, -18)
 color = Color(0.95, 0.94, 0.88, 1)
 
-[node name="CupRim" type="Line2D" parent="."]
+[node name="CupRim" type="Line2D" parent="WhiteCup"]
 points = PackedVector2Array(7, -36, 14, -30, 31, -28, 43, -34)
 width = 2.0
 default_color = Color(0.73, 0.71, 0.65, 1)

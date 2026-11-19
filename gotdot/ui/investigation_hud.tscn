@@ -97,7 +97,18 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="Preview" type="Panel" parent="Overlay/Card/Content/Evidence"]
+[node name="EvidenceScroll" type="ScrollContainer" parent="Overlay/Card/Content/Evidence"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="EvidenceBody" type="VBoxContainer" parent="Overlay/Card/Content/Evidence/EvidenceScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="Preview" type="Panel" parent="Overlay/Card/Content/Evidence/EvidenceScroll/EvidenceBody"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -105,17 +116,17 @@ custom_minimum_size = Vector2(0, 136)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_preview")
 
-[node name="PreviewCenter" type="Control" parent="Overlay/Card/Content/Evidence/Preview"]
+[node name="PreviewCenter" type="Control" parent="Overlay/Card/Content/Evidence/EvidenceScroll/EvidenceBody/Preview"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 mouse_filter = 2
 
-[node name="PreviewAnchor" type="Node2D" parent="Overlay/Card/Content/Evidence/Preview/PreviewCenter"]
+[node name="PreviewAnchor" type="Node2D" parent="Overlay/Card/Content/Evidence/EvidenceScroll/EvidenceBody/Preview/PreviewCenter"]
 unique_name_in_owner = true
 
-[node name="Description" type="Label" parent="Overlay/Card/Content/Evidence"]
+[node name="Description" type="Label" parent="Overlay/Card/Content/Evidence/EvidenceScroll/EvidenceBody"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 3

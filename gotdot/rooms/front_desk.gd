@@ -3,6 +3,8 @@ extends Node2D
 const Case = preload("res://chapters/chapter_one.gd").CaseStage
 const EvidenceEntry = preload("res://investigation/evidence_entry.gd")
 const FinalEnding = preload("res://ui/final_ending.gd")
+const REGISTER_STORAGE_RULE = preload("res://investigation/visitor_register_storage_rule.tres")
+const SHAO_NING_PHONE = preload("res://props/shaoning_phone_preview.tscn")
 
 var _final_ending := FinalEnding.new()
 
@@ -196,6 +198,18 @@ func _show_original_photo() -> void:
 		_hud.show_evidence(ChapterTwo.PHOTO, false, "对照转发截图", _show_forwarded_crop)
 
 
+func _on_file_pocket_inspected(entry: EvidenceEntry) -> void:
+	_investigation.inspect(entry, "查看夹背收存规则", _show_register_storage_rule)
+
+
+func _show_register_storage_rule() -> void:
+	_hud.show_evidence(REGISTER_STORAGE_RULE, false, "返回登记夹", _show_register)
+
+
+func _show_register() -> void:
+	_hud.show_evidence(ChapterTwo.FILE_POCKET, false, "查看夹背收存规则", _show_register_storage_rule)
+
+
 func _shao_ning_action() -> String:
 	if ChapterTwo.has_withdrawn_photo():
 		return "向邵宁问登记摘录"
@@ -232,6 +246,8 @@ func _on_shao_ning_interacted() -> void:
 		var message := EvidenceEntry.new()
 		message.title = "邵宁的群聊消息"
 		message.description = "邵宁：「大家都在转截过的那一块。我问过发图的人，『群里这张有原图吗？请先别再转。』你可以先看柜台上最早那条。」"
+		message.preview = SHAO_NING_PHONE
+		message.preview_scale = 1.0
 		_hud.show_evidence(message)
 
 

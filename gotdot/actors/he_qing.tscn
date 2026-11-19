@@ -1,22 +1,18 @@
 [gd_scene format=3]
 
+[ext_resource type="Texture2D" path="res://actors/heqing/idle/heqing_idle_front.png" id="1_front"]
+
 [node name="HeQing" type="Node2D"]
 
-[node name="Body" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-14, -90, 14, -90, 18, -49, -18, -49)
-color = Color(0.59, 0.37, 0.28, 1)
-
-[node name="Head" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-13, -115, 13, -115, 13, -91, -13, -91)
-color = Color(0.86, 0.68, 0.51, 1)
-
-[node name="Hair" type="Polygon2D" parent="."]
-polygon = PackedVector2Array(-15, -118, 15, -118, 15, -106, -15, -110)
-color = Color(0.15, 0.14, 0.14, 1)
+[node name="Sprite" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(-36, -104)
+centered = false
+texture = ExtResource("1_front")
 
 [node name="Name" type="Label" parent="."]
 offset_left = -24.0
-offset_top = -151.0
+offset_top = -130.0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 20
 text = "何青"

@@ -1,9 +1,12 @@
 [gd_resource type="Resource" format=3]
 
 [ext_resource type="Script" path="res://investigation/evidence_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://props/zhouwen_inventory_preview.tscn" id="2_preview"]
 
 [resource]
 script = ExtResource("1")
 id = &"a01_signed_inventory"
 title = "A01 清点单"
 description = "102 下抽屉，蓝布报修册一册，另有散页。并入 A01。\n已阅：周闻（签字）。\n\n周闻拍下清点单副联，把原件夹回林禾的板夹。资料留在 102 桌后，等到新址再逐页核对。"
+preview = ExtResource("2_preview")
+preview_scale = 1.0

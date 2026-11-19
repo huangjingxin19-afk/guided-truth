@@ -49,9 +49,15 @@ func _run() -> void:
 	_check(_hud.description.text.contains("核实 102 傍晚的出入者、路线和声响来源"), "Commission matches the final script.")
 	await _check_card("commission")
 	await _capture("02-commission")
+	var evidence_scroll := _hud.get_node("%EvidenceScroll") as ScrollContainer
+	evidence_scroll.scroll_vertical = int(evidence_scroll.get_v_scroll_bar().max_value)
+	await _settle()
+	_check(_hud.description.get_global_rect().end.y <= evidence_scroll.get_global_rect().end.y + 1.0,
+		"The commission can be scrolled to its last line.")
 	_tap_button(_hud.evidence_action_button)
 	await _settle()
 	_check(_hud.header.text == "器材交接便笺" and _hud.description.text.contains("领取人和件数见随车单"), "The note unfolds with its complete routing text.")
+	_check(evidence_scroll.scroll_vertical == 0, "Changing evidence resets the reading position.")
 	await _check_card("equipment note")
 	await _capture("03-equipment-note")
 	_close()
@@ -380,6 +386,15 @@ func _play_chapter_two() -> void:
 	_check(_hud.header.text == "登记夹与内袋" and _hud.preview_container.visible, "The counter pocket reveals three partially covered originals.")
 	await _check_card("front desk file pocket")
 	await _capture("17-chapter-two-file-pocket")
+	var evidence_count: int = _log.entries().size()
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "登记夹背面 · 原页收存规则" and _hud.preview_container.visible,
+		"The back of the register opens from the file pocket.")
+	_tap_button(_hud.evidence_action_button)
+	await _settle()
+	_check(_hud.header.text == "登记夹与内袋" and _log.entries().size() == evidence_count,
+		"Returning from the storage rule restores the evidence without another notebook entry.")
 	_close()
 	await _settle()
 	_check(not _chapter_two.can_submit_reasoning(), "The photographer still needs to confirm the circumstances.")
@@ -643,6 +658,8 @@ func _play_saturday_return() -> void:
 	await _interact_at(Vector2(483, 257), "随韩素去雨棚")
 	await _room_ready("BackYard")
 	_check(not _room.get_node("Investigation/ReturnSignOffPoint").visible, "Inspect the returned item before asking Han Su to sign.")
+	_check(_room.get_node("WalkableFloor/DepthSort/XuNan/CarryPose").visible,
+		"Xu Nan arrives with his narrow bag.")
 	await _interact_at(Vector2(594, 379), "核对许南带来的谱架")
 	_check(_hud.description.text.contains("桌脚蹭地") and _hud.description.text.contains("白色替换件"),
 		"The stand records the audible clue, Xu Nan's account and the physical match.")
@@ -652,6 +669,10 @@ func _play_saturday_return() -> void:
 	await _interact_at(Vector2(657, 379), "请韩素签收")
 	_check(_hud.header.text == "19:27 · 后院签收联" and _chapter_three.can_submit_conclusion(),
 		"The signed receipt sets the final time and unlocks the conclusion.")
+	_check(_hud.preview_anchor.find_child("XuNanHandOver", true, false) != null,
+		"The receipt shows Xu Nan handing over the stand.")
+	await _check_card("signed return receipt")
+	await _capture("32b-chapter-three-signed-receipt")
 	_close()
 	await _interact_at(Vector2(657, 379), "向韩素提交归还结论")
 	var form := _hud.presentation_slot.get_node("ReturnReasoning") as Control

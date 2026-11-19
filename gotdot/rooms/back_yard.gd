@@ -61,6 +61,7 @@ func _refresh_saturday() -> void:
 	$Scenery/ReturnMailbox.visible = ChapterThree.has_location_finding()
 	$Investigation/ReturnMessagePoint.visible = ChapterThree.has_location_finding() and not appointment
 	$WalkableFloor/DepthSort/XuNan.visible = returning
+	_set_xu_nan_carrying_bag(returning and not has_stand)
 	$WalkableFloor/DepthSort/ReturnedStand.visible = returning
 	$Investigation/ReturnedStandPoint.visible = returning
 	$Investigation/ReturnSignOffPoint.visible = returning and has_stand
@@ -74,6 +75,12 @@ func _refresh_saturday() -> void:
 	elif ChapterThree.can_submit_conclusion():
 		action = "向韩素提交归还结论"
 	$Investigation/ReturnSignOffPoint.interaction_label = action
+
+
+func _set_xu_nan_carrying_bag(carrying_bag: bool) -> void:
+	$WalkableFloor/DepthSort/XuNan/IdlePose.visible = not carrying_bag
+	$WalkableFloor/DepthSort/XuNan/CarryPose.visible = carrying_bag
+	$WalkableFloor/DepthSort/ReturnedStand/ReturnBag.visible = not carrying_bag
 
 
 func _refresh_final_review() -> void:
@@ -97,6 +104,7 @@ func _refresh_final_review() -> void:
 		$WalkableFloor/DepthSort/HanSu.position = Vector2(657, 343)
 		$WalkableFloor/DepthSort/HanSu.pose = HanSuActor.Pose.FRONT
 		$WalkableFloor/DepthSort/XuNan.show()
+		_set_xu_nan_carrying_bag(false)
 		$WalkableFloor/DepthSort/ReturnedStand.show()
 		$Investigation/ReturnSignOffPoint.show()
 		$Investigation/ReturnSignOffPoint.interaction_label = "听许南讲述西梯那一晚"

@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://actors/heqing/actions/heqing_hand_work_order.png" id="1_pose"]
+[ext_resource type="Texture2D" path="res://props/heqing_work_order.png" id="2_order"]
+
+[node name="HeQingCommission" type="Node2D"]
+texture_filter = 1
+
+[node name="HeQing" type="Sprite2D" parent="."]
+position = Vector2(-54, 0)
+texture = ExtResource("1_pose")
+
+[node name="WorkOrder" type="Sprite2D" parent="."]
+position = Vector2(48, 0)
+texture = ExtResource("2_order")
